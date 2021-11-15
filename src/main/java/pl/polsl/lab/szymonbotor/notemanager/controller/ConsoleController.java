@@ -20,15 +20,18 @@ import pl.polsl.lab.szymonbotor.notemanager.model.*;
  * @author Szymon Botor
  * @version 1.0
  */
-public class Controller {
-    
+public class ConsoleController {
+
+    // TODO: comment and javadoc
+    private static final String HISTORY_DIR = "history.txt";
+
     /**
      * The default constructor for the controller class.
      */
-    public Controller() {
-        
+    public ConsoleController() {
+
     }
-    
+
     /**
      * The main method of the controller. The arguments can be provided by the command line, otherwise the user is asked to input them in the console.<br>
      * Three modes of operation can be specified by using appropriate switches and arguments:<br>
@@ -43,11 +46,19 @@ public class Controller {
      * @param args command line parameters.
      */
     public static void main(String[] args) {
-        
+
         ConsoleView view = new ConsoleView();
-        
+        NoteHistory noteHistory = null;
+
+        try {
+            noteHistory = new NoteHistory(HISTORY_DIR);
+        }
+        catch (IOException ex) {
+            view.display("Warning: cannot open or create the note history file.\n");
+        }
+
         if (args.length < 1) {
-            args = view.fetchArgs();
+            args = view.fetchArgs(noteHistory);
         }
         
         switch (args[0]) {
@@ -55,18 +66,24 @@ public class Controller {
             case "-o":
             case "-O": {
                 if (args.length < 2) {
-                    args = new String[] {"-o", view.fetchFileDir() };
+                    args = new String[] {"-o", view.fetchFileDir(noteHistory) };
                 }
                 try {
                     Note note = view.openNote(args[1]);
-                    if (note == null) {
-                        return;
-                    } else {
+                    if (note != null) {
+                        noteHistory.add(note);
                         view.display(note);
+
+                        try {
+                            noteHistory.save();
+                        }
+                        catch (IOException ex) {
+                            view.display("Warning: cannot save or create the note history file.\n");
+                        }
                     }
                 }
                 catch (IOException | InvalidPathException ex) {
-                    view.display("Cannot open file \"".concat(args[1]).concat("\"."));
+                    view.display("Cannot open file \"" + args[1] + "\".");
                 }
                 catch (NoSuchAlgorithmException |
                         InvalidKeySpecException |
@@ -75,7 +92,7 @@ public class Controller {
                         InvalidAlgorithmParameterException |
                         IllegalBlockSizeException |
                         BadPaddingException ex) {
-                    view.display("Error during decryption. ".concat(ex.getMessage()));
+                    view.display("Error during decryption. " + ex.getMessage());
                 }
                 break;
             }
@@ -86,6 +103,14 @@ public class Controller {
                 try {
                     if (view.editNote(note)) {
                         view.saveNote(note);
+                        noteHistory.add(note);
+
+                        try {
+                            noteHistory.save();
+                        }
+                        catch (IOException ex) {
+                            view.display("Warning: cannot save or create the note history file.\n");
+                        }
                     }
                 }
                 catch (IOException | InvalidPathException ex) {
@@ -98,7 +123,7 @@ public class Controller {
                         InvalidAlgorithmParameterException |
                         IllegalBlockSizeException |
                         BadPaddingException ex) {
-                    view.display("Error during encryption. ".concat(ex.getMessage()));
+                    view.display("Error during encryption. " + ex.getMessage());
                 }
                 break;
             }

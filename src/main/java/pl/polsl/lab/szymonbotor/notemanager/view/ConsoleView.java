@@ -48,15 +48,15 @@ public class ConsoleView {
      * @param passGen PasswordGen object used to generate passwords.
      */
     public void display(PasswordGen passGen) {
-        System.out.println("Generated password: ".concat(passGen.generate()));
+        display("Generated password: ".concat(passGen.generate()));
         while (true) {
-            System.out.println("\"r\" - regenerate\n\"e\" - exit");
+            display("\"r\" - regenerate\n\"e\" - exit");
             String choice = scanner.nextLine().strip().toLowerCase();
             
             switch (choice) {
                 case "r":
                 case "regenerate":
-                    System.out.println("\nGenerated password: ".concat(passGen.generate()));
+                    display("\nGenerated password: ".concat(passGen.generate()));
                     break;
                 case "e":
                 case "exit":
@@ -65,7 +65,7 @@ public class ConsoleView {
                 case "end":
                     return;
                 default:
-                    System.out.println("\nUrecognised command.");
+                    display("\nUrecognised command.");
                     break;
             }
         }
@@ -77,20 +77,35 @@ public class ConsoleView {
      */
     public void display(Note note) {
         if (note == null) {
-            System.out.println("Error: the note does not exist.");
+            display("Error: the note does not exist.");
             return;
         }
         
-        System.out.println("Note content:");
-        System.out.println(note.getContent());
+        display("Note content:");
+        display(note.getContent());
+    }
+
+    private String fetchFileDirWithHistory(NoteHistory history) {
+        display("Previously used notes:\n");
+        int counter = 1;
+        for (String noteDir : history.getNotes()) {
+            display(counter + ". " + noteDir);
+        }
+        display("");
+
+        return new String(); // TODO
     }
     
     /**
      * Method used to get a directory of a note from the user using standard i/o.
      * @return provided file directory.
      */
-    public String fetchFileDir() {
-        System.out.println("File directory:");
+    public String fetchFileDir(NoteHistory history) {
+        if (history != null && history.getNotes().size() != 0) {
+            return fetchFileDirWithHistory(history);
+        }
+
+        display("Choose file:");
         return scanner.nextLine().strip();
     }
     
@@ -99,7 +114,7 @@ public class ConsoleView {
      * @return provided length in string format.
      */
     public String fetchPasswordLength() {
-        System.out.println("Number of characters in the password:");
+        display("Number of characters in the password:");
         
         return scanner.nextLine().strip();
     }
@@ -109,8 +124,8 @@ public class ConsoleView {
      * @return provided symbols.
      */
     public String fetchPasswordSymbols() {
-        System.out.println("Symbols to include in addition to lowercase letters (without spaces):");
-        System.out.println("\"u\" - uppercase letters\n\"d\" - digits\nOther symbols (\"o\" to include all): !@#$%^&*-_+,.?");
+        display("Symbols to include in addition to lowercase letters (without spaces):");
+        display("\"u\" - uppercase letters\n\"d\" - digits\nOther symbols (\"o\" to include all): !@#$%^&*-_+,.?");
         
         return scanner.nextLine().strip();
     }
@@ -119,19 +134,19 @@ public class ConsoleView {
      * Method used to get all arguments from the user using standard i/o if none were provided via the command line.
      * @return array of provided arguments.
      */
-    public String[] fetchArgs() {
+    public String[] fetchArgs(NoteHistory history) {
         
-        System.out.println("Insufficient argument count. Choose what to do:");
+        display("Insufficient argument count. Choose what to do:");
         String choice = "";
         
         while(true) {
-            System.out.println("\"-o\" - Open note\n\"-c\" - Create note\n\"-g\" - Generate password");
+            display("\"-o\" - Open note\n\"-c\" - Create note\n\"-g\" - Generate password");
             choice = scanner.nextLine().strip().toLowerCase();
             
             if ("-o".equals(choice) || "-c".equals(choice) || "-g".equals(choice)) {
                 break;
             }
-            System.out.println("\nUnrecognised command");
+            display("\nUnrecognised command. Try again.");
         }
         
         String[] args;
@@ -143,7 +158,7 @@ public class ConsoleView {
             case "-o":
                 args = new String[2];
                 args[0] = choice;
-                args[1] = fetchFileDir();
+                args[1] = fetchFileDir(history);
                 break;
             case "-g":
                 args = new String[3];
@@ -154,11 +169,11 @@ public class ConsoleView {
                         if (Integer.parseInt(args[1]) > 0) {
                             break;
                         } else {
-                            System.out.println("Character count too low.");
+                            display("Character count too low.");
                         }
                     }
                     catch (NumberFormatException ex) {
-                        System.out.println("Invalid character count.");
+                        display("Invalid character count.");
                     }
                 }
                 args[2] = fetchPasswordSymbols();
@@ -209,18 +224,18 @@ public class ConsoleView {
         Note note = new Note();  
         int tryCount = 0;
         while (tryCount < 3) {
-            System.out.println("Password:");
+            display("Password:");
             char[] password = readPassword();
             
             if (note.open(filename, new String(password))) {
                 return note;
             }
             
-            System.out.println("Invalid password. Try again.\n");
+            display("Invalid password. Try again.\n");
             tryCount++;
         }
         
-        System.out.println("Too many tries. The program will now exit.");
+        display("Too many tries. The program will now exit.");
         return null;
     }
     
@@ -231,18 +246,18 @@ public class ConsoleView {
      */
     public boolean editNote(Note note) {
         while (true) {
-            System.out.println("Write a new note. Press Enter to end.\n");
+            display("Write a new note. Press Enter to end.\n");
             try {
                 note.change(scanner.nextLine());
                 break;
             }
             catch (NoteTooLongException ex) {
-                System.out.println(ex.getMessage());
+                display(ex.getMessage());
             }
         }
         
         while (true) {
-            System.out.println("Do you want to save the note? Y/N");
+            display("Do you want to save the note? Y/N");
             String choice = scanner.nextLine().strip().toLowerCase();
             
             switch (choice) {
@@ -253,7 +268,7 @@ public class ConsoleView {
                 case "no":
                     return false;
                 default:
-                    System.out.println("Unrecognised command.\n");
+                    display("Unrecognised command.\n");
             }
         }
     }
@@ -277,22 +292,22 @@ public class ConsoleView {
             InvalidAlgorithmParameterException, IllegalBlockSizeException,
             BadPaddingException {
         
-        System.out.println("Output directory:");
+        display("Output directory:");
         String outDir = scanner.nextLine().strip();
         
         while (true) {
-            System.out.println("Set a password:");
+            display("Set a password:");
             char[] password = readPassword();
-            System.out.println("Repeat password:");
+            display("Repeat password:");
             char[] rPassword = readPassword();
             
             if (Arrays.equals(password, rPassword)) {
                 note.save(outDir, new String(password));
-                System.out.println("Saved successfully.");
+                display("Saved successfully.");
                 return;
             }
             
-            System.out.println("Passwords do not match. Try again.\n");
+            display("Passwords do not match. Try again.\n");
         }
     }
 }

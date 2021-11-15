@@ -49,6 +49,11 @@ public class Note {
      * Initialisation vector used during note encryption/decryption.
      */
     private byte[] iv;
+
+    /**
+     * Name of the file that the note was created from or saved into even if it was not successful.
+     */
+    private String fileDir;
     
     /**
      * Default constructor of the Note class.
@@ -90,6 +95,8 @@ public class Note {
             InvalidAlgorithmParameterException, IllegalBlockSizeException,
             BadPaddingException {
         
+        fileDir = file;
+
         fileBuffer = Files.readAllBytes(Paths.get(file));
         passHash = Arrays.copyOfRange(fileBuffer, 0, 32);
         salt = Arrays.copyOfRange(fileBuffer, 32, 40);
@@ -130,6 +137,8 @@ public class Note {
             InvalidAlgorithmParameterException, IllegalBlockSizeException,
             BadPaddingException {
         
+        fileDir = file;
+
         passHash = Authenticator.hashPassword(password);
         
         AES aes = new AES(password);
@@ -158,5 +167,13 @@ public class Note {
         }
         
         content = str;
+    }
+
+    /**
+     * This method is used to get the last open/save directory of the note that was used (even if unsuccessful).
+     * @return Last directory that the note was opened from or saved to (even if unsuccessful).
+     */
+    public String getFileDir() {
+        return fileDir;
     }
 }
