@@ -16,7 +16,7 @@ import javax.crypto.NoSuchPaddingException;
 /**
  * Class representing a text note. The contents can be encrypted and saved to a file, or a file can be decrypted and read into a Note object.
  * @author Szymon Botor
- * @version 1.0
+ * @version 1.1
  */
 public class Note {
     

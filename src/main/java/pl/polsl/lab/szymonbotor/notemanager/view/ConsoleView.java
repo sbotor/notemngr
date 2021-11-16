@@ -18,7 +18,7 @@ import pl.polsl.lab.szymonbotor.notemanager.model.*;
 /**
  * Console view class of the whole program. It is used as the main user interface during runtime.
  * @author Szymon Botor
- * @version 1.0
+ * @version 1.1
  */
 public class ConsoleView {
     

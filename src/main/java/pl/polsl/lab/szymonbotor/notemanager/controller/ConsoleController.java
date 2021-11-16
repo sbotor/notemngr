@@ -18,11 +18,13 @@ import pl.polsl.lab.szymonbotor.notemanager.model.*;
 /**
  * The main controller class of the whole program in the console.
  * @author Szymon Botor
- * @version 1.0
+ * @version 1.1
  */
 public class ConsoleController {
 
-    // TODO: comment and javadoc
+    /**
+     * Directory to the history file.
+     */
     private static final String HISTORY_DIR = "history.txt";
 
     /**
@@ -71,14 +73,16 @@ public class ConsoleController {
                 try {
                     Note note = view.openNote(args[1]);
                     if (note != null) {
-                        noteHistory.add(note);
-                        view.display(note);
-
                         try {
+                            noteHistory.add(note);
+                            view.display(note);
                             noteHistory.save();
                         }
                         catch (IOException ex) {
                             view.display("Warning: cannot save or create the note history file.\n");
+                        }
+                        catch (IllegalArgumentException ex) {
+                            view.display("The note file directory is empty.");
                         }
                     }
                 }
@@ -103,13 +107,15 @@ public class ConsoleController {
                 try {
                     if (view.editNote(note)) {
                         view.saveNote(note);
-                        noteHistory.add(note);
-
                         try {
+                            noteHistory.add(note);
                             noteHistory.save();
                         }
                         catch (IOException ex) {
                             view.display("Warning: cannot save or create the note history file.\n");
+                        }
+                        catch (IllegalArgumentException ex) {
+                            view.display("The note file directory is empty.");
                         }
                     }
                 }

@@ -6,7 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 /**
- * Class used during password authentication process. It implements SHA-256 algorithm.
+ * Class used during password authentication process. It implements the SHA-256 algorithm.
  * @author Szymon Botor
  * @version 1.0
  */
