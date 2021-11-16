@@ -152,7 +152,7 @@ public class Note {
         System.arraycopy(iv, 0, fileBuffer, 40, 16);
         System.arraycopy(cipherText, 0, fileBuffer, 56, cipherText.length);
         
-        Files.write(Paths.get(file.concat(".note")), fileBuffer);
+        Files.write(Paths.get(file + ".note"), fileBuffer);
     }
     
     /**

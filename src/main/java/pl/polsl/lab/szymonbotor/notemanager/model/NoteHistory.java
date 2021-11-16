@@ -54,7 +54,7 @@ public class NoteHistory {
         }
 
         if (note.getFileDir() != null) {
-            notes.add(0, note.getFileDir());
+            notes.add(0, note.getFileDir() + ".note");
         } else {
             // TODO: maybe a new exception???
         }

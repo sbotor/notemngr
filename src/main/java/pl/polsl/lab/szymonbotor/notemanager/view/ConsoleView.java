@@ -89,11 +89,23 @@ public class ConsoleView {
         display("Previously used notes:\n");
         int counter = 1;
         for (String noteDir : history.getNotes()) {
-            display(counter + ". " + noteDir);
+            display(counter++ + ". " + noteDir);
         }
-        display("");
+        display("Select file number or filename.");
 
-        return new String(); // TODO
+        String choice = scanner.nextLine();
+        try {
+            int noteNum = Integer.parseInt(choice);
+
+            while (noteNum > history.getNotes().size() || noteNum < 1) {
+                display("Invalid note number. Try again.");
+                choice = scanner.nextLine();
+                noteNum = Integer.parseInt(choice);
+            }
+            return history.getNotes().get(noteNum - 1);
+        } catch (NumberFormatException ex) {
+            return choice;
+        }
     }
     
     /**
