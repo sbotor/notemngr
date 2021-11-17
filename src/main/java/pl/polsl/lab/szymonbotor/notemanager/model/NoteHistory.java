@@ -3,8 +3,6 @@ package pl.polsl.lab.szymonbotor.notemanager.model;
 import java.io.*;
 import java.util.Vector;
 
-// TODO: comments and javadoc
-
 /**
  * Class for storing and managing note history.
  * @author Szymon Botor
