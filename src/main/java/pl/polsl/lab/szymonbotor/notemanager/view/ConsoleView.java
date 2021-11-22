@@ -1,14 +1,20 @@
 package pl.polsl.lab.szymonbotor.notemanager.view;
 
+import org.w3c.dom.ranges.Range;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.NoteTooLongException;
 import java.io.Console;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Scanner;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
@@ -111,13 +117,14 @@ public class ConsoleView {
     }
 
     private String fetchFileDirWithHistory(NoteHistory history) {
-        display("Previously used notes:");
-        int counter = 1;
-        for (String noteDir : history.getNotes()) {
-            display(counter++ + ". " + noteDir);
-        }
-        display("Select file number or filename.");
 
+        display("Previously used notes:");
+        Map<Integer, String> noteMap = IntStream.range(0, history.getNotes().size())
+                .boxed()
+                .collect(Collectors.toMap(i -> i + 1, i -> history.getNotes().get(i)));
+        noteMap.forEach((k, v) -> System.out.println(k + ". " + v));
+
+        display("Select file number or filename.");
         String choice = scanner.nextLine();
         try {
             int noteNum = Integer.parseInt(choice);
@@ -127,7 +134,7 @@ public class ConsoleView {
                 choice = scanner.nextLine();
                 noteNum = Integer.parseInt(choice);
             }
-            return history.getNotes().get(noteNum - 1);
+            return noteMap.get(noteNum);
         } catch (NumberFormatException ex) {
             return choice;
         }
