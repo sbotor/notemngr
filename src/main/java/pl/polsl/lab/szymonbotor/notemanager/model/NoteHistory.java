@@ -1,6 +1,8 @@
 package pl.polsl.lab.szymonbotor.notemanager.model;
 
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Vector;
 
 /**
@@ -19,6 +21,15 @@ public class NoteHistory {
      * @return Directory of the history file.
      */
     public String getFileDir() {
+        return fileDir.toString();
+    }
+
+    /**
+     * This method is used to get the Path object of the
+     * history file.
+     * @return Path object of the history file.
+     */
+    public Path getFilePath() {
         return fileDir;
     }
 
@@ -27,13 +38,13 @@ public class NoteHistory {
      * @param fileDir New directory of the history file.
      */
     public void setFileDir(String fileDir) {
-        this.fileDir = fileDir;
+        this.fileDir = Paths.get(fileDir);
     }
 
     /**
-     * Directory of the file that the history is stored in.
+     * Path to the file that the history is stored in.
      */
-    private String fileDir;
+    private Path fileDir;
 
     /**
      * This method is used to get the collection of notes in the history.
@@ -56,11 +67,11 @@ public class NoteHistory {
      * @throws IOException Thrown when a problem occurs during file creation.
      */
     public NoteHistory(String file) throws IOException {
-        fileDir = file;
+        fileDir = Paths.get(file);
         notes = new Vector<String>();
 
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(fileDir));
+            BufferedReader reader = new BufferedReader(new FileReader(fileDir.toString()));
             String line = reader.readLine();
 
             while (line != null && notes.size() < MAX_ITEMS) {
@@ -70,7 +81,7 @@ public class NoteHistory {
             reader.close();
         }
         catch (FileNotFoundException ex) {
-            new File(fileDir).createNewFile();
+            new File(fileDir.toString()).createNewFile();
         }
     }
 
@@ -81,12 +92,17 @@ public class NoteHistory {
      * @throws IllegalArgumentException Thrown when the note's file directory is empty.
      */
     public void add(Note note) throws IllegalArgumentException {
-        if (notes.size() == MAX_ITEMS) {
-            notes.remove(notes.size() - 1);
-        }
 
-        if (note.getFileDir() != null && !"".equals(note.getFileDir())) {
-            notes.add(0, note.getFileDir() + ".note");
+        if (note.getFilePath() != null && !"".equals(note.getFileDir())) {
+            int elementIndx = notes.indexOf(note.getFileDir());
+            if (elementIndx != -1) {
+                notes.remove(elementIndx);
+            }
+
+            notes.add(0, note.getFileDir());
+            if (notes.size() > MAX_ITEMS) {
+                notes.remove(notes.size() - 1);
+            }
         } else {
             throw new IllegalArgumentException("The note file dir is empty.");
         }
@@ -99,7 +115,7 @@ public class NoteHistory {
      */
     public void save() throws IOException{
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(fileDir, false));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(fileDir.toString(), false));
 
             for (String noteDir : notes) {
                 writer.write(noteDir + "\n");
@@ -107,7 +123,7 @@ public class NoteHistory {
             writer.close();
         }
         catch (FileNotFoundException ex) {
-            new File(fileDir).createNewFile();
+            new File(fileDir.toString()).createNewFile();
         }
     }
 }

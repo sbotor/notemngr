@@ -1,3 +1,7 @@
+# .note files and history file
+*.note
+history.txt
+
 # Compiled class file
 *.class
 

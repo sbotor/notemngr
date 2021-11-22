@@ -75,18 +75,43 @@ public class ConsoleView {
      * Method used to display contents of a note passed as a parameter.
      * @param note decrypted note to display.
      */
-    public void display(Note note) {
+    public boolean display(Note note) {
         if (note == null) {
             display("Error: the note does not exist.");
-            return;
+            return false;
         }
         
         display("Note content:");
         display(note.getContent());
+
+        return getBinaryAnswer("Do you want to edit the note? Y/n");
+    }
+
+    /**
+     * This method is used to get a yes/no answer from user using the provided message.
+     * @param msg message to show to the user.
+     * @return true if the answer was "yes", false if it was "no".
+     */
+    private boolean getBinaryAnswer(String msg) {
+        while (true) {
+            display(msg);
+            String choice = scanner.nextLine().strip().toLowerCase();
+
+            switch (choice) {
+                case "y":
+                case "yes":
+                    return true;
+                case "n":
+                case "no":
+                    return false;
+                default:
+                    display("Unrecognised command.\n");
+            }
+        }
     }
 
     private String fetchFileDirWithHistory(NoteHistory history) {
-        display("Previously used notes:\n");
+        display("Previously used notes:");
         int counter = 1;
         for (String noteDir : history.getNotes()) {
             display(counter++ + ". " + noteDir);
@@ -154,47 +179,43 @@ public class ConsoleView {
         while(true) {
             display("\"-o\" - Open note\n\"-c\" - Create note\n\"-g\" - Generate password");
             choice = scanner.nextLine().strip().toLowerCase();
-            
-            if ("-o".equals(choice) || "-c".equals(choice) || "-g".equals(choice)) {
-                break;
-            }
-            display("\nUnrecognised command. Try again.");
-        }
-        
-        String[] args;
-        switch (choice) {
-            case "-c":
-                args = new String[1];
-                args[0] = choice;
-                break;
-            case "-o":
-                args = new String[2];
-                args[0] = choice;
-                args[1] = fetchFileDir(history);
-                break;
-            case "-g":
-                args = new String[3];
-                args[0] = choice;
-                while (true) {
-                    args[1] = fetchPasswordLength();
-                    try {
-                        if (Integer.parseInt(args[1]) > 0) {
-                            break;
-                        } else {
-                            display("Character count too low.");
+
+            String[] args;
+            switch (choice) {
+                case "-c":
+                case "c":
+                    args = new String[1];
+                    args[0] = "-c";
+                    return args;
+                case "-o":
+                case "o":
+                    args = new String[2];
+                    args[0] = "-o";
+                    args[1] = fetchFileDir(history);
+                    return args;
+                case "-g":
+                case "g":
+                    args = new String[3];
+                    args[0] = "-g";
+                    while (true) {
+                        args[1] = fetchPasswordLength();
+                        try {
+                            if (Integer.parseInt(args[1]) > 0) {
+                                break;
+                            } else {
+                                display("Character count too low.");
+                            }
+                        }
+                        catch (NumberFormatException ex) {
+                            display("Invalid character count.");
                         }
                     }
-                    catch (NumberFormatException ex) {
-                        display("Invalid character count.");
-                    }
-                }
-                args[2] = fetchPasswordSymbols();
-                break;
-            default:
-                return null;
+                    args[2] = fetchPasswordSymbols();
+                    return args;
+                default:
+                    display("\nUnrecognised command. Try again.");
+            }
         }
-        
-        return args;
     }
     
     /**
@@ -239,7 +260,7 @@ public class ConsoleView {
             display("Password:");
             char[] password = readPassword();
             
-            if (note.open(filename, new String(password))) {
+            if (note.read(filename, new String(password))) {
                 return note;
             }
             
@@ -268,21 +289,7 @@ public class ConsoleView {
             }
         }
         
-        while (true) {
-            display("Do you want to save the note? Y/N");
-            String choice = scanner.nextLine().strip().toLowerCase();
-            
-            switch (choice) {
-                case "y":
-                case "yes":
-                    return true;
-                case "n":
-                case "no":
-                    return false;
-                default:
-                    display("Unrecognised command.\n");
-            }
-        }
+        return getBinaryAnswer("Do you want to save the note? Y/n");
     }
     
     /**
@@ -319,6 +326,42 @@ public class ConsoleView {
                 return;
             }
             
+            display("Passwords do not match. Try again.\n");
+        }
+    }
+
+    /**
+     * Method used to encrypt a note and save it to a predetermined file. It asks the user for a
+     * new password for encryption.
+     * @param note Note object to save the contents of.
+     * @param outDir directory to save the note to.
+     * @throws IOException Signals that an I/O exception of some sort has occurred.
+     * @throws NoSuchAlgorithmException This exception is thrown when a particular cryptographic algorithm is requested but is not available in the environment.
+     * @throws InvalidKeySpecException This is the exception for invalid key specifications.
+     * @throws NoSuchPaddingException This exception is thrown when a particular padding mechanism is requested but is not available in the environment.
+     * @throws InvalidKeyException This is the exception for invalid Keys (invalid encoding, wrong length, uninitialized, etc).
+     * @throws InvalidAlgorithmParameterException This is the exception for invalid or inappropriate algorithm parameters.
+     * @throws IllegalBlockSizeException This exception is thrown when the length of data provided to a block cipher is incorrect, i.e., does not match the block size of the cipher.
+     * @throws BadPaddingException This exception is thrown when a particular padding mechanism is expected for the input data but the data is not padded properly.
+     */
+    public void saveNote(Note note, String outDir)
+            throws IOException, NoSuchAlgorithmException, InvalidKeySpecException,
+            NoSuchPaddingException, InvalidKeyException,
+            InvalidAlgorithmParameterException, IllegalBlockSizeException,
+            BadPaddingException {
+
+        while (true) {
+            display("Set a password:");
+            char[] password = readPassword();
+            display("Repeat password:");
+            char[] rPassword = readPassword();
+
+            if (Arrays.equals(password, rPassword)) {
+                note.save(outDir, new String(password));
+                display("Saved successfully.");
+                return;
+            }
+
             display("Passwords do not match. Try again.\n");
         }
     }

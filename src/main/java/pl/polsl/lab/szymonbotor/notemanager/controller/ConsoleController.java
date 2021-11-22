@@ -8,6 +8,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Locale;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
@@ -62,11 +63,10 @@ public class ConsoleController {
         if (args.length < 1) {
             args = view.fetchArgs(noteHistory);
         }
-        
-        switch (args[0]) {
+
+        switch (args[0].toLowerCase()) {
             // Open an encrypted note.
-            case "-o":
-            case "-O": {
+            case "-o": {
                 if (args.length < 2) {
                     args = new String[] {"-o", view.fetchFileDir(noteHistory) };
                 }
@@ -75,7 +75,10 @@ public class ConsoleController {
                     if (note != null) {
                         try {
                             noteHistory.add(note);
-                            view.display(note);
+                            if (view.display(note)) {
+                                view.editNote(note);
+                                view.saveNote(note, note.getFileDir());
+                            }
                             noteHistory.save();
                         }
                         catch (IOException ex) {
@@ -101,8 +104,7 @@ public class ConsoleController {
                 break;
             }
             // Create a new note.
-            case "-c":
-            case "-C": {
+            case "-c": {
                 Note note = new Note();
                 try {
                     if (view.editNote(note)) {
@@ -135,7 +137,6 @@ public class ConsoleController {
             }
             // Generate a password.
             case "-g":
-            case "-G":
                 try {
                     if (args.length < 2) {
                         args = new String[] {
