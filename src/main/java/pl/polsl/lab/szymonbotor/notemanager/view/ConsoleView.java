@@ -4,6 +4,7 @@ import org.w3c.dom.ranges.Range;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.NoteTooLongException;
 import java.io.Console;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Scanner;
 import java.security.InvalidAlgorithmParameterException;
@@ -122,7 +123,12 @@ public class ConsoleView {
         Map<Integer, String> noteMap = IntStream.range(0, history.getNotes().size())
                 .boxed()
                 .collect(Collectors.toMap(i -> i + 1, i -> history.getNotes().get(i)));
-        noteMap.forEach((k, v) -> System.out.println(k + ". " + v));
+
+        noteMap.forEach((k, v) -> {
+            String filename = Paths.get(v).getFileName().toString();
+            filename = filename.substring(0, filename.lastIndexOf(".note"));
+            System.out.println(k + ". " + filename + " (" + v + ")");
+        });
 
         display("Select file number or filename.");
         String choice = scanner.nextLine();

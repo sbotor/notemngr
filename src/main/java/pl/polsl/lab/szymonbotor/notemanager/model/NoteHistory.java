@@ -86,6 +86,15 @@ public class NoteHistory {
     }
 
     /**
+     * This method is used to get a note directory from the note collection.
+     * @param index index in the note collection.
+     * @return directory to the note at the provided index.
+     */
+    public String get(int index) {
+        return notes.get(index);
+    }
+
+    /**
      * This method is used to add a note to the history. If the current note count is
      * equal to the max allowed count the oldest note is removed.
      * @param note Note to be added to the history.
