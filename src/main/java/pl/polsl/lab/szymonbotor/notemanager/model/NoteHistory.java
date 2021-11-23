@@ -55,6 +55,14 @@ public class NoteHistory {
     }
 
     /**
+     * This method is used to get the size of the note history collection.
+     * @return number of elements in the history.
+     */
+    public int size() {
+        return notes.size();
+    }
+
+    /**
      * This is the collection of saved notes.
      */
     private Vector<String> notes;

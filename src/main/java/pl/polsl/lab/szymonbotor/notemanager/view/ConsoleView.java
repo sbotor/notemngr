@@ -1,6 +1,6 @@
 package pl.polsl.lab.szymonbotor.notemanager.view;
 
-import org.w3c.dom.ranges.Range;
+import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidCryptModeException;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.NoteTooLongException;
 import java.io.Console;
 import java.io.IOException;
@@ -12,10 +12,8 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
@@ -120,9 +118,9 @@ public class ConsoleView {
     private String fetchFileDirWithHistory(NoteHistory history) {
 
         display("Previously used notes:");
-        Map<Integer, String> noteMap = IntStream.range(0, history.getNotes().size())
+        Map<Integer, String> noteMap = IntStream.range(0, history.size())
                 .boxed()
-                .collect(Collectors.toMap(i -> i + 1, i -> history.getNotes().get(i)));
+                .collect(Collectors.toMap(i -> i + 1, i -> history.get(i)));
 
         noteMap.forEach((k, v) -> {
             String filename = Paths.get(v).getFileName().toString();
@@ -135,7 +133,7 @@ public class ConsoleView {
         try {
             int noteNum = Integer.parseInt(choice);
 
-            while (noteNum > history.getNotes().size() || noteNum < 1) {
+            while (noteNum > history.size() || noteNum < 1) {
                 display("Invalid note number. Try again.");
                 choice = scanner.nextLine();
                 noteNum = Integer.parseInt(choice);
@@ -151,7 +149,7 @@ public class ConsoleView {
      * @return provided file directory.
      */
     public String fetchFileDir(NoteHistory history) {
-        if (history != null && history.getNotes().size() != 0) {
+        if (history != null && history.size() != 0) {
             return fetchFileDirWithHistory(history);
         }
 
@@ -260,12 +258,13 @@ public class ConsoleView {
      * @throws InvalidAlgorithmParameterException This is the exception for invalid or inappropriate algorithm parameters.
      * @throws IllegalBlockSizeException This exception is thrown when the length of data provided to a block cipher is incorrect, i.e., does not match the block size of the cipher.
      * @throws BadPaddingException This exception is thrown when a particular padding mechanism is expected for the input data but the data is not padded properly.
+     * @throws InvalidCryptModeException This exception is thrown when a decryption method on an encryption AES object is used or vice versa.
      */
     public Note openNote(String filename)
             throws IOException, NoSuchAlgorithmException, InvalidKeySpecException,
             NoSuchPaddingException, InvalidKeyException,
             InvalidAlgorithmParameterException, IllegalBlockSizeException,
-            BadPaddingException {
+            BadPaddingException, InvalidCryptModeException {
         
         Note note = new Note();  
         int tryCount = 0;
@@ -317,12 +316,13 @@ public class ConsoleView {
      * @throws InvalidAlgorithmParameterException This is the exception for invalid or inappropriate algorithm parameters.
      * @throws IllegalBlockSizeException This exception is thrown when the length of data provided to a block cipher is incorrect, i.e., does not match the block size of the cipher.
      * @throws BadPaddingException This exception is thrown when a particular padding mechanism is expected for the input data but the data is not padded properly.
+     * @throws InvalidCryptModeException This exception is thrown when a decryption method on an encryption AES object is used or vice versa.
      */
     public void saveNote(Note note)
             throws IOException, NoSuchAlgorithmException, InvalidKeySpecException,
             NoSuchPaddingException, InvalidKeyException,
             InvalidAlgorithmParameterException, IllegalBlockSizeException,
-            BadPaddingException {
+            BadPaddingException, InvalidCryptModeException {
         
         display("Output directory:");
         String outDir = scanner.nextLine().strip();
@@ -361,7 +361,7 @@ public class ConsoleView {
             throws IOException, NoSuchAlgorithmException, InvalidKeySpecException,
             NoSuchPaddingException, InvalidKeyException,
             InvalidAlgorithmParameterException, IllegalBlockSizeException,
-            BadPaddingException {
+            BadPaddingException, InvalidCryptModeException {
 
         while (true) {
             display("Set a password:");

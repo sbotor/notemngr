@@ -1,5 +1,8 @@
 package pl.polsl.lab.szymonbotor.notemanager.model;
 
+import pl.polsl.lab.szymonbotor.notemanager.enums.CryptMode;
+import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidCryptModeException;
+
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -32,6 +35,8 @@ public class AES {
      */
     private static final int KEY_LENGTH = 256;
     
+    public final CryptMode cryptMode;
+
     /**
      * Secret key used in encryption and decryption.
      */
@@ -58,6 +63,8 @@ public class AES {
     public AES(String password)
             throws NoSuchAlgorithmException, InvalidKeySpecException {
         
+        cryptMode = CryptMode.ENCRYPTION;
+
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
         
         salt = new byte[8];
@@ -82,7 +89,9 @@ public class AES {
      */
     public AES(String password, byte[] salt, byte[] ivArray)
             throws NoSuchAlgorithmException, InvalidKeySpecException {
-        
+
+        cryptMode = CryptMode.DECRYPTION;
+
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
         KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, ITER_COUNT, KEY_LENGTH);
         key = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
@@ -116,18 +125,23 @@ public class AES {
      * @throws InvalidAlgorithmParameterException This is the exception for invalid or inappropriate algorithm parameters.
      * @throws IllegalBlockSizeException This exception is thrown when the length of data provided to a block cipher is incorrect, i.e., does not match the block size of the cipher.
      * @throws BadPaddingException This exception is thrown when a particular padding mechanism is expected for the input data but the data is not padded properly.
+     * @throws InvalidCryptModeException This exception is thrown when the method is called on an object set up to decrypt.
      */
     public byte[] encrypt(String data)
             throws NoSuchAlgorithmException, NoSuchPaddingException,
             InvalidKeyException, InvalidAlgorithmParameterException,
-            IllegalBlockSizeException, BadPaddingException {
+            IllegalBlockSizeException, BadPaddingException, InvalidCryptModeException {
 
+        if (cryptMode == CryptMode.ENCRYPTION) {
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             cipher.init(Cipher.ENCRYPT_MODE, key, iv);
-            
+
             byte[] retVal = cipher.doFinal(data.getBytes());
-            
+
             return retVal;
+        } else {
+            throw new InvalidCryptModeException("Encrypt called on a decryption AES object.");
+        }
     }
     
     /**
@@ -140,16 +154,21 @@ public class AES {
      * @throws InvalidAlgorithmParameterException This is the exception for invalid or inappropriate algorithm parameters.
      * @throws IllegalBlockSizeException This exception is thrown when the length of data provided to a block cipher is incorrect, i.e., does not match the block size of the cipher.
      * @throws BadPaddingException This exception is thrown when a particular padding mechanism is expected for the input data but the data is not padded properly.
+     * @throws InvalidCryptModeException This exception is thrown when the method is called on an object set up to encrypt.
      */
     public String decrypt(byte[] data)
             throws NoSuchAlgorithmException, NoSuchPaddingException,
             InvalidKeyException, InvalidAlgorithmParameterException,
-            IllegalBlockSizeException, BadPaddingException {
-        
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        cipher.init(Cipher.DECRYPT_MODE, key, iv);
-        byte[] plainText = cipher.doFinal(data);
+            IllegalBlockSizeException, BadPaddingException, InvalidCryptModeException {
 
-        return new String(plainText);
+        if (cryptMode == CryptMode.DECRYPTION) {
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            cipher.init(Cipher.DECRYPT_MODE, key, iv);
+            byte[] plainText = cipher.doFinal(data);
+
+            return new String(plainText);
+        } else {
+            throw new InvalidCryptModeException("Decrypt called on an encryption AES object.");
+        }
     }
 }

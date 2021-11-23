@@ -1,5 +1,6 @@
 package pl.polsl.lab.szymonbotor.notemanager.model;
 
+import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidCryptModeException;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.NoteTooLongException;
 
 import java.io.IOException;
@@ -68,12 +69,13 @@ public class Note {
      * @throws InvalidAlgorithmParameterException This is the exception for invalid or inappropriate algorithm parameters.
      * @throws IllegalBlockSizeException This exception is thrown when the length of data provided to a block cipher is incorrect, i.e., does not match the block size of the cipher.
      * @throws BadPaddingException This exception is thrown when a particular padding mechanism is expected for the input data but the data is not padded properly.
+     * @throws InvalidCryptModeException This exception is thrown when a decryption method on an encryption AES object is used or vice versa.
      */
     public boolean read(InputStream inpStream, String password)
             throws IOException, NoSuchAlgorithmException, InvalidKeySpecException,
             NoSuchPaddingException, InvalidKeyException,
             InvalidAlgorithmParameterException, IllegalBlockSizeException,
-            BadPaddingException {
+            BadPaddingException, InvalidCryptModeException {
 
         byte[] passHash = inpStream.readNBytes(32);
         byte[] salt = inpStream.readNBytes(8);
@@ -105,12 +107,13 @@ public class Note {
      * @throws InvalidAlgorithmParameterException This is the exception for invalid or inappropriate algorithm parameters.
      * @throws IllegalBlockSizeException This exception is thrown when the length of data provided to a block cipher is incorrect, i.e., does not match the block size of the cipher.
      * @throws BadPaddingException This exception is thrown when a particular padding mechanism is expected for the input data but the data is not padded properly.
+     * @throws InvalidCryptModeException This exception is thrown when a decryption method on an encryption AES object is used or vice versa.
      */
     public boolean read(String fileName, String password)
             throws IOException, NoSuchAlgorithmException, InvalidKeySpecException,
             NoSuchPaddingException, InvalidKeyException,
             InvalidAlgorithmParameterException, IllegalBlockSizeException,
-            BadPaddingException {
+            BadPaddingException, InvalidCryptModeException {
 
         if (!fileName.endsWith(FILE_EXTENSION)) {
             fileName = fileName + FILE_EXTENSION;
@@ -142,12 +145,13 @@ public class Note {
      * @throws InvalidAlgorithmParameterException This is the exception for invalid or inappropriate algorithm parameters.
      * @throws IllegalBlockSizeException This exception is thrown when the length of data provided to a block cipher is incorrect, i.e., does not match the block size of the cipher.
      * @throws BadPaddingException This exception is thrown when a particular padding mechanism is expected for the input data but the data is not padded properly.
+     * @throws InvalidCryptModeException This exception is thrown when a decryption method on an encryption AES object is used or vice versa.
      */
     public void save(OutputStream outStream, String password)
             throws IOException, NoSuchAlgorithmException, InvalidKeySpecException,
             NoSuchPaddingException, InvalidKeyException,
             InvalidAlgorithmParameterException, IllegalBlockSizeException,
-            BadPaddingException {
+            BadPaddingException, InvalidCryptModeException {
 
         byte[] passHash = Authenticator.hashPassword(password);
 
@@ -179,12 +183,13 @@ public class Note {
      * @throws InvalidAlgorithmParameterException This is the exception for invalid or inappropriate algorithm parameters.
      * @throws IllegalBlockSizeException This exception is thrown when the length of data provided to a block cipher is incorrect, i.e., does not match the block size of the cipher.
      * @throws BadPaddingException This exception is thrown when a particular padding mechanism is expected for the input data but the data is not padded properly.
+     * @throws InvalidCryptModeException This exception is thrown when a decryption method on an encryption AES object is used or vice versa.
      */
     public void save(String fileName, String password)
             throws IOException, NoSuchAlgorithmException, InvalidKeySpecException,
             NoSuchPaddingException, InvalidKeyException,
             InvalidAlgorithmParameterException, IllegalBlockSizeException,
-            BadPaddingException {
+            BadPaddingException, InvalidCryptModeException {
 
         if (!fileName.endsWith(FILE_EXTENSION)) {
             fileName = fileName + FILE_EXTENSION;

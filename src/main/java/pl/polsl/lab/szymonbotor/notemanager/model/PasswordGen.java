@@ -16,12 +16,12 @@ public class PasswordGen {
     /**
      * Constant string of all valid special symbols that can be used during generation.
      */
-    private static final String SPECIAL_SYMBOLS = "!@#$%^&*-_+,.?";
+    public static final String SPECIAL_SYMBOLS = "!@#$%^&*-_+,.?";
     
     /**
      * Constant value of maximum password length.
      */
-    private static final int MAX_PASSWORD_LENGTH = 64;
+    public static final int MAX_PASSWORD_LENGTH = 64;
     
     /**
      * Value indicating if uppercase letters are allowed in the generation process.
