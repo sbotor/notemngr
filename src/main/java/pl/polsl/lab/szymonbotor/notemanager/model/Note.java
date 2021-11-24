@@ -37,6 +37,22 @@ public class Note {
     private String content;
 
     /**
+     * This method is used to set the file directory of the note using the specified String.
+     * @param fileDir String with the desired directory.
+     */
+    public void setFileDir(String fileDir) {
+        this.fileDir = Path.of(fileDir);
+    }
+
+    /**
+     * This method is used to set the file directory of the note using the specified Path object.
+     * @param fileDir Path with the desired directory.
+     */
+    public void setFileDir(Path fileDir) {
+        this.fileDir = fileDir;
+    }
+
+    /**
      * Path to the file that the note was created from or saved into even if it was not successful.
      */
     private Path fileDir;
@@ -46,6 +62,7 @@ public class Note {
      */
     public Note() {
         content = null;
+        fileDir = null;
     }
     
     /**

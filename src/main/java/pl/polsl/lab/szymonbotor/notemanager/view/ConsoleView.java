@@ -77,8 +77,10 @@ public class ConsoleView {
     }
     
     /**
-     * Method used to display contents of a note passed as a parameter.
+     * Method used to display contents of a note passed as a parameter. The method asks the user if they
+     * want to save the note or not.
      * @param note decrypted note to display.
+     * @return true if the user wants to save the note, false otherwise.
      */
     public boolean display(Note note) {
         if (note == null) {
@@ -146,6 +148,7 @@ public class ConsoleView {
     
     /**
      * Method used to get a directory of a note from the user using standard i/o.
+     * @param history NoteHistory object representing the recent note history from which the user can choose a note.
      * @return provided file directory.
      */
     public String fetchFileDir(NoteHistory history) {
@@ -180,6 +183,7 @@ public class ConsoleView {
     
     /**
      * Method used to get all arguments from the user using standard i/o if none were provided via the command line.
+     * @param history NoteHistory object representing the recent note history from which the user can choose a note.
      * @return array of provided arguments.
      */
     public String[] fetchArgs(NoteHistory history) {
@@ -356,6 +360,7 @@ public class ConsoleView {
      * @throws InvalidAlgorithmParameterException This is the exception for invalid or inappropriate algorithm parameters.
      * @throws IllegalBlockSizeException This exception is thrown when the length of data provided to a block cipher is incorrect, i.e., does not match the block size of the cipher.
      * @throws BadPaddingException This exception is thrown when a particular padding mechanism is expected for the input data but the data is not padded properly.
+     * @throws InvalidCryptModeException This exception is thrown when a decryption method on an encryption AES object is used or vice versa.
      */
     public void saveNote(Note note, String outDir)
             throws IOException, NoSuchAlgorithmException, InvalidKeySpecException,
