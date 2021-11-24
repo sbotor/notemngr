@@ -1,6 +1,7 @@
-package pl.polsl.lab.szymonbotor.notemanager.model;
+package pl.polsl.lab.szymonbotor.notemanager.modelTests;
 
 import org.junit.jupiter.api.Test;
+import pl.polsl.lab.szymonbotor.notemanager.model.Authenticator;
 
 import java.security.NoSuchAlgorithmException;
 

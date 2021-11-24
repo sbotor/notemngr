@@ -1,10 +1,12 @@
-package pl.polsl.lab.szymonbotor.notemanager.model;
+package pl.polsl.lab.szymonbotor.notemanager.modelTests;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import pl.polsl.lab.szymonbotor.notemanager.model.Note;
+import pl.polsl.lab.szymonbotor.notemanager.model.NoteHistory;
 
 import java.io.IOException;
 import java.nio.file.Files;

@@ -1,10 +1,13 @@
-package pl.polsl.lab.szymonbotor.notemanager.model;
+package pl.polsl.lab.szymonbotor.notemanager.modelTests;
 
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidCryptModeException;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.NoteTooLongException;
+import pl.polsl.lab.szymonbotor.notemanager.model.AES;
+import pl.polsl.lab.szymonbotor.notemanager.model.Authenticator;
+import pl.polsl.lab.szymonbotor.notemanager.model.Note;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;

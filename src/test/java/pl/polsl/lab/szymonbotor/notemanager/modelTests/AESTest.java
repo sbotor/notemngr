@@ -1,4 +1,4 @@
-package pl.polsl.lab.szymonbotor.notemanager.model;
+package pl.polsl.lab.szymonbotor.notemanager.modelTests;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -6,6 +6,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import pl.polsl.lab.szymonbotor.notemanager.enums.CryptMode;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidCryptModeException;
+import pl.polsl.lab.szymonbotor.notemanager.model.AES;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;

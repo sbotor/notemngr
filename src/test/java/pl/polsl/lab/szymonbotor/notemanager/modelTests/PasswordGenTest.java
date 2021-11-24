@@ -1,4 +1,4 @@
-package pl.polsl.lab.szymonbotor.notemanager.model;
+package pl.polsl.lab.szymonbotor.notemanager.modelTests;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -6,6 +6,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidCharacterException;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidPasswordLengthException;
+import pl.polsl.lab.szymonbotor.notemanager.model.PasswordGen;
 
 import java.util.Arrays;
 import java.util.stream.Stream;
@@ -174,7 +175,7 @@ class PasswordGenTest {
      * @see PasswordGenTest#generateWhenCorrectParameters(int, String)
      */
     static Stream<Arguments> intAndStringParamSource() {
-        int[] intArray = new int[] {1, 8, 10, 17, 20, 25, 40, 50, 60, PasswordGen.MAX_PASSWORD_LENGTH};
+        int[] intArray = new int[] {1, 8, 10, 17, 25, 60, PasswordGen.MAX_PASSWORD_LENGTH};
         String[] stringArray = new String[] {"", "d", "u", "o", "+", "*+", PasswordGen.SPECIAL_SYMBOLS, "@#$%^dduoodd"};
 
         Arguments[] args = new Arguments[intArray.length * stringArray.length];
