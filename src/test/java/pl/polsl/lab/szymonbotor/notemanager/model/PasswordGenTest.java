@@ -12,8 +12,16 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * This is the testing class for the PasswordGen class.
+ * @author Szymon Botor
+ * @version 1.0
+ */
 class PasswordGenTest {
 
+    /**
+     * This method is used to test symbol parsing when the symbol list string is empty.
+     */
     @Test
     void parseSymbolsWhenEmpty() {
         // Given
@@ -34,6 +42,9 @@ class PasswordGenTest {
         assertTrue(testSuccess);
     }
 
+    /**
+     * This method is used to test symbol parsing when the symbol list string is not empty and has only correct symbols.
+     */
     @Test
     void parseSymbolsWhenNotEmptyAndCorrect() {
         // Given
@@ -54,6 +65,9 @@ class PasswordGenTest {
         assertTrue(testSuccess);
     }
 
+    /**
+     * This method is used to test symbol parsing when the symbol list string is not empty and has incorrect symbols.
+     */
     @Test
     void parseSymbolsWhenNotEmptyAndIncorrect() {
         // Given
@@ -77,8 +91,11 @@ class PasswordGenTest {
         assertTrue(testSuccess);
     }
 
+    /**
+     * This method is used to test the behaviour when the desired password length is too low.
+     */
     @Test
-    void generateCharacterWhenCountTooLow() {
+    void generateWhenCountTooLow() {
         // Given
         final int passSize = 0;
         final String symbols = "Du!@#$%^&*-_o+,.?dUduo";
@@ -100,8 +117,11 @@ class PasswordGenTest {
         assertTrue(testSuccess);
     }
 
+    /**
+     * This method is used to test the behaviour when the desired password length is too high.
+     */
     @Test
-    void generateCharacterWhenCountTooHigh() {
+    void generateWhenCountTooHigh() {
         // Given
         final int passSize = PasswordGen.MAX_PASSWORD_LENGTH + 1;
         final String symbols = "Du!@#$%^&*-_o+,.?dUduo";
@@ -123,9 +143,13 @@ class PasswordGenTest {
         assertTrue(testSuccess);
     }
 
+    /**
+     * This method is used to test the behaviour when the parameters are correct.
+     * @see PasswordGenTest#intAndStringParamSource()
+     */
     @ParameterizedTest
     @MethodSource("intAndStringParamSource")
-    void generatePasswordWhenCorrectParameters(int passSize, String symbols) {
+    void generateWhenCorrectParameters(int passSize, String symbols) {
         // Given
 
         // When
@@ -142,9 +166,14 @@ class PasswordGenTest {
         assertEquals(passSize, generated.length());
     }
 
+    /**
+     * This is the factory method for the generatePasswordWhenCorrectParameters test.
+     * @return a stream of the generated arguments.
+     * @see PasswordGenTest#generateWhenCorrectParameters(int, String)
+     */
     static Stream<Arguments> intAndStringParamSource() {
-        int[] intArray = new int[] {1, 2, 3, 7, 8, 10, 17, 20, 25, 40, 50, 60, PasswordGen.MAX_PASSWORD_LENGTH};
-        String[] stringArray = new String[] {"", "d", "u", "o", "+", "*+", ".", "@#$%^dduoodd", "@#&"};
+        int[] intArray = new int[] {1, 8, 10, 17, 20, 25, 40, 50, 60, PasswordGen.MAX_PASSWORD_LENGTH};
+        String[] stringArray = new String[] {"", "d", "u", "o", "+", "*+", PasswordGen.SPECIAL_SYMBOLS, "@#$%^dduoodd"};
 
         Arguments[] args = new Arguments[intArray.length * stringArray.length];
 

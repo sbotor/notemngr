@@ -6,8 +6,16 @@ import java.security.NoSuchAlgorithmException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * This is the testing class for the Authenticator class.
+ * @author Szymon Botor
+ * @version 1.0
+ */
 class AuthenticatorTest {
 
+    /**
+     * This test is used to check if the authorisation will be denied by using the incorrect password.
+     */
     @Test
     void testAuthWhenWrongPassword() {
         // Given
@@ -30,6 +38,9 @@ class AuthenticatorTest {
         assertTrue(testSuccess);
     }
 
+    /**
+     * This test is used to check if the authorisation will be granted by using the correct password.
+     */
     @Test
     void testAuthWhenCorrectPassword() {
         // Given
@@ -52,6 +63,9 @@ class AuthenticatorTest {
         assertTrue(testSuccess);
     }
 
+    /**
+     * This test is used to check if the authorisation will be granted if the password is empty and correct.
+     */
     @Test
     void testAuthWhenPasswordEmpty() {
         // Given

@@ -27,7 +27,7 @@ public class Note {
     /**
      * Constant value representing the maximum size of a note in characters.
      */
-    private static final int MAX_NOTE_SIZE = 255;
+    public static final int MAX_NOTE_SIZE = 255;
 
     public static final String FILE_EXTENSION = ".note";
 
@@ -64,7 +64,30 @@ public class Note {
         content = null;
         fileDir = null;
     }
-    
+
+    /**
+     * Constructor creating a note by opening an encrypted note from a file and decrypting it with the given password.
+     * @param fileName directory to the encrypted note file. It should have a .note extension. If not then it will be appended.
+     * @param password password used to encrypt the note needed for decryption.
+     * @throws IOException Signals that an I/O exception of some sort has occurred.
+     * @throws NoSuchAlgorithmException This exception is thrown when a particular cryptographic algorithm is requested but is not available in the environment.
+     * @throws InvalidKeySpecException This is the exception for invalid key specifications.
+     * @throws NoSuchPaddingException This exception is thrown when a particular padding mechanism is requested but is not available in the environment.
+     * @throws InvalidKeyException This is the exception for invalid Keys (invalid encoding, wrong length, uninitialized, etc).
+     * @throws InvalidAlgorithmParameterException This is the exception for invalid or inappropriate algorithm parameters.
+     * @throws IllegalBlockSizeException This exception is thrown when the length of data provided to a block cipher is incorrect, i.e., does not match the block size of the cipher.
+     * @throws BadPaddingException This exception is thrown when a particular padding mechanism is expected for the input data but the data is not padded properly.
+     * @throws InvalidCryptModeException This exception is thrown when a decryption method on an encryption AES object is used or vice versa.
+     */
+    public Note(String fileName, String password)
+            throws IOException, NoSuchAlgorithmException, InvalidKeySpecException,
+            NoSuchPaddingException, InvalidKeyException,
+            InvalidAlgorithmParameterException, IllegalBlockSizeException,
+            BadPaddingException, InvalidCryptModeException {
+
+        read(fileName, password);
+    }
+
     /**
      * This method is used to get the content of the note.
      * @return string representing the content of the note.

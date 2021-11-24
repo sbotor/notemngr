@@ -14,28 +14,61 @@ import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * This is the testing class for the NoteHistory class.
+ * @author Szymon Botor
+ * @version 1.0
+ */
 class NoteHistoryTest {
 
+    /**
+     * Path object pointing to the file that should exist.
+     */
     private static final Path existingPath = Path.of("existingInpHistory.txt");
 
+    /**
+     * Path object pointing to the file that should not exist.
+     */
     private static final Path newPath = Path.of("newInpHistory.txt");
 
+    /**
+     * This is the string template for the note directory string.
+     */
     private static final String noteString = "c:\\folder$\\notes\\$note$";
 
+    /**
+     * This is the array storing the note directory strings.
+     */
     private String[] noteArray;
 
+    /**
+     * This is the static method used to prepare a string array using the provided string template.
+     * @param start starting index of the note template parameter. Inclusive.
+     * @param end ending index of the note template parameter. Exclusive.
+     * @return the constructed array.
+     */
     static String[] prepareStrings(int start, int end) {
         return IntStream.range(start, end)
                 .mapToObj(i -> noteString.replace("$", Integer.toString(end - i - 1)))
                 .toArray(String[]::new);
     }
 
+    /**
+     * This is the static method used to prepare a string array in reverse using the provided string template.
+     * @param start starting index of the note template parameter. Inclusive.
+     * @param end ending index of the note template parameter. Exclusive.
+     * @return the constructed array.
+     */
     static String[] prepareStringsReverse(int start, int end) {
         return IntStream.range(start, end)
                 .mapToObj(i -> noteString.replace("$", Integer.toString(i)))
                 .toArray(String[]::new);
     }
 
+    /**
+     * This method is used to prepare the files and array before every test.
+     * @throws IOException Thrown when an error occurs during file IO.
+     */
     @BeforeEach
     void prepare() throws IOException {
         Files.deleteIfExists(existingPath);
@@ -50,6 +83,10 @@ class NoteHistoryTest {
         }
     }
 
+    /**
+     * This test is used to check the input when the input file does not exist.
+     * @throws IOException When an error occurs during file IO.
+     */
     @Test
     void testInputWhenDoesNotExist() throws IOException {
         // Given
@@ -62,6 +99,11 @@ class NoteHistoryTest {
         assertEquals(0, history.getNotes().size());
     }
 
+    /**
+     * This test is used to check the input when the input file exists
+     * and its length is not higher than the max history capacity.
+     * @throws IOException When an error occurs during file IO.
+     */
     @Test
     void testInputWhenExistsAndCorrectLength() {
         // Given
@@ -78,6 +120,11 @@ class NoteHistoryTest {
         assertArrayEquals(noteArray, history.getNotes().toArray());
     }
 
+    /**
+     * This test is used to check the input when the input file exists
+     * and its length is not higher than the max history capacity.
+     * @throws IOException When an error occurs during file IO.
+     */
     @Test
     void testInputWhenExistsAndTooLong() throws IOException {
         // Given
@@ -99,6 +146,10 @@ class NoteHistoryTest {
         assertArrayEquals(noteArray, history.getNotes().toArray());
     }
 
+    /**
+     * This method is used to test adding a string when it is null or empty.
+     * @throws IOException When an error occurs during file IO.
+     */
     @Test
     void testAddWhenNoteDirNullOrEmpty() throws IOException {
         // Given
@@ -119,6 +170,10 @@ class NoteHistoryTest {
         assertTrue(testSuccess);
     }
 
+    /**
+     * This method is used to test adding a correct string when the history does not already contain it.
+     * @throws IOException When an error occurs during file IO.
+     */
     @Test
     void testAddWhenNotDuplicate() throws IOException {
         // Given
@@ -136,6 +191,10 @@ class NoteHistoryTest {
         assertArrayEquals(newNoteArray, history.getNotes().toArray());
     }
 
+    /**
+     * This method is used to test adding a correct string when the history already contains it.
+     * @throws IOException When an error occurs during file IO.
+     */
     @ParameterizedTest
     @ValueSource(ints = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9})
     void testAddWhenDuplicate(int elementIndx) throws IOException {
@@ -155,6 +214,11 @@ class NoteHistoryTest {
         assertArrayEquals(newNoteArray, history.getNotes().toArray());
     }
 
+    /**
+     * This method is used to check file output when the file already exists.
+     * @param strCount number of string added to the saved history.
+     * @throws IOException When an error occurs during file IO.
+     */
     @ParameterizedTest
     @ValueSource(ints = {0, 1, 3, 5, 9, 11, 32})
     void testSaveWhenExists(int strCount) throws IOException {
@@ -175,6 +239,11 @@ class NoteHistoryTest {
         assertArrayEquals(history.getNotes().toArray(), newHistory.getNotes().toArray());
     }
 
+    /**
+     * This method is used to check file output when the file does not exist.
+     * @param strCount number of string added to the saved history.
+     * @throws IOException When an error occurs during file IO.
+     */
     @ParameterizedTest
     @ValueSource(ints = {0, 1, 3, 5, 9, 11, 32})
     void testSaveWhenDoesNotExist(int strCount) throws IOException {
@@ -195,6 +264,10 @@ class NoteHistoryTest {
         assertArrayEquals(history.getNotes().toArray(), newHistory.getNotes().toArray());
     }
 
+    /**
+     * This method is used to clean up after all tests are done.
+     * @throws IOException When an error occurs during file IO.
+     */
     @AfterAll
     static void cleanup() throws IOException{
         Files.deleteIfExists(existingPath);

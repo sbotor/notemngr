@@ -17,17 +17,34 @@ import java.security.spec.InvalidKeySpecException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * This is the testing class for the AES class.
+ * @author Szymon Botor
+ * @version 1.0
+ */
 class AESTest {
 
+    /**
+     * This is the password used in testing.
+     */
     private String rawPassword;
+    /**
+     * This is the text that is encrypted during testing.
+     */
     private String plainText;
 
+    /**
+     * This method is used to prepare the password and text before every test.
+     */
     @BeforeEach
     void prepare() {
         rawPassword = "!paSswOrd_123";
         plainText = "Test string. This string is used for testing. I will now present some symbols: 123890!@#$%-()=.";
     }
 
+    /**
+     * This method tests encryption and decryption while using the correct password.
+     */
     @Test
     void testEncryptionAndDecryptionWhenCorrect() {
         // Given
@@ -53,6 +70,10 @@ class AESTest {
         assertEquals(plainText, decryptedText);
     }
 
+    /**
+     * This method is used to test encryption and decryption on a single object created using
+     * CryptMode.BOTH.
+     */
     @Test
     void testEncryptionAndDecryptionWhenBothMode() {
         // Given
@@ -77,6 +98,9 @@ class AESTest {
         assertEquals(plainText, decryptedText);
     }
 
+    /**
+     * This method is used to test an object created in decryption only mode against using for encryption.
+     */
     @Test
     void testEncryptionWhenDecryptionMode() {
         // Given
@@ -103,6 +127,9 @@ class AESTest {
         assertTrue(testSuccess);
     }
 
+    /**
+     * This method is used to test an object created in encryption only mode against using for decryption.
+     */
     @Test
     void testDecryptionWhenEncryptionMode() {
         // Given
@@ -128,6 +155,9 @@ class AESTest {
         assertTrue(testSuccess);
     }
 
+    /**
+     * This method is used to test encryption and decryption on an empty input string.
+     */
     @Test
     void testEncryptionAndDecryptionWhenTextEmpty() {
         // Given
@@ -154,6 +184,9 @@ class AESTest {
         assertEquals(plainText, decryptedText);
     }
 
+    /**
+     * This method is used to test encryption and decryption with an empty password.
+     */
     @Test
     void testEncryptionDecryptionWhenPasswordEmpty() {
         // Given
@@ -180,6 +213,9 @@ class AESTest {
         assertEquals(plainText, decryptedText);
     }
 
+    /**
+     * This method is used to test encryption and decryption with an empty password and input string.
+     */
     @Test
     void testEncryptionDecryptionWhenPasswordAndTextEmpty() {
         // Given
