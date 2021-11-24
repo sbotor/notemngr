@@ -90,7 +90,7 @@ class NoteHistoryTest {
      * @throws IOException When an error occurs during file IO.
      */
     @Test
-    void testInputWhenDoesNotExist() throws IOException {
+    void testInputWhenFileDoesNotExist() throws IOException {
         // Given
         Files.deleteIfExists(existingPath);
 
@@ -98,7 +98,7 @@ class NoteHistoryTest {
         NoteHistory history = new NoteHistory(existingPath.toString());
 
         // Then
-        assertEquals(0, history.getNotes().size());
+        assertEquals(0, history.getNotes().size(), "The history is not empty.");
     }
 
     /**
@@ -106,7 +106,7 @@ class NoteHistoryTest {
      * and its length is not higher than the max history capacity.
      */
     @Test
-    void testInputWhenExistsAndCorrectLength() {
+    void testInputWhenFileExistsAndCorrectLength() {
         // Given
 
         // When
@@ -118,7 +118,7 @@ class NoteHistoryTest {
         }
 
         // Then
-        assertArrayEquals(noteArray, history.getNotes().toArray());
+        assertArrayEquals(noteArray, history.getNotes().toArray(), "The history is different than expected.");
     }
 
     /**
@@ -127,7 +127,7 @@ class NoteHistoryTest {
      * @throws IOException When an error occurs during file IO.
      */
     @Test
-    void testInputWhenExistsAndTooLong() throws IOException {
+    void testInputWhenFileExistsAndTooLong() throws IOException {
         // Given
         String[] additionalArray = prepareStrings(NoteHistory.MAX_ITEMS, 2 * NoteHistory.MAX_ITEMS);
 
@@ -144,7 +144,7 @@ class NoteHistoryTest {
         }
 
         // Then
-        assertArrayEquals(noteArray, history.getNotes().toArray());
+        assertArrayEquals(noteArray, history.getNotes().toArray(), "The history is different than expected.");
     }
 
     /**
@@ -176,7 +176,7 @@ class NoteHistoryTest {
      * @throws IOException When an error occurs during file IO.
      */
     @Test
-    void testAddWhenNotDuplicate() throws IOException {
+    void testAddWhenTextNotDuplicate() throws IOException {
         // Given
         String newElement = "c:\\testNotes\\testnote";
         NoteHistory history = new NoteHistory(existingPath.toString());
@@ -199,7 +199,7 @@ class NoteHistoryTest {
      */
     @ParameterizedTest
     @ValueSource(ints = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9})
-    void testAddWhenDuplicate(int elementIndx) throws IOException {
+    void testAddWhenTextDuplicate(int elementIndx) throws IOException {
         // Given
         String newElement = noteArray[elementIndx];
         NoteHistory history = new NoteHistory(existingPath.toString());
@@ -223,7 +223,7 @@ class NoteHistoryTest {
      */
     @ParameterizedTest
     @ValueSource(ints = {0, 1, 3, 5, 9, 11, 32})
-    void testSaveWhenExists(int strCount) throws IOException {
+    void testSaveWhenFileExists(int strCount) throws IOException {
         // Given
         NoteHistory history = new NoteHistory();
         String[] testStrings = prepareStringsReverse(0, strCount);
@@ -248,7 +248,7 @@ class NoteHistoryTest {
      */
     @ParameterizedTest
     @ValueSource(ints = {0, 1, 3, 5, 9, 11, 32})
-    void testSaveWhenDoesNotExist(int strCount) throws IOException {
+    void testSaveWhenFileDoesNotExist(int strCount) throws IOException {
         // Given
         NoteHistory history = new NoteHistory();
         String[] testStrings = prepareStringsReverse(0, strCount);

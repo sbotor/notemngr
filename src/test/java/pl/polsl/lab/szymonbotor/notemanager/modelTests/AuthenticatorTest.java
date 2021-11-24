@@ -36,14 +36,14 @@ class AuthenticatorTest {
         }
 
         // Then
-        assertTrue(testSuccess);
+        assertTrue(testSuccess, "Authorisation did not succeed.");
     }
 
     /**
      * This test is used to check if the authorisation will be granted by using the correct password.
      */
     @Test
-    void testAuthWhenCorrectPassword() {
+    void testAuthWhenPasswordCorrect() {
         // Given
         String originalPassword = "!password_123",
                 newPassword = "!password_123";
@@ -57,11 +57,11 @@ class AuthenticatorTest {
             testSuccess = auth.authenticate(newPassword);
         }
         catch (NoSuchAlgorithmException ex) {
-            testSuccess = false;
+            fail("An unexpected exception was thrown.");
         }
 
         // Then
-        assertTrue(testSuccess);
+        assertTrue(testSuccess, "Authorisation did not succeed.");
     }
 
     /**
@@ -82,10 +82,10 @@ class AuthenticatorTest {
             testSuccess = auth.authenticate(newPassword);
         }
         catch (NoSuchAlgorithmException ex) {
-            testSuccess = false;
+            fail("An unexpected exception was thrown.");
         }
 
         // Then
-        assertTrue(testSuccess);
+        assertTrue(testSuccess, "Authorisation did not succeed.");
     }
 }

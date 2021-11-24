@@ -125,7 +125,7 @@ class NoteTest {
      * @throws BadPaddingException This exception is thrown when a particular padding mechanism is expected for the input data but the data is not padded properly.
      */
     @Test
-    void testReadWhenDoesNotExist() throws InvalidCryptModeException, InvalidAlgorithmParameterException,
+    void testReadWhenFileDoesNotExist() throws InvalidCryptModeException, InvalidAlgorithmParameterException,
             NoSuchPaddingException, IllegalBlockSizeException,
             NoSuchAlgorithmException, InvalidKeySpecException, BadPaddingException, InvalidKeyException {
 
@@ -157,7 +157,7 @@ class NoteTest {
      * @throws IOException Thrown when an error occurs during file IO.
      */
     @Test
-    void testReadWhenExistsAndPasswordCorrect() throws InvalidCryptModeException, InvalidAlgorithmParameterException,
+    void testReadWhenFileExistsAndPasswordCorrect() throws InvalidCryptModeException, InvalidAlgorithmParameterException,
             NoSuchPaddingException, IllegalBlockSizeException,
             NoSuchAlgorithmException, InvalidKeySpecException, BadPaddingException,
             InvalidKeyException, IOException {
@@ -184,7 +184,7 @@ class NoteTest {
      * @throws IOException Thrown when an error occurs during file IO.
      */
     @Test
-    void testReadWhenExistsAndPasswordIncorrect() throws InvalidCryptModeException, InvalidAlgorithmParameterException,
+    void testReadWhenFileExistsAndPasswordIncorrect() throws InvalidCryptModeException, InvalidAlgorithmParameterException,
             NoSuchPaddingException, IllegalBlockSizeException,
             NoSuchAlgorithmException, InvalidKeySpecException, BadPaddingException,
             InvalidKeyException, IOException {
@@ -204,7 +204,7 @@ class NoteTest {
      */
     @ParameterizedTest
     @ValueSource(strings = {"", "test$note1234", "test$note1234 secondWord", "test$note1234 secondWord _thirdwOrd"})
-    void testChangeWhenCorrect(String newContent) {
+    void testChangeWhenParamsCorrect(String newContent) {
         // Given
         Note note = new Note();
 
@@ -223,7 +223,7 @@ class NoteTest {
      * This method is used to test changing the note content when the new content is higher than the maximum allowed length.
      */
     @Test
-    void testChangeWhenTooLong() {
+    void testChangeWhenContentTooLong() {
         // Given
         String str = String.valueOf(new char[Note.MAX_NOTE_SIZE + 1]);
         Note note = new Note();
@@ -254,7 +254,7 @@ class NoteTest {
      * @throws IOException Thrown when an error occurs during file IO.
      */
     @Test
-    void testSaveWhenExists() throws InvalidCryptModeException, InvalidAlgorithmParameterException,
+    void testSaveWhenFileExists() throws InvalidCryptModeException, InvalidAlgorithmParameterException,
             NoSuchPaddingException, IllegalBlockSizeException, IOException,
             NoSuchAlgorithmException, InvalidKeySpecException, BadPaddingException, InvalidKeyException {
         // Given
@@ -282,7 +282,7 @@ class NoteTest {
      * @throws IOException Thrown when an error occurs during file IO.
      */
     @Test
-    void testSaveWhenDoesNotExists() throws InvalidCryptModeException, InvalidAlgorithmParameterException,
+    void testSaveWhenFileDoesNotExists() throws InvalidCryptModeException, InvalidAlgorithmParameterException,
             NoSuchPaddingException, IllegalBlockSizeException, IOException,
             NoSuchAlgorithmException, InvalidKeySpecException, BadPaddingException, InvalidKeyException {
         // Given

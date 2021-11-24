@@ -47,7 +47,7 @@ class AESTest {
      * This method tests encryption and decryption while using the correct password.
      */
     @Test
-    void testEncryptionAndDecryptionWhenCorrect() {
+    void testEncryptionAndDecryptionWhenParamsCorrect() {
         // Given
 
         // When
@@ -64,11 +64,11 @@ class AESTest {
                 InvalidAlgorithmParameterException | BadPaddingException |
                 IllegalBlockSizeException | InvalidCryptModeException ex) {
 
-            fail();
+            fail("An unexpected exception was thrown.");
         }
 
         // Then
-        assertEquals(plainText, decryptedText);
+        assertEquals(plainText, decryptedText, "Original and decrypted texts are different.");
     }
 
     /**
@@ -92,11 +92,11 @@ class AESTest {
                 InvalidAlgorithmParameterException | BadPaddingException |
                 IllegalBlockSizeException | InvalidCryptModeException ex) {
 
-            fail();
+            fail("An unexpected exception was thrown.");
         }
 
         // Then
-        assertEquals(plainText, decryptedText);
+        assertEquals(plainText, decryptedText, "Original and decrypted texts are different.");
     }
 
     /**
@@ -118,14 +118,14 @@ class AESTest {
                 InvalidAlgorithmParameterException | BadPaddingException |
                 IllegalBlockSizeException ex) {
 
-            testSuccess = false;
+            fail("An unexpected exception was thrown.");
         }
         catch (InvalidCryptModeException ex) {
             testSuccess = true;
         }
 
         // Then
-        assertTrue(testSuccess);
+        assertTrue(testSuccess, "InvalidCryptModeException was not thrown.");
     }
 
     /**
@@ -146,14 +146,14 @@ class AESTest {
                 InvalidAlgorithmParameterException | BadPaddingException |
                 IllegalBlockSizeException ex) {
 
-            testSuccess = false;
+            fail("An unexpected exception was thrown.");
         }
         catch (InvalidCryptModeException ex) {
             testSuccess = true;
         }
 
         // Then
-        assertTrue(testSuccess);
+        assertTrue(testSuccess, "InvalidCryptModeException was not thrown.");
     }
 
     /**
@@ -178,11 +178,11 @@ class AESTest {
                 InvalidAlgorithmParameterException | BadPaddingException |
                 IllegalBlockSizeException | InvalidCryptModeException ex) {
 
-            fail();
+            fail("An unexpected exception was thrown.");
         }
 
         // Then
-        assertEquals(plainText, decryptedText);
+        assertEquals(plainText, decryptedText, "Original and decrypted texts are different.");
     }
 
     /**
@@ -207,11 +207,11 @@ class AESTest {
                 InvalidAlgorithmParameterException | BadPaddingException |
                 IllegalBlockSizeException | InvalidCryptModeException ex) {
 
-            fail();
+            fail("An unexpected exception was thrown.");
         }
 
         // Then
-        assertEquals(plainText, decryptedText);
+        assertEquals(plainText, decryptedText, "Original and decrypted texts are different.");
     }
 
     /**
@@ -236,10 +236,10 @@ class AESTest {
                 InvalidAlgorithmParameterException | BadPaddingException |
                 IllegalBlockSizeException | InvalidCryptModeException ex) {
 
-            fail();
+            fail("An unexpected exception was thrown.");
         }
 
         // Then
-        assertEquals(plainText, decryptedText);
+        assertEquals(plainText, decryptedText, "Original and decrypted texts are different.");
     }
 }
