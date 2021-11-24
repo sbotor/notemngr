@@ -22,7 +22,7 @@ import javax.crypto.spec.SecretKeySpec;
 /**
  * Class implementing the Advanced Encryption Standard algorithm. It is used to encrypt and decrypt notes.
  * @author Szymon Botor
- * @version 1.0
+ * @version 1.1
  */
 public class AES {
     /**
@@ -152,7 +152,7 @@ public class AES {
 
     /**
      * This method is used to set the initialisation vector.
-     * @return current initialisation vector of the AES instance.
+     * @param newIV new initialisation vector.
      */
     public void setIV(byte[] newIV) {
         iv = new IvParameterSpec(newIV);
@@ -168,7 +168,7 @@ public class AES {
 
     /**
      * This method is used to set the cryptographic salt.
-     * @return current cryptographic salt of the AES instance.
+     * @param newSalt new cryptographic salt.
      */
     public void setSalt(byte[] newSalt) {
         salt = newSalt;

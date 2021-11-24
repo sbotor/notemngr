@@ -8,7 +8,7 @@ import java.util.Arrays;
 /**
  * Class used during password authentication process. It implements the SHA-256 algorithm.
  * @author Szymon Botor
- * @version 1.0
+ * @version 1.1
  */
 public class Authenticator {
     /**

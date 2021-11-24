@@ -145,6 +145,8 @@ class PasswordGenTest {
 
     /**
      * This method is used to test the behaviour when the parameters are correct.
+     * @param passSize size of the password to generate.
+     * @param symbols a string symbolising the list of symbols to pick from during generation.
      * @see PasswordGenTest#intAndStringParamSource()
      */
     @ParameterizedTest

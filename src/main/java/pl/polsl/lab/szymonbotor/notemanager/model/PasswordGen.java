@@ -9,7 +9,7 @@ import java.security.SecureRandom;
 /**
  * Class used during password generation. It uses the provided symbols to generate a random password of a specified length.
  * @author Szymon Botor
- * @version 1.0
+ * @version 1.1
  */
 public class PasswordGen {
     

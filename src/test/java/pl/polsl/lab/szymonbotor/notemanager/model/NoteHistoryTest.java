@@ -102,7 +102,6 @@ class NoteHistoryTest {
     /**
      * This test is used to check the input when the input file exists
      * and its length is not higher than the max history capacity.
-     * @throws IOException When an error occurs during file IO.
      */
     @Test
     void testInputWhenExistsAndCorrectLength() {
@@ -193,6 +192,7 @@ class NoteHistoryTest {
 
     /**
      * This method is used to test adding a correct string when the history already contains it.
+     * @param elementIndx index of the element to re-add to the history.
      * @throws IOException When an error occurs during file IO.
      */
     @ParameterizedTest
