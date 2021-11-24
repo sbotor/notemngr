@@ -143,8 +143,7 @@ class PasswordGenTest {
     }
 
     static Stream<Arguments> intAndStringParamSource() {
-        int[] intArray = new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-                13, 15, 17, 20, 25, 40, 50, 60, PasswordGen.MAX_PASSWORD_LENGTH};
+        int[] intArray = new int[] {1, 2, 3, 7, 8, 10, 17, 20, 25, 40, 50, 60, PasswordGen.MAX_PASSWORD_LENGTH};
         String[] stringArray = new String[] {"", "d", "u", "o", "+", "*+", ".", "@#$%^dduoodd", "@#&"};
 
         Arguments[] args = new Arguments[intArray.length * stringArray.length];

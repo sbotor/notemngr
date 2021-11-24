@@ -6,18 +6,4 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class NoteTest {
 
-    @Test
-    void openNoteTest() {
-
-    }
-
-    @Test
-    void saveNoteTest() {
-
-    }
-
-    @Test
-    void changeNoteTest() {
-
-    }
 }

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import pl.polsl.lab.szymonbotor.notemanager.enums.CryptMode;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidCryptModeException;
 
 import javax.crypto.BadPaddingException;
@@ -18,11 +19,18 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class AESTest {
 
+    private String rawPassword;
+    private String plainText;
+
+    @BeforeEach
+    void prepare() {
+        rawPassword = "!paSswOrd_123";
+        plainText = "Test string. This string is used for testing. I will now present some symbols: 123890!@#$%-()=.";
+    }
+
     @Test
     void testEncryptionAndDecryptionWhenCorrect() {
         // Given
-        String rawPassword = "!password_123",
-        plainText = "Test string. This string is used for testing. I will now present some symbols: 123890!@#$%-()=.";
 
         // When
         String decryptedText = null;
@@ -46,10 +54,32 @@ class AESTest {
     }
 
     @Test
+    void testEncryptionAndDecryptionWhenBothMode() {
+        // Given
+
+        // When
+        String decryptedText = null;
+        try {
+            AES aes = new AES(rawPassword, CryptMode.BOTH);
+            byte[] cipherText = aes.encrypt(plainText);
+
+            decryptedText = aes.decrypt(cipherText);
+        }
+        catch (NoSuchAlgorithmException | InvalidKeySpecException |
+                NoSuchPaddingException | InvalidKeyException |
+                InvalidAlgorithmParameterException | BadPaddingException |
+                IllegalBlockSizeException | InvalidCryptModeException ex) {
+
+            fail();
+        }
+
+        // Then
+        assertEquals(plainText, decryptedText);
+    }
+
+    @Test
     void testEncryptionWhenDecryptionMode() {
         // Given
-        String rawPassword = "!password_123",
-                plainText = "Test string. This string is used for testing. I will now present some symbols: 123890!@#$%-()=.";
 
         // When
         boolean testSuccess = false;
@@ -76,7 +106,6 @@ class AESTest {
     @Test
     void testDecryptionWhenEncryptionMode() {
         // Given
-        String rawPassword = "!password_123";
 
         // When
         boolean testSuccess = false;
@@ -97,5 +126,83 @@ class AESTest {
 
         // Then
         assertTrue(testSuccess);
+    }
+
+    @Test
+    void testEncryptionAndDecryptionWhenTextEmpty() {
+        // Given
+        plainText = "";
+
+        // When
+        String decryptedText = null;
+        try {
+            AES aes = new AES(rawPassword);
+            byte[] cipherText = aes.encrypt(plainText);
+
+            aes = new AES(rawPassword, aes.getSalt(), aes.getIV());
+            decryptedText = aes.decrypt(cipherText);
+        }
+        catch (NoSuchAlgorithmException | InvalidKeySpecException |
+                NoSuchPaddingException | InvalidKeyException |
+                InvalidAlgorithmParameterException | BadPaddingException |
+                IllegalBlockSizeException | InvalidCryptModeException ex) {
+
+            fail();
+        }
+
+        // Then
+        assertEquals(plainText, decryptedText);
+    }
+
+    @Test
+    void testEncryptionDecryptionWhenPasswordEmpty() {
+        // Given
+        rawPassword = "";
+
+        // When
+        String decryptedText = null;
+        try {
+            AES aes = new AES(rawPassword);
+            byte[] cipherText = aes.encrypt(plainText);
+
+            aes = new AES(rawPassword, aes.getSalt(), aes.getIV());
+            decryptedText = aes.decrypt(cipherText);
+        }
+        catch (NoSuchAlgorithmException | InvalidKeySpecException |
+                NoSuchPaddingException | InvalidKeyException |
+                InvalidAlgorithmParameterException | BadPaddingException |
+                IllegalBlockSizeException | InvalidCryptModeException ex) {
+
+            fail();
+        }
+
+        // Then
+        assertEquals(plainText, decryptedText);
+    }
+
+    @Test
+    void testEncryptionDecryptionWhenPasswordAndTextEmpty() {
+        // Given
+        rawPassword = "";
+        plainText = "";
+
+        // When
+        String decryptedText = null;
+        try {
+            AES aes = new AES(rawPassword);
+            byte[] cipherText = aes.encrypt(plainText);
+
+            aes = new AES(rawPassword, aes.getSalt(), aes.getIV());
+            decryptedText = aes.decrypt(cipherText);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException |
+                NoSuchPaddingException | InvalidKeyException |
+                InvalidAlgorithmParameterException | BadPaddingException |
+                IllegalBlockSizeException | InvalidCryptModeException ex) {
+
+            fail();
+        }
+
+        // Then
+        assertEquals(plainText, decryptedText);
     }
 }

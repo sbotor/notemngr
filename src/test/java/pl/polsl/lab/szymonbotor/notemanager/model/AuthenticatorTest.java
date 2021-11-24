@@ -1,23 +1,76 @@
 package pl.polsl.lab.szymonbotor.notemanager.model;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+
+import java.security.NoSuchAlgorithmException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class AuthenticatorTest {
 
-    Authenticator auth;
+    @Test
+    void testAuthWhenWrongPassword() {
+        // Given
+        String originalPassword = "!password_123",
+                newPassword = "wrong_password";
 
-    @ParameterizedTest
-    @CsvSource({})
-    static void testHashing(String input, byte[] expected) {
+        // When
+        boolean testSuccess = false;
+        try {
+            byte[] passHash = Authenticator.hashPassword(originalPassword);
+            Authenticator auth = new Authenticator(passHash);
 
+            testSuccess = !auth.authenticate(newPassword);
+        }
+        catch (NoSuchAlgorithmException ex) {
+            testSuccess = false;
+        }
+
+        // Then
+        assertTrue(testSuccess);
     }
 
     @Test
-    void testAuthentication() {
+    void testAuthWhenCorrectPassword() {
+        // Given
+        String originalPassword = "!password_123",
+                newPassword = "!password_123";
 
+        // When
+        boolean testSuccess = false;
+        try {
+            byte[] passHash = Authenticator.hashPassword(originalPassword);
+            Authenticator auth = new Authenticator(passHash);
+
+            testSuccess = auth.authenticate(newPassword);
+        }
+        catch (NoSuchAlgorithmException ex) {
+            testSuccess = false;
+        }
+
+        // Then
+        assertTrue(testSuccess);
+    }
+
+    @Test
+    void testAuthWhenPasswordEmpty() {
+        // Given
+        String originalPassword = "",
+                newPassword = "";
+
+        // When
+        boolean testSuccess = false;
+        try {
+            byte[] passHash = Authenticator.hashPassword(originalPassword);
+            Authenticator auth = new Authenticator(passHash);
+
+            testSuccess = auth.authenticate(newPassword);
+        }
+        catch (NoSuchAlgorithmException ex) {
+            testSuccess = false;
+        }
+
+        // Then
+        assertTrue(testSuccess);
     }
 }

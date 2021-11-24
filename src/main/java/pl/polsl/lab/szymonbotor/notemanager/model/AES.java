@@ -28,13 +28,26 @@ public class AES {
     /**
      * Constant value representing the number of iterations in the AES algorithm.
      */
-    private static final int ITER_COUNT = 65536;
+    public static final int ITER_COUNT = 65536;
     
     /**
      * Constant value representing the length of the encryption key in bits.
      */
-    private static final int KEY_LENGTH = 256;
-    
+    public static final int KEY_LENGTH = 256;
+
+    /**
+     * Constant value representing size of the initialisation vector.
+     */
+    public static final int IV_LENGTH = 16;
+
+    /**
+     * Constant value representing size of the cryptographic salt in bytes.
+     */
+    public static final int SALT_LENGTH = 8;
+
+    /**
+     * This is an enum used to determine whether the object is used to encrypt, decrypt or both.
+     */
     public final CryptMode cryptMode;
 
     /**
@@ -56,24 +69,38 @@ public class AES {
     
     /**
      * Constructor used during encryption. It generates a new random initialisation vector and salt.
-     * @param password password to be used as a base for the secret key.
+     * @param password password to be used as a base for the secret key. Can be empty.
      * @throws NoSuchAlgorithmException This exception is thrown when a particular cryptographic algorithm is requested but is not available in the environment.
      * @throws InvalidKeySpecException This is the exception for invalid key specifications.
      */
     public AES(String password)
             throws NoSuchAlgorithmException, InvalidKeySpecException {
         
-        cryptMode = CryptMode.ENCRYPTION;
+        this(password, CryptMode.ENCRYPTION);
+    }
+
+    /**
+     * Constructor used to create an object using the specified mode (encryption, decryption or both).
+     * It generates a new random initialisation vector and salt.
+     * @param password password to be used as a base for the secret key. Can be empty.
+     * @param mode enum representing the type of operation available for the object.
+     * @throws NoSuchAlgorithmException This exception is thrown when a particular cryptographic algorithm is requested but is not available in the environment.
+     * @throws InvalidKeySpecException This is the exception for invalid key specifications.
+     */
+    public AES(String password, CryptMode mode)
+            throws NoSuchAlgorithmException, InvalidKeySpecException {
+
+        cryptMode = mode;
 
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-        
-        salt = new byte[8];
+
+        salt = new byte[SALT_LENGTH];
         new SecureRandom().nextBytes(salt);
-        
+
         KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, ITER_COUNT, KEY_LENGTH);
         key = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
-        
-        byte[] ivArray = new byte[16];
+
+        byte[] ivArray = new byte[IV_LENGTH];
         new SecureRandom().nextBytes(ivArray);
         iv = new IvParameterSpec(ivArray);
     }
@@ -81,7 +108,7 @@ public class AES {
     /**
      * Constructor used during decryption. It needs to be supplied with salt and initialisation vector
      * generated during the encryption process.
-     * @param password password to be used as a base for the secret key.
+     * @param password password to be used as a base for the secret key. Can be empty.
      * @param salt previously generated cryptographic salt.
      * @param ivArray previously generated initialisation vector.
      * @throws NoSuchAlgorithmException This exception is thrown when a particular cryptographic algorithm is requested but is not available in the environment.
@@ -90,12 +117,28 @@ public class AES {
     public AES(String password, byte[] salt, byte[] ivArray)
             throws NoSuchAlgorithmException, InvalidKeySpecException {
 
-        cryptMode = CryptMode.DECRYPTION;
+        this(password, salt, ivArray, CryptMode.DECRYPTION);
+    }
+
+    /**
+     * Constructor used to create an object with the provided salt and initialisation vector using the specified
+     * mode (encryption, decryption or both).
+     * @param password password to be used as a base for the secret key. Can be empty.
+     * @param salt previously generated cryptographic salt.
+     * @param ivArray previously generated initialisation vector.
+     * @param mode enum representing the type of operation available for the object.
+     * @throws NoSuchAlgorithmException This exception is thrown when a particular cryptographic algorithm is requested but is not available in the environment.
+     * @throws InvalidKeySpecException This is the exception for invalid key specifications.
+     */
+    public AES(String password, byte[] salt, byte[] ivArray, CryptMode mode)
+            throws NoSuchAlgorithmException, InvalidKeySpecException {
+
+        cryptMode = mode;
 
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
         KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, ITER_COUNT, KEY_LENGTH);
         key = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
-        
+
         iv = new IvParameterSpec(ivArray);
     }
     
@@ -106,6 +149,14 @@ public class AES {
     public byte[] getIV() {
         return iv.getIV();
     }
+
+    /**
+     * This method is used to set the initialisation vector.
+     * @return current initialisation vector of the AES instance.
+     */
+    public void setIV(byte[] newIV) {
+        iv = new IvParameterSpec(newIV);
+    }
     
     /**
      * This method is used to get the cryptographic salt.
@@ -113,6 +164,14 @@ public class AES {
      */
     public byte[] getSalt() {
         return salt;
+    }
+
+    /**
+     * This method is used to set the cryptographic salt.
+     * @return current cryptographic salt of the AES instance.
+     */
+    public void setSalt(byte[] newSalt) {
+        salt = newSalt;
     }
     
     /**
@@ -132,15 +191,13 @@ public class AES {
             InvalidKeyException, InvalidAlgorithmParameterException,
             IllegalBlockSizeException, BadPaddingException, InvalidCryptModeException {
 
-        if (cryptMode == CryptMode.ENCRYPTION) {
+        if (cryptMode == CryptMode.DECRYPTION) {
+            throw new InvalidCryptModeException("Encrypt called on a decryption only AES object.");
+        } else {
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             cipher.init(Cipher.ENCRYPT_MODE, key, iv);
 
-            byte[] retVal = cipher.doFinal(data.getBytes());
-
-            return retVal;
-        } else {
-            throw new InvalidCryptModeException("Encrypt called on a decryption AES object.");
+            return cipher.doFinal(data.getBytes());
         }
     }
     
@@ -161,14 +218,14 @@ public class AES {
             InvalidKeyException, InvalidAlgorithmParameterException,
             IllegalBlockSizeException, BadPaddingException, InvalidCryptModeException {
 
-        if (cryptMode == CryptMode.DECRYPTION) {
+        if (cryptMode == CryptMode.ENCRYPTION) {
+            throw new InvalidCryptModeException("Decrypt called on an encryption only AES object.");
+        } else {
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             cipher.init(Cipher.DECRYPT_MODE, key, iv);
             byte[] plainText = cipher.doFinal(data);
 
             return new String(plainText);
-        } else {
-            throw new InvalidCryptModeException("Decrypt called on an encryption AES object.");
         }
     }
 }

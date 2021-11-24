@@ -14,7 +14,7 @@ public class NoteHistory {
     /**
      * Maximum number of items in the note history.
      */
-    private static final int MAX_ITEMS = 10;
+    public static final int MAX_ITEMS = 10;
 
     /**
      * This method is used to get the directory of the history file.
