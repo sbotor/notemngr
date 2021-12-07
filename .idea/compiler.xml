@@ -9,5 +9,8 @@
         <module name="NoteManager" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="NoteManager" target="11" />
+    </bytecodeTargetLevel>
   </component>
 </project>
