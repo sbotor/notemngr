@@ -135,8 +135,10 @@ public class NoteHistory {
      */
     public void add(Note note) throws IllegalArgumentException {
 
-        if (note.getFilePath() != null) {
+        if (note!= null && note.getFilePath() != null) {
             add(note.getFileDir());
+        } else {
+            throw new IllegalArgumentException();
         }
     }
     /**

@@ -1,4 +1,4 @@
-package pl.polsl.lab.szymonbotor.notemanager.modelTests;
+package pl.polsl.lab.szymonbotor.notemanager.model.tests;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
