@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import pl.polsl.lab.szymonbotor.notemanager.enums.CryptMode;
+import pl.polsl.lab.szymonbotor.notemanager.exceptions.CryptException;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidCryptModeException;
 import pl.polsl.lab.szymonbotor.notemanager.model.AES;
 
@@ -59,12 +60,8 @@ class AESTest {
             aes = new AES(rawPassword, aes.getSalt(), aes.getIV());
             decryptedText = aes.decrypt(cipherText);
         }
-        catch (NoSuchAlgorithmException | InvalidKeySpecException |
-                NoSuchPaddingException | InvalidKeyException |
-                InvalidAlgorithmParameterException | BadPaddingException |
-                IllegalBlockSizeException | InvalidCryptModeException ex) {
-
-            fail("An unexpected exception was thrown.");
+        catch (CryptException | InvalidCryptModeException e) {
+            e.printStackTrace();
         }
 
         // Then
@@ -87,12 +84,8 @@ class AESTest {
 
             decryptedText = aes.decrypt(cipherText);
         }
-        catch (NoSuchAlgorithmException | InvalidKeySpecException |
-                NoSuchPaddingException | InvalidKeyException |
-                InvalidAlgorithmParameterException | BadPaddingException |
-                IllegalBlockSizeException | InvalidCryptModeException ex) {
-
-            fail("An unexpected exception was thrown.");
+        catch (CryptException | InvalidCryptModeException e) {
+            e.printStackTrace();
         }
 
         // Then
@@ -113,14 +106,7 @@ class AESTest {
             aes = new AES(rawPassword, aes.getSalt(), aes.getIV());
             aes.encrypt(plainText);
         }
-        catch (NoSuchAlgorithmException | InvalidKeySpecException |
-                NoSuchPaddingException | InvalidKeyException |
-                InvalidAlgorithmParameterException | BadPaddingException |
-                IllegalBlockSizeException ex) {
-
-            fail("An unexpected exception was thrown.");
-        }
-        catch (InvalidCryptModeException ex) {
+        catch (InvalidCryptModeException | CryptException ex) {
             testSuccess = true;
         }
 
@@ -141,15 +127,10 @@ class AESTest {
             AES aes = new AES(rawPassword);
             aes.decrypt(new byte[256]);
         }
-        catch (NoSuchAlgorithmException | InvalidKeySpecException |
-                NoSuchPaddingException | InvalidKeyException |
-                InvalidAlgorithmParameterException | BadPaddingException |
-                IllegalBlockSizeException ex) {
-
-            fail("An unexpected exception was thrown.");
-        }
         catch (InvalidCryptModeException ex) {
             testSuccess = true;
+        } catch (CryptException e) {
+            e.printStackTrace();
         }
 
         // Then
@@ -172,13 +153,8 @@ class AESTest {
 
             aes = new AES(rawPassword, aes.getSalt(), aes.getIV());
             decryptedText = aes.decrypt(cipherText);
-        }
-        catch (NoSuchAlgorithmException | InvalidKeySpecException |
-                NoSuchPaddingException | InvalidKeyException |
-                InvalidAlgorithmParameterException | BadPaddingException |
-                IllegalBlockSizeException | InvalidCryptModeException ex) {
-
-            fail("An unexpected exception was thrown.");
+        } catch (InvalidCryptModeException | CryptException e) {
+            e.printStackTrace();
         }
 
         // Then
@@ -201,13 +177,8 @@ class AESTest {
 
             aes = new AES(rawPassword, aes.getSalt(), aes.getIV());
             decryptedText = aes.decrypt(cipherText);
-        }
-        catch (NoSuchAlgorithmException | InvalidKeySpecException |
-                NoSuchPaddingException | InvalidKeyException |
-                InvalidAlgorithmParameterException | BadPaddingException |
-                IllegalBlockSizeException | InvalidCryptModeException ex) {
-
-            fail("An unexpected exception was thrown.");
+        } catch (InvalidCryptModeException | CryptException e) {
+            e.printStackTrace();
         }
 
         // Then
@@ -231,12 +202,8 @@ class AESTest {
 
             aes = new AES(rawPassword, aes.getSalt(), aes.getIV());
             decryptedText = aes.decrypt(cipherText);
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException |
-                NoSuchPaddingException | InvalidKeyException |
-                InvalidAlgorithmParameterException | BadPaddingException |
-                IllegalBlockSizeException | InvalidCryptModeException ex) {
-
-            fail("An unexpected exception was thrown.");
+        } catch (CryptException | InvalidCryptModeException e) {
+            e.printStackTrace();
         }
 
         // Then

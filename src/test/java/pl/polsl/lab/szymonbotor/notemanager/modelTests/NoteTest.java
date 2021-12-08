@@ -3,6 +3,7 @@ package pl.polsl.lab.szymonbotor.notemanager.modelTests;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import pl.polsl.lab.szymonbotor.notemanager.exceptions.CryptException;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidCryptModeException;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.NoteTooLongException;
 import pl.polsl.lab.szymonbotor.notemanager.model.AES;
@@ -73,19 +74,9 @@ class NoteTest {
     /**
      * This method is used to set up the salt, initialisation vector, password hash and encrypted text before all tests.
      * @throws InvalidCryptModeException Thrown when an AES object created to encrypt is used to decrypt or vice versa.
-     * @throws NoSuchAlgorithmException This exception is thrown when a particular cryptographic algorithm is requested but is not available in the environment.
-     * @throws InvalidKeySpecException This is the exception for invalid key specifications.
-     * @throws NoSuchPaddingException This exception is thrown when a particular padding mechanism is requested but is not available in the environment.
-     * @throws InvalidKeyException This is the exception for invalid Keys (invalid encoding, wrong length, uninitialized, etc).
-     * @throws InvalidAlgorithmParameterException This is the exception for invalid or inappropriate algorithm parameters.
-     * @throws IllegalBlockSizeException This exception is thrown when the length of data provided to a block cipher is incorrect, i.e., does not match the block size of the cipher.
-     * @throws BadPaddingException This exception is thrown when a particular padding mechanism is expected for the input data but the data is not padded properly.
      */
     @BeforeAll
-    static void init() throws NoSuchAlgorithmException, InvalidKeySpecException,
-            InvalidCryptModeException, InvalidAlgorithmParameterException,
-            NoSuchPaddingException, IllegalBlockSizeException,
-            BadPaddingException, InvalidKeyException {
+    static void init() throws InvalidCryptModeException, CryptException {
         AES aes = new AES(password);
 
         salt = aes.getSalt();
@@ -116,18 +107,10 @@ class NoteTest {
     /**
      * This test is used to check input when the file does not exist.
      * @throws InvalidCryptModeException Thrown when an AES object created to encrypt is used to decrypt or vice versa.
-     * @throws NoSuchAlgorithmException This exception is thrown when a particular cryptographic algorithm is requested but is not available in the environment.
-     * @throws InvalidKeySpecException This is the exception for invalid key specifications.
-     * @throws NoSuchPaddingException This exception is thrown when a particular padding mechanism is requested but is not available in the environment.
-     * @throws InvalidKeyException This is the exception for invalid Keys (invalid encoding, wrong length, uninitialized, etc).
-     * @throws InvalidAlgorithmParameterException This is the exception for invalid or inappropriate algorithm parameters.
-     * @throws IllegalBlockSizeException This exception is thrown when the length of data provided to a block cipher is incorrect, i.e., does not match the block size of the cipher.
-     * @throws BadPaddingException This exception is thrown when a particular padding mechanism is expected for the input data but the data is not padded properly.
+     *
      */
     @Test
-    void testReadWhenFileDoesNotExist() throws InvalidCryptModeException, InvalidAlgorithmParameterException,
-            NoSuchPaddingException, IllegalBlockSizeException,
-            NoSuchAlgorithmException, InvalidKeySpecException, BadPaddingException, InvalidKeyException {
+    void testReadWhenFileDoesNotExist() throws InvalidCryptModeException {
 
         // Given
 
@@ -136,7 +119,7 @@ class NoteTest {
         Note note;
         try {
             note = new Note(newPath.toString(), password);
-        } catch (IOException e) {
+        } catch (IOException | CryptException e) {
             testSuccess = true;
         }
 
@@ -146,21 +129,10 @@ class NoteTest {
 
     /**
      * This test is used to check input when the file exists and the provided password is correct.
-     * @throws InvalidCryptModeException Thrown when an AES object created to encrypt is used to decrypt or vice versa.
-     * @throws NoSuchAlgorithmException This exception is thrown when a particular cryptographic algorithm is requested but is not available in the environment.
-     * @throws InvalidKeySpecException This is the exception for invalid key specifications.
-     * @throws NoSuchPaddingException This exception is thrown when a particular padding mechanism is requested but is not available in the environment.
-     * @throws InvalidKeyException This is the exception for invalid Keys (invalid encoding, wrong length, uninitialized, etc).
-     * @throws InvalidAlgorithmParameterException This is the exception for invalid or inappropriate algorithm parameters.
-     * @throws IllegalBlockSizeException This exception is thrown when the length of data provided to a block cipher is incorrect, i.e., does not match the block size of the cipher.
-     * @throws BadPaddingException This exception is thrown when a particular padding mechanism is expected for the input data but the data is not padded properly.
      * @throws IOException Thrown when an error occurs during file IO.
      */
     @Test
-    void testReadWhenFileExistsAndPasswordCorrect() throws InvalidCryptModeException, InvalidAlgorithmParameterException,
-            NoSuchPaddingException, IllegalBlockSizeException,
-            NoSuchAlgorithmException, InvalidKeySpecException, BadPaddingException,
-            InvalidKeyException, IOException {
+    void testReadWhenFileExistsAndPasswordCorrect() throws InvalidCryptModeException, IOException, CryptException {
 
         // Given
 
@@ -174,20 +146,10 @@ class NoteTest {
     /**
      * This test is used to check input when the file exists and the provided password is incorrect.
      * @throws InvalidCryptModeException Thrown when an AES object created to encrypt is used to decrypt or vice versa.
-     * @throws NoSuchAlgorithmException This exception is thrown when a particular cryptographic algorithm is requested but is not available in the environment.
-     * @throws InvalidKeySpecException This is the exception for invalid key specifications.
-     * @throws NoSuchPaddingException This exception is thrown when a particular padding mechanism is requested but is not available in the environment.
-     * @throws InvalidKeyException This is the exception for invalid Keys (invalid encoding, wrong length, uninitialized, etc).
-     * @throws InvalidAlgorithmParameterException This is the exception for invalid or inappropriate algorithm parameters.
-     * @throws IllegalBlockSizeException This exception is thrown when the length of data provided to a block cipher is incorrect, i.e., does not match the block size of the cipher.
-     * @throws BadPaddingException This exception is thrown when a particular padding mechanism is expected for the input data but the data is not padded properly.
      * @throws IOException Thrown when an error occurs during file IO.
      */
     @Test
-    void testReadWhenFileExistsAndPasswordIncorrect() throws InvalidCryptModeException, InvalidAlgorithmParameterException,
-            NoSuchPaddingException, IllegalBlockSizeException,
-            NoSuchAlgorithmException, InvalidKeySpecException, BadPaddingException,
-            InvalidKeyException, IOException {
+    void testReadWhenFileExistsAndPasswordIncorrect() throws InvalidCryptModeException, IOException, CryptException {
 
         // Given
 
@@ -243,20 +205,10 @@ class NoteTest {
 
     /**
      * This method is used to test file output when the file already exists.
-     * @throws InvalidCryptModeException Thrown when an AES object created to encrypt is used to decrypt or vice versa.
-     * @throws NoSuchAlgorithmException This exception is thrown when a particular cryptographic algorithm is requested but is not available in the environment.
-     * @throws InvalidKeySpecException This is the exception for invalid key specifications.
-     * @throws NoSuchPaddingException This exception is thrown when a particular padding mechanism is requested but is not available in the environment.
-     * @throws InvalidKeyException This is the exception for invalid Keys (invalid encoding, wrong length, uninitialized, etc).
-     * @throws InvalidAlgorithmParameterException This is the exception for invalid or inappropriate algorithm parameters.
-     * @throws IllegalBlockSizeException This exception is thrown when the length of data provided to a block cipher is incorrect, i.e., does not match the block size of the cipher.
-     * @throws BadPaddingException This exception is thrown when a particular padding mechanism is expected for the input data but the data is not padded properly.
      * @throws IOException Thrown when an error occurs during file IO.
      */
     @Test
-    void testSaveWhenFileExists() throws InvalidCryptModeException, InvalidAlgorithmParameterException,
-            NoSuchPaddingException, IllegalBlockSizeException, IOException,
-            NoSuchAlgorithmException, InvalidKeySpecException, BadPaddingException, InvalidKeyException {
+    void testSaveWhenFileExists() throws InvalidCryptModeException, IOException, CryptException {
         // Given
         Note note = new Note(existingPath.toString(), password);
 
@@ -272,19 +224,10 @@ class NoteTest {
     /**
      * This method is used to test file output when the file does not already exist.
      * @throws InvalidCryptModeException Thrown when an AES object created to encrypt is used to decrypt or vice versa.
-     * @throws NoSuchAlgorithmException This exception is thrown when a particular cryptographic algorithm is requested but is not available in the environment.
-     * @throws InvalidKeySpecException This is the exception for invalid key specifications.
-     * @throws NoSuchPaddingException This exception is thrown when a particular padding mechanism is requested but is not available in the environment.
-     * @throws InvalidKeyException This is the exception for invalid Keys (invalid encoding, wrong length, uninitialized, etc).
-     * @throws InvalidAlgorithmParameterException This is the exception for invalid or inappropriate algorithm parameters.
-     * @throws IllegalBlockSizeException This exception is thrown when the length of data provided to a block cipher is incorrect, i.e., does not match the block size of the cipher.
-     * @throws BadPaddingException This exception is thrown when a particular padding mechanism is expected for the input data but the data is not padded properly.
      * @throws IOException Thrown when an error occurs during file IO.
      */
     @Test
-    void testSaveWhenFileDoesNotExists() throws InvalidCryptModeException, InvalidAlgorithmParameterException,
-            NoSuchPaddingException, IllegalBlockSizeException, IOException,
-            NoSuchAlgorithmException, InvalidKeySpecException, BadPaddingException, InvalidKeyException {
+    void testSaveWhenFileDoesNotExists() throws InvalidCryptModeException, IOException, CryptException {
         // Given
         Note note = new Note(existingPath.toString(), password);
 

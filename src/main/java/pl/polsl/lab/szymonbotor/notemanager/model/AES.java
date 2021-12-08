@@ -1,6 +1,7 @@
 package pl.polsl.lab.szymonbotor.notemanager.model;
 
 import pl.polsl.lab.szymonbotor.notemanager.enums.CryptMode;
+import pl.polsl.lab.szymonbotor.notemanager.exceptions.CryptException;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidCryptModeException;
 
 import java.security.InvalidAlgorithmParameterException;
@@ -74,7 +75,7 @@ public class AES {
      * @throws InvalidKeySpecException This is the exception for invalid key specifications.
      */
     public AES(String password)
-            throws NoSuchAlgorithmException, InvalidKeySpecException {
+            throws CryptException {
         
         this(password, CryptMode.ENCRYPTION);
     }
@@ -84,25 +85,27 @@ public class AES {
      * It generates a new random initialisation vector and salt.
      * @param password password to be used as a base for the secret key. Can be empty.
      * @param mode enum representing the type of operation available for the object.
-     * @throws NoSuchAlgorithmException This exception is thrown when a particular cryptographic algorithm is requested but is not available in the environment.
-     * @throws InvalidKeySpecException This is the exception for invalid key specifications.
      */
     public AES(String password, CryptMode mode)
-            throws NoSuchAlgorithmException, InvalidKeySpecException {
+            throws CryptException {
 
         cryptMode = mode;
 
-        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+        SecretKeyFactory factory = null;
+        try {
+            factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+            salt = new byte[SALT_LENGTH];
+            new SecureRandom().nextBytes(salt);
 
-        salt = new byte[SALT_LENGTH];
-        new SecureRandom().nextBytes(salt);
+            KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, ITER_COUNT, KEY_LENGTH);
+            key = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
 
-        KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, ITER_COUNT, KEY_LENGTH);
-        key = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
-
-        byte[] ivArray = new byte[IV_LENGTH];
-        new SecureRandom().nextBytes(ivArray);
-        iv = new IvParameterSpec(ivArray);
+            byte[] ivArray = new byte[IV_LENGTH];
+            new SecureRandom().nextBytes(ivArray);
+            iv = new IvParameterSpec(ivArray);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            throw new CryptException();
+        }
     }
     
     /**
@@ -111,11 +114,9 @@ public class AES {
      * @param password password to be used as a base for the secret key. Can be empty.
      * @param salt previously generated cryptographic salt.
      * @param ivArray previously generated initialisation vector.
-     * @throws NoSuchAlgorithmException This exception is thrown when a particular cryptographic algorithm is requested but is not available in the environment.
-     * @throws InvalidKeySpecException This is the exception for invalid key specifications.
      */
     public AES(String password, byte[] salt, byte[] ivArray)
-            throws NoSuchAlgorithmException, InvalidKeySpecException {
+            throws CryptException {
 
         this(password, salt, ivArray, CryptMode.DECRYPTION);
     }
@@ -127,19 +128,21 @@ public class AES {
      * @param salt previously generated cryptographic salt.
      * @param ivArray previously generated initialisation vector.
      * @param mode enum representing the type of operation available for the object.
-     * @throws NoSuchAlgorithmException This exception is thrown when a particular cryptographic algorithm is requested but is not available in the environment.
-     * @throws InvalidKeySpecException This is the exception for invalid key specifications.
      */
     public AES(String password, byte[] salt, byte[] ivArray, CryptMode mode)
-            throws NoSuchAlgorithmException, InvalidKeySpecException {
+            throws CryptException {
 
         cryptMode = mode;
 
-        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-        KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, ITER_COUNT, KEY_LENGTH);
-        key = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
-
-        iv = new IvParameterSpec(ivArray);
+        SecretKeyFactory factory = null;
+        try {
+            factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+            KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, ITER_COUNT, KEY_LENGTH);
+            key = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
+            iv = new IvParameterSpec(ivArray);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            throw new CryptException();
+        }
     }
     
     /**
@@ -178,26 +181,26 @@ public class AES {
      * This method is used to encrypt text provided as the argument using AES.
      * @param data string of data to encrypt (plaintext).
      * @return encrypted array of bytes (ciphertext).
-     * @throws NoSuchAlgorithmException This exception is thrown when a particular cryptographic algorithm is requested but is not available in the environment.
-     * @throws NoSuchPaddingException This exception is thrown when a particular padding mechanism is requested but is not available in the environment.
-     * @throws InvalidKeyException This is the exception for invalid Keys (invalid encoding, wrong length, uninitialized, etc).
-     * @throws InvalidAlgorithmParameterException This is the exception for invalid or inappropriate algorithm parameters.
-     * @throws IllegalBlockSizeException This exception is thrown when the length of data provided to a block cipher is incorrect, i.e., does not match the block size of the cipher.
-     * @throws BadPaddingException This exception is thrown when a particular padding mechanism is expected for the input data but the data is not padded properly.
      * @throws InvalidCryptModeException This exception is thrown when the method is called on an object set up to decrypt.
      */
     public byte[] encrypt(String data)
-            throws NoSuchAlgorithmException, NoSuchPaddingException,
-            InvalidKeyException, InvalidAlgorithmParameterException,
-            IllegalBlockSizeException, BadPaddingException, InvalidCryptModeException {
+            throws InvalidCryptModeException, CryptException {
 
         if (cryptMode == CryptMode.DECRYPTION) {
             throw new InvalidCryptModeException("Encrypt called on a decryption only AES object.");
         } else {
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            cipher.init(Cipher.ENCRYPT_MODE, key, iv);
-
-            return cipher.doFinal(data.getBytes());
+            try {
+                Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+                cipher.init(Cipher.ENCRYPT_MODE, key, iv);
+                return cipher.doFinal(data.getBytes());
+            } catch (InvalidKeyException |
+                    InvalidAlgorithmParameterException |
+                    IllegalBlockSizeException |
+                    BadPaddingException |
+                    NoSuchAlgorithmException |
+                    NoSuchPaddingException e) {
+                throw new CryptException();
+            }
         }
     }
     
@@ -205,27 +208,28 @@ public class AES {
      * This method is used to decrypt data provided as the argument using AES.
      * @param data array of bytes do decrypt (ciphertext).
      * @return decrypted text (plaintext).
-     * @throws NoSuchAlgorithmException This exception is thrown when a particular cryptographic algorithm is requested but is not available in the environment.
-     * @throws NoSuchPaddingException This exception is thrown when a particular padding mechanism is requested but is not available in the environment.
-     * @throws InvalidKeyException This is the exception for invalid Keys (invalid encoding, wrong length, uninitialized, etc).
-     * @throws InvalidAlgorithmParameterException This is the exception for invalid or inappropriate algorithm parameters.
-     * @throws IllegalBlockSizeException This exception is thrown when the length of data provided to a block cipher is incorrect, i.e., does not match the block size of the cipher.
-     * @throws BadPaddingException This exception is thrown when a particular padding mechanism is expected for the input data but the data is not padded properly.
      * @throws InvalidCryptModeException This exception is thrown when the method is called on an object set up to encrypt.
      */
     public String decrypt(byte[] data)
-            throws NoSuchAlgorithmException, NoSuchPaddingException,
-            InvalidKeyException, InvalidAlgorithmParameterException,
-            IllegalBlockSizeException, BadPaddingException, InvalidCryptModeException {
+            throws InvalidCryptModeException, CryptException {
 
         if (cryptMode == CryptMode.ENCRYPTION) {
             throw new InvalidCryptModeException("Decrypt called on an encryption only AES object.");
         } else {
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            cipher.init(Cipher.DECRYPT_MODE, key, iv);
-            byte[] plainText = cipher.doFinal(data);
-
-            return new String(plainText);
+            Cipher cipher = null;
+            try {
+                cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+                cipher.init(Cipher.DECRYPT_MODE, key, iv);
+                byte[] plainText = cipher.doFinal(data);
+                return new String(plainText);
+            } catch (NoSuchAlgorithmException |
+                    NoSuchPaddingException |
+                    InvalidKeyException |
+                    InvalidAlgorithmParameterException |
+                    IllegalBlockSizeException |
+                    BadPaddingException e) {
+                throw new CryptException();
+            }
         }
     }
 }

@@ -1,18 +1,12 @@
 package pl.polsl.lab.szymonbotor.notemanager.controller;
 
+import pl.polsl.lab.szymonbotor.notemanager.exceptions.CryptException;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidCryptModeException;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidPasswordLengthException;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidCharacterException;
 
 import java.io.IOException;
 import java.nio.file.InvalidPathException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 
 import pl.polsl.lab.szymonbotor.notemanager.view.ConsoleView;
 import pl.polsl.lab.szymonbotor.notemanager.model.*;
@@ -132,15 +126,8 @@ public class ConsoleController {
         }
         catch (IOException | InvalidPathException ex) {
             view.display("Cannot open file \"" + args[1] + "\".");
-        }
-        catch (NoSuchAlgorithmException |
-                InvalidKeySpecException |
-                NoSuchPaddingException |
-                InvalidKeyException |
-                InvalidAlgorithmParameterException |
-                IllegalBlockSizeException |
-                BadPaddingException ex) {
-            view.display("Error during decryption. " + ex.getMessage());
+        } catch (CryptException e) {
+            view.display("Error during decryption. " + e.getMessage());
         }
     }
 
@@ -162,6 +149,8 @@ public class ConsoleController {
                 }
                 catch (InvalidCryptModeException ex) {
                     view.display(ex.getMessage());
+                } catch (CryptException e) {
+                    view.display("Error during encryption. " + e.getMessage());
                 }
 
                 try {
@@ -178,15 +167,6 @@ public class ConsoleController {
         }
         catch (IOException | InvalidPathException ex) {
             view.display("Cannot write to the output file.");
-        }
-        catch (NoSuchAlgorithmException |
-                InvalidKeySpecException |
-                NoSuchPaddingException |
-                InvalidKeyException |
-                InvalidAlgorithmParameterException |
-                IllegalBlockSizeException |
-                BadPaddingException ex) {
-            view.display("Error during encryption. " + ex.getMessage());
         }
     }
 

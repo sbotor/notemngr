@@ -1,6 +1,7 @@
 package pl.polsl.lab.szymonbotor.notemanager.modelTests;
 
 import org.junit.jupiter.api.Test;
+import pl.polsl.lab.szymonbotor.notemanager.exceptions.CryptException;
 import pl.polsl.lab.szymonbotor.notemanager.model.Authenticator;
 
 import java.security.NoSuchAlgorithmException;
@@ -31,8 +32,8 @@ class AuthenticatorTest {
 
             testSuccess = !auth.authenticate(newPassword);
         }
-        catch (NoSuchAlgorithmException ex) {
-            testSuccess = false;
+        catch (CryptException e) {
+            e.printStackTrace();
         }
 
         // Then
@@ -56,8 +57,8 @@ class AuthenticatorTest {
 
             testSuccess = auth.authenticate(newPassword);
         }
-        catch (NoSuchAlgorithmException ex) {
-            fail("An unexpected exception was thrown.");
+        catch (CryptException e) {
+            e.printStackTrace();
         }
 
         // Then
@@ -81,8 +82,8 @@ class AuthenticatorTest {
 
             testSuccess = auth.authenticate(newPassword);
         }
-        catch (NoSuchAlgorithmException ex) {
-            fail("An unexpected exception was thrown.");
+        catch (CryptException e) {
+            e.printStackTrace();
         }
 
         // Then

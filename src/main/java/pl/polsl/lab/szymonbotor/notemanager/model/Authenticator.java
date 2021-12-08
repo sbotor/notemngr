@@ -1,5 +1,7 @@
 package pl.polsl.lab.szymonbotor.notemanager.model;
 
+import pl.polsl.lab.szymonbotor.notemanager.exceptions.CryptException;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -30,7 +32,7 @@ public class Authenticator {
      * @return true if the hashes are equal. False otherwise.
      * @throws NoSuchAlgorithmException This exception is thrown when a particular cryptographic algorithm is requested but is not available in the environment.
      */
-    public boolean authenticate(String password) throws NoSuchAlgorithmException {
+    public boolean authenticate(String password) throws CryptException {
         return Arrays.equals(hash, hashPassword(password));
     }
     
@@ -38,11 +40,15 @@ public class Authenticator {
      * A static method used for hashing a provided password by passing it through SHA-256.
      * @param password password to be hashed.
      * @return array of bytes representing the hash of the password.
-     * @throws NoSuchAlgorithmException This exception is thrown when a particular cryptographic algorithm is requested but is not available in the environment.
      */
-    public static byte[] hashPassword(String password) throws NoSuchAlgorithmException {
-        
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
-        return digest.digest(password.getBytes(StandardCharsets.UTF_8));
+    public static byte[] hashPassword(String password) throws CryptException {
+
+        MessageDigest digest = null;
+        try {
+            digest = MessageDigest.getInstance("SHA-256");
+            return digest.digest(password.getBytes(StandardCharsets.UTF_8));
+        } catch (NoSuchAlgorithmException e) {
+            throw new CryptException();
+        }
     }
 }

@@ -1,11 +1,10 @@
 package pl.polsl.lab.szymonbotor.notemanager.model;
 
+import pl.polsl.lab.szymonbotor.notemanager.exceptions.CryptException;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidCryptModeException;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.NoteTooLongException;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -53,7 +52,7 @@ public class Note {
     }
 
     /**
-     * Path to the file that the note was created from or saved into even if it was not successful.
+     * Path to the file that the note was created from or saved into.
      */
     private Path fileDir;
     
@@ -70,20 +69,11 @@ public class Note {
      * @param fileName directory to the encrypted note file. It should have a .note extension. If not then it will be appended.
      * @param password password used to encrypt the note needed for decryption.
      * @throws IOException Signals that an I/O exception of some sort has occurred.
-     * @throws NoSuchAlgorithmException This exception is thrown when a particular cryptographic algorithm is requested but is not available in the environment.
-     * @throws InvalidKeySpecException This is the exception for invalid key specifications.
-     * @throws NoSuchPaddingException This exception is thrown when a particular padding mechanism is requested but is not available in the environment.
-     * @throws InvalidKeyException This is the exception for invalid Keys (invalid encoding, wrong length, uninitialized, etc).
-     * @throws InvalidAlgorithmParameterException This is the exception for invalid or inappropriate algorithm parameters.
-     * @throws IllegalBlockSizeException This exception is thrown when the length of data provided to a block cipher is incorrect, i.e., does not match the block size of the cipher.
-     * @throws BadPaddingException This exception is thrown when a particular padding mechanism is expected for the input data but the data is not padded properly.
      * @throws InvalidCryptModeException This exception is thrown when a decryption method on an encryption AES object is used or vice versa.
+     * @throws CryptException This exception is thrown when a cryptographic exception occurs.
      */
     public Note(String fileName, String password)
-            throws IOException, NoSuchAlgorithmException, InvalidKeySpecException,
-            NoSuchPaddingException, InvalidKeyException,
-            InvalidAlgorithmParameterException, IllegalBlockSizeException,
-            BadPaddingException, InvalidCryptModeException {
+            throws IOException, InvalidCryptModeException, CryptException {
 
         read(fileName, password);
     }
@@ -102,20 +92,11 @@ public class Note {
      * @param password password used to encrypt the note.
      * @return true if the operation was successful, false otherwise.
      * @throws IOException Signals that an I/O exception of some sort has occurred.
-     * @throws NoSuchAlgorithmException This exception is thrown when a particular cryptographic algorithm is requested but is not available in the environment.
-     * @throws InvalidKeySpecException This is the exception for invalid key specifications.
-     * @throws NoSuchPaddingException This exception is thrown when a particular padding mechanism is requested but is not available in the environment.
-     * @throws InvalidKeyException This is the exception for invalid Keys (invalid encoding, wrong length, uninitialized, etc).
-     * @throws InvalidAlgorithmParameterException This is the exception for invalid or inappropriate algorithm parameters.
-     * @throws IllegalBlockSizeException This exception is thrown when the length of data provided to a block cipher is incorrect, i.e., does not match the block size of the cipher.
-     * @throws BadPaddingException This exception is thrown when a particular padding mechanism is expected for the input data but the data is not padded properly.
      * @throws InvalidCryptModeException This exception is thrown when a decryption method on an encryption AES object is used or vice versa.
+     * @throws CryptException This exception is thrown when a cryptographic exception occurs.
      */
-    public boolean read(InputStream inpStream, String password)
-            throws IOException, NoSuchAlgorithmException, InvalidKeySpecException,
-            NoSuchPaddingException, InvalidKeyException,
-            InvalidAlgorithmParameterException, IllegalBlockSizeException,
-            BadPaddingException, InvalidCryptModeException {
+    private boolean read(FileInputStream inpStream, String password)
+            throws IOException, InvalidCryptModeException, CryptException {
 
         byte[] passHash = inpStream.readNBytes(32);
         byte[] salt = inpStream.readNBytes(8);
@@ -128,7 +109,7 @@ public class Note {
             content = aes.decrypt(inpStream.readAllBytes());
 
             inpStream.close();
-            return content != null;
+            return true;
         }
 
         return false;
@@ -140,31 +121,27 @@ public class Note {
      * @param password password used to encrypt the note needed for decryption.
      * @return true if the authentication and decryption succeeded. False otherwise.
      * @throws IOException Signals that an I/O exception of some sort has occurred.
-     * @throws NoSuchAlgorithmException This exception is thrown when a particular cryptographic algorithm is requested but is not available in the environment.
-     * @throws InvalidKeySpecException This is the exception for invalid key specifications.
-     * @throws NoSuchPaddingException This exception is thrown when a particular padding mechanism is requested but is not available in the environment.
-     * @throws InvalidKeyException This is the exception for invalid Keys (invalid encoding, wrong length, uninitialized, etc).
-     * @throws InvalidAlgorithmParameterException This is the exception for invalid or inappropriate algorithm parameters.
-     * @throws IllegalBlockSizeException This exception is thrown when the length of data provided to a block cipher is incorrect, i.e., does not match the block size of the cipher.
-     * @throws BadPaddingException This exception is thrown when a particular padding mechanism is expected for the input data but the data is not padded properly.
      * @throws InvalidCryptModeException This exception is thrown when a decryption method on an encryption AES object is used or vice versa.
+     * @throws CryptException This exception is thrown when a cryptographic exception occurs.
      */
     public boolean read(String fileName, String password)
-            throws IOException, NoSuchAlgorithmException, InvalidKeySpecException,
-            NoSuchPaddingException, InvalidKeyException,
-            InvalidAlgorithmParameterException, IllegalBlockSizeException,
-            BadPaddingException, InvalidCryptModeException {
+            throws IOException, InvalidCryptModeException, CryptException {
 
         if (!fileName.endsWith(FILE_EXTENSION)) {
             fileName = fileName + FILE_EXTENSION;
         }
-        fileDir = Paths.get(fileName);
+        Path newFileDir = Paths.get(fileName);
 
-        InputStream inpStream = Files.newInputStream(fileDir);
+        FileInputStream inpStream = new FileInputStream(newFileDir.toString());
+        boolean successful = false;
 
-        boolean successful = read(inpStream, password);
-
+        successful = read(inpStream, password);
         inpStream.close();
+
+        if (successful) {
+            fileDir = newFileDir;
+        }
+
         return successful;
     }
 
@@ -178,23 +155,14 @@ public class Note {
      * @param outStream output stream to save to.
      * @param password password to use as a base in encryption. The same password must be provided during decryption to successfully decrypt the note.
      * @throws IOException Signals that an I/O exception of some sort has occurred.
-     * @throws NoSuchAlgorithmException This exception is thrown when a particular cryptographic algorithm is requested but is not available in the environment.
-     * @throws InvalidKeySpecException This is the exception for invalid key specifications.
-     * @throws NoSuchPaddingException This exception is thrown when a particular padding mechanism is requested but is not available in the environment.
-     * @throws InvalidKeyException This is the exception for invalid Keys (invalid encoding, wrong length, uninitialized, etc).
-     * @throws InvalidAlgorithmParameterException This is the exception for invalid or inappropriate algorithm parameters.
-     * @throws IllegalBlockSizeException This exception is thrown when the length of data provided to a block cipher is incorrect, i.e., does not match the block size of the cipher.
-     * @throws BadPaddingException This exception is thrown when a particular padding mechanism is expected for the input data but the data is not padded properly.
      * @throws InvalidCryptModeException This exception is thrown when a decryption method on an encryption AES object is used or vice versa.
+     * @throws CryptException This exception is thrown when a cryptographic exception occurs.
      */
-    public void save(OutputStream outStream, String password)
-            throws IOException, NoSuchAlgorithmException, InvalidKeySpecException,
-            NoSuchPaddingException, InvalidKeyException,
-            InvalidAlgorithmParameterException, IllegalBlockSizeException,
-            BadPaddingException, InvalidCryptModeException {
+    private void save(FileOutputStream outStream, String password)
+            throws IOException, InvalidCryptModeException, CryptException {
 
-        byte[] passHash = Authenticator.hashPassword(password);
-
+        byte[] passHash = new byte[0];
+        passHash = Authenticator.hashPassword(password);
         AES aes = new AES(password);
         byte[] cipherText = aes.encrypt(content);
         byte[] iv = aes.getIV();
@@ -216,31 +184,22 @@ public class Note {
      * @param fileName directory to the output file
      * @param password password to use as a base in encryption. The same password must be provided during decryption to successfully decrypt the note.
      * @throws IOException Signals that an I/O exception of some sort has occurred.
-     * @throws NoSuchAlgorithmException This exception is thrown when a particular cryptographic algorithm is requested but is not available in the environment.
-     * @throws InvalidKeySpecException This is the exception for invalid key specifications.
-     * @throws NoSuchPaddingException This exception is thrown when a particular padding mechanism is requested but is not available in the environment.
-     * @throws InvalidKeyException This is the exception for invalid Keys (invalid encoding, wrong length, uninitialized, etc).
-     * @throws InvalidAlgorithmParameterException This is the exception for invalid or inappropriate algorithm parameters.
-     * @throws IllegalBlockSizeException This exception is thrown when the length of data provided to a block cipher is incorrect, i.e., does not match the block size of the cipher.
-     * @throws BadPaddingException This exception is thrown when a particular padding mechanism is expected for the input data but the data is not padded properly.
      * @throws InvalidCryptModeException This exception is thrown when a decryption method on an encryption AES object is used or vice versa.
+     * @throws CryptException This exception is thrown when a cryptographic exception occurs.
      */
     public void save(String fileName, String password)
-            throws IOException, NoSuchAlgorithmException, InvalidKeySpecException,
-            NoSuchPaddingException, InvalidKeyException,
-            InvalidAlgorithmParameterException, IllegalBlockSizeException,
-            BadPaddingException, InvalidCryptModeException {
+            throws IOException, InvalidCryptModeException, CryptException {
 
         if (!fileName.endsWith(FILE_EXTENSION)) {
             fileName = fileName + FILE_EXTENSION;
         }
-        fileDir = Paths.get(fileName);
+        Path newFileDir = Paths.get(fileName);
 
-        OutputStream outStream = Files.newOutputStream(fileDir);
-
+        FileOutputStream outStream = new FileOutputStream(newFileDir.toString());
         save(outStream, password);
-
         outStream.close();
+
+        fileDir = newFileDir;
     }
     
     /**

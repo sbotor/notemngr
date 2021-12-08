@@ -1,5 +1,6 @@
 package pl.polsl.lab.szymonbotor.notemanager.view;
 
+import pl.polsl.lab.szymonbotor.notemanager.exceptions.CryptException;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidCryptModeException;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.NoteTooLongException;
 import java.io.Console;
@@ -255,20 +256,11 @@ public class ConsoleView {
      * @param filename directory to the note file.
      * @return Note object if the opening and authentication was successful, otherwise it returns null.
      * @throws IOException Signals that an I/O exception of some sort has occurred.
-     * @throws NoSuchAlgorithmException This exception is thrown when a particular cryptographic algorithm is requested but is not available in the environment.
-     * @throws InvalidKeySpecException This is the exception for invalid key specifications.
-     * @throws NoSuchPaddingException This exception is thrown when a particular padding mechanism is requested but is not available in the environment.
-     * @throws InvalidKeyException This is the exception for invalid Keys (invalid encoding, wrong length, uninitialized, etc).
-     * @throws InvalidAlgorithmParameterException This is the exception for invalid or inappropriate algorithm parameters.
-     * @throws IllegalBlockSizeException This exception is thrown when the length of data provided to a block cipher is incorrect, i.e., does not match the block size of the cipher.
-     * @throws BadPaddingException This exception is thrown when a particular padding mechanism is expected for the input data but the data is not padded properly.
      * @throws InvalidCryptModeException This exception is thrown when a decryption method on an encryption AES object is used or vice versa.
+     * @throws CryptException This exception is thrown when a cryptographic exception occurs.
      */
     public Note openNote(String filename)
-            throws IOException, NoSuchAlgorithmException, InvalidKeySpecException,
-            NoSuchPaddingException, InvalidKeyException,
-            InvalidAlgorithmParameterException, IllegalBlockSizeException,
-            BadPaddingException, InvalidCryptModeException {
+            throws IOException, InvalidCryptModeException, CryptException {
         
         Note note = new Note();  
         int tryCount = 0;
@@ -313,20 +305,11 @@ public class ConsoleView {
      * and a new password for encryption.
      * @param note Note object to save the contents of.
      * @throws IOException Signals that an I/O exception of some sort has occurred.
-     * @throws NoSuchAlgorithmException This exception is thrown when a particular cryptographic algorithm is requested but is not available in the environment.
-     * @throws InvalidKeySpecException This is the exception for invalid key specifications.
-     * @throws NoSuchPaddingException This exception is thrown when a particular padding mechanism is requested but is not available in the environment.
-     * @throws InvalidKeyException This is the exception for invalid Keys (invalid encoding, wrong length, uninitialized, etc).
-     * @throws InvalidAlgorithmParameterException This is the exception for invalid or inappropriate algorithm parameters.
-     * @throws IllegalBlockSizeException This exception is thrown when the length of data provided to a block cipher is incorrect, i.e., does not match the block size of the cipher.
-     * @throws BadPaddingException This exception is thrown when a particular padding mechanism is expected for the input data but the data is not padded properly.
      * @throws InvalidCryptModeException This exception is thrown when a decryption method on an encryption AES object is used or vice versa.
+     * @throws CryptException This exception is thrown when a cryptographic exception occurs.
      */
     public void saveNote(Note note)
-            throws IOException, NoSuchAlgorithmException, InvalidKeySpecException,
-            NoSuchPaddingException, InvalidKeyException,
-            InvalidAlgorithmParameterException, IllegalBlockSizeException,
-            BadPaddingException, InvalidCryptModeException {
+            throws IOException, InvalidCryptModeException, CryptException {
         
         display("Output directory:");
         String outDir = scanner.nextLine().strip();
@@ -353,20 +336,11 @@ public class ConsoleView {
      * @param note Note object to save the contents of.
      * @param outDir directory to save the note to.
      * @throws IOException Signals that an I/O exception of some sort has occurred.
-     * @throws NoSuchAlgorithmException This exception is thrown when a particular cryptographic algorithm is requested but is not available in the environment.
-     * @throws InvalidKeySpecException This is the exception for invalid key specifications.
-     * @throws NoSuchPaddingException This exception is thrown when a particular padding mechanism is requested but is not available in the environment.
-     * @throws InvalidKeyException This is the exception for invalid Keys (invalid encoding, wrong length, uninitialized, etc).
-     * @throws InvalidAlgorithmParameterException This is the exception for invalid or inappropriate algorithm parameters.
-     * @throws IllegalBlockSizeException This exception is thrown when the length of data provided to a block cipher is incorrect, i.e., does not match the block size of the cipher.
-     * @throws BadPaddingException This exception is thrown when a particular padding mechanism is expected for the input data but the data is not padded properly.
      * @throws InvalidCryptModeException This exception is thrown when a decryption method on an encryption AES object is used or vice versa.
+     * @throws CryptException This exception is thrown when a cryptographic exception occurs.
      */
     public void saveNote(Note note, String outDir)
-            throws IOException, NoSuchAlgorithmException, InvalidKeySpecException,
-            NoSuchPaddingException, InvalidKeyException,
-            InvalidAlgorithmParameterException, IllegalBlockSizeException,
-            BadPaddingException, InvalidCryptModeException {
+            throws IOException, InvalidCryptModeException, CryptException {
 
         while (true) {
             display("Set a password:");
