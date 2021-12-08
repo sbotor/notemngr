@@ -1,4 +1,4 @@
-package pl.polsl.lab.szymonbotor.notemanager.model.tests;
+package pl.polsl.lab.szymonbotor.notemanager.model;
 
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -74,6 +74,7 @@ class NoteTest {
     /**
      * This method is used to set up the salt, initialisation vector, password hash and encrypted text before all tests.
      * @throws InvalidCryptModeException Thrown when an AES object created to encrypt is used to decrypt or vice versa.
+     * @throws CryptException Thrown when a cryptographic error occurs.
      */
     @BeforeAll
     static void init() throws InvalidCryptModeException, CryptException {
@@ -107,7 +108,6 @@ class NoteTest {
     /**
      * This test is used to check input when the file does not exist.
      * @throws InvalidCryptModeException Thrown when an AES object created to encrypt is used to decrypt or vice versa.
-     *
      */
     @Test
     void testReadWhenFileDoesNotExist() throws InvalidCryptModeException {
@@ -130,6 +130,8 @@ class NoteTest {
     /**
      * This test is used to check input when the file exists and the provided password is correct.
      * @throws IOException Thrown when an error occurs during file IO.
+     * @throws CryptException Thrown when a cryptographic error occurs.
+     * @throws InvalidCryptModeException Thrown when an AES object created to encrypt is used to decrypt or vice versa.
      */
     @Test
     void testReadWhenFileExistsAndPasswordCorrect() throws InvalidCryptModeException, IOException, CryptException {
@@ -147,6 +149,7 @@ class NoteTest {
      * This test is used to check input when the file exists and the provided password is incorrect.
      * @throws InvalidCryptModeException Thrown when an AES object created to encrypt is used to decrypt or vice versa.
      * @throws IOException Thrown when an error occurs during file IO.
+     * @throws CryptException Thrown when a cryptographic error occurs.
      */
     @Test
     void testReadWhenFileExistsAndPasswordIncorrect() throws InvalidCryptModeException, IOException, CryptException {
@@ -206,6 +209,8 @@ class NoteTest {
     /**
      * This method is used to test file output when the file already exists.
      * @throws IOException Thrown when an error occurs during file IO.
+     * @throws CryptException Thrown when a cryptographic error occurs.
+     * @throws InvalidCryptModeException Thrown when an AES object created to encrypt is used to decrypt or vice versa.
      */
     @Test
     void testSaveWhenFileExists() throws InvalidCryptModeException, IOException, CryptException {
@@ -225,6 +230,7 @@ class NoteTest {
      * This method is used to test file output when the file does not already exist.
      * @throws InvalidCryptModeException Thrown when an AES object created to encrypt is used to decrypt or vice versa.
      * @throws IOException Thrown when an error occurs during file IO.
+     * @throws CryptException Thrown when a cryptographic error occurs.
      */
     @Test
     void testSaveWhenFileDoesNotExists() throws InvalidCryptModeException, IOException, CryptException {

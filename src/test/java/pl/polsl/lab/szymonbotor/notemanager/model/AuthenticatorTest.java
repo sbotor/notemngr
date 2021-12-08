@@ -1,4 +1,4 @@
-package pl.polsl.lab.szymonbotor.notemanager.model.tests;
+package pl.polsl.lab.szymonbotor.notemanager.model;
 
 import org.junit.jupiter.api.Test;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.CryptException;

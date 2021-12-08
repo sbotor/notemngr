@@ -30,7 +30,7 @@ public class Authenticator {
      * Authentication method. It compares the provided password with the hashed original.
      * @param password input password to be hashed and compared against the original.
      * @return true if the hashes are equal. False otherwise.
-     * @throws NoSuchAlgorithmException This exception is thrown when a particular cryptographic algorithm is requested but is not available in the environment.
+     * @throws CryptException This exception is thrown when an error occurs during hashing.
      */
     public boolean authenticate(String password) throws CryptException {
         return Arrays.equals(hash, hashPassword(password));
@@ -40,6 +40,7 @@ public class Authenticator {
      * A static method used for hashing a provided password by passing it through SHA-256.
      * @param password password to be hashed.
      * @return array of bytes representing the hash of the password.
+     * @throws CryptException This exception is thrown when an error occurs during hashing.
      */
     public static byte[] hashPassword(String password) throws CryptException {
 

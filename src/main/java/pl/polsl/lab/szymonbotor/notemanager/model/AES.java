@@ -71,8 +71,7 @@ public class AES {
     /**
      * Constructor used during encryption. It generates a new random initialisation vector and salt.
      * @param password password to be used as a base for the secret key. Can be empty.
-     * @throws NoSuchAlgorithmException This exception is thrown when a particular cryptographic algorithm is requested but is not available in the environment.
-     * @throws InvalidKeySpecException This is the exception for invalid key specifications.
+     * @throws CryptException This exception is thrown when a cryptographic error occurs.
      */
     public AES(String password)
             throws CryptException {
@@ -85,6 +84,7 @@ public class AES {
      * It generates a new random initialisation vector and salt.
      * @param password password to be used as a base for the secret key. Can be empty.
      * @param mode enum representing the type of operation available for the object.
+     * @throws CryptException This exception is thrown when a cryptographic error occurs.
      */
     public AES(String password, CryptMode mode)
             throws CryptException {
@@ -114,6 +114,7 @@ public class AES {
      * @param password password to be used as a base for the secret key. Can be empty.
      * @param salt previously generated cryptographic salt.
      * @param ivArray previously generated initialisation vector.
+     * @throws CryptException This exception is thrown when a cryptographic error occurs.
      */
     public AES(String password, byte[] salt, byte[] ivArray)
             throws CryptException {
@@ -128,6 +129,7 @@ public class AES {
      * @param salt previously generated cryptographic salt.
      * @param ivArray previously generated initialisation vector.
      * @param mode enum representing the type of operation available for the object.
+     * @throws CryptException This exception is thrown when a cryptographic error occurs.
      */
     public AES(String password, byte[] salt, byte[] ivArray, CryptMode mode)
             throws CryptException {
@@ -182,6 +184,7 @@ public class AES {
      * @param data string of data to encrypt (plaintext).
      * @return encrypted array of bytes (ciphertext).
      * @throws InvalidCryptModeException This exception is thrown when the method is called on an object set up to decrypt.
+     * @throws CryptException Thrown when a cryptographic error occurs.
      */
     public byte[] encrypt(String data)
             throws InvalidCryptModeException, CryptException {
@@ -209,6 +212,7 @@ public class AES {
      * @param data array of bytes do decrypt (ciphertext).
      * @return decrypted text (plaintext).
      * @throws InvalidCryptModeException This exception is thrown when the method is called on an object set up to encrypt.
+     * @throws CryptException This exception is thrown when a cryptographic error occurs.
      */
     public String decrypt(byte[] data)
             throws InvalidCryptModeException, CryptException {
