@@ -109,7 +109,7 @@ public class ConsoleController {
                     noteHistory.add(note);
                     if (view.display(note)) {
                         view.editNote(note);
-                        view.saveNote(note, note.getFileDir());
+                        view.saveNote(note, note.getFile().toString());
                     }
                     noteHistory.save();
                 }

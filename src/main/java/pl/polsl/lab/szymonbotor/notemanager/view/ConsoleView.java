@@ -4,6 +4,7 @@ import pl.polsl.lab.szymonbotor.notemanager.exceptions.CryptException;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidCryptModeException;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.NoteTooLongException;
 import java.io.Console;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Map;
@@ -121,14 +122,14 @@ public class ConsoleView {
     private String fetchFileDirWithHistory(NoteHistory history) {
 
         display("Previously used notes:");
-        Map<Integer, String> noteMap = IntStream.range(0, history.size())
+        Map<Integer, File> noteMap = IntStream.range(0, history.size())
                 .boxed()
                 .collect(Collectors.toMap(i -> i + 1, i -> history.get(i)));
 
         noteMap.forEach((k, v) -> {
-            String filename = Paths.get(v).getFileName().toString();
+            String filename = v.getName();
             filename = filename.substring(0, filename.lastIndexOf(".note"));
-            System.out.println(k + ". " + filename + " (" + v + ")");
+            System.out.println(k + ". " + filename + " (" + v.getAbsolutePath() + ")");
         });
 
         display("Select file number or filename.");
@@ -141,7 +142,7 @@ public class ConsoleView {
                 choice = scanner.nextLine();
                 noteNum = Integer.parseInt(choice);
             }
-            return noteMap.get(noteNum);
+            return noteMap.get(noteNum).getAbsolutePath();
         } catch (NumberFormatException ex) {
             return choice;
         }

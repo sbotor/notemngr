@@ -1,8 +1,10 @@
 package pl.polsl.lab.szymonbotor.notemanager.model;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Vector;
 
 /**
@@ -12,16 +14,16 @@ import java.util.Vector;
  */
 public class NoteHistory {
     /**
-     * Maximum number of items in the note history.
+     * Maximum number of items in the note history. The actual limit of a NoteHistory object can be lower, but never higher.
      */
-    public static final int MAX_ITEMS = 10;
+    public static final int MAX_ITEMS = 64;
 
     /**
      * This method is used to get the directory of the history file.
      * @return Directory of the history file.
      */
     public String getFileDir() {
-        return fileDir.toString();
+        return filePath.toString();
     }
 
     /**
@@ -30,7 +32,7 @@ public class NoteHistory {
      * @return Path object of the history file.
      */
     public Path getFilePath() {
-        return fileDir;
+        return filePath;
     }
 
     /**
@@ -38,27 +40,27 @@ public class NoteHistory {
      * @param fileDir String of the new directory of the history file.
      */
     public void setFileDir(String fileDir) {
-        this.fileDir = Paths.get(fileDir);
+        this.filePath = Paths.get(fileDir);
     }
 
     /**
      * This method is used to set the directory of the history file with a Path object.
-     * @param fileDir Path of the new directory of the history file.
+     * @param filePath Path of the new directory of the history file.
      */
-    public void setFileDir(Path fileDir) {
-        this.fileDir = fileDir;
+    public void setFilePath(Path filePath) {
+        this.filePath = filePath;
     }
 
     /**
      * Path to the file that the history is stored in.
      */
-    private Path fileDir;
+    private Path filePath;
 
     /**
      * This method is used to get the collection of notes in the history.
      * @return Collection with the saved notes.
      */
-    public Vector<String> getNotes() {
+    public ArrayList<File> getNotes() {
         return notes;
     }
 
@@ -73,14 +75,21 @@ public class NoteHistory {
     /**
      * This is the collection of saved notes.
      */
-    private Vector<String> notes;
+    private ArrayList<File> notes;
+
+    /**
+     * This is the actual upper limit of possible items in the history.
+     * It can never be higher than MAX_ITEMS. The default limit is equal to MAX_ITEMS.
+     */
+    private int itemLimit;
 
     /**
      * Constructor of the NoteHistory class creating an empty collection with no file directory attached.
      */
     public NoteHistory() {
-        notes = new Vector<String>();
-        fileDir = null;
+        notes = new ArrayList<File>();
+        filePath = null;
+        itemLimit = MAX_ITEMS;
     }
 
     /**
@@ -91,6 +100,7 @@ public class NoteHistory {
      * @throws IOException Thrown when a problem occurs during file creation.
      */
     public NoteHistory(String filename) throws IOException {
+        this();
         read(filename);
     }
 
@@ -99,31 +109,40 @@ public class NoteHistory {
      * @param index index in the note collection.
      * @return directory to the note at the provided index.
      */
-    public String get(int index) {
+    public File get(int index) {
         return notes.get(index);
     }
 
     /**
-     * This is the method used to read history from a file.
+     * This is the method used to read history from a file. Existing history is cleared.
      * @param filename file directory to read from. The file is created if it does not exist.
      * @throws IOException Thrown when a problem occurs during file creation.
      */
     public void read(String filename) throws IOException {
-        fileDir = Paths.get(filename);
-        notes = new Vector<String>();
+        filePath = Paths.get(filename);
+        read();
+    }
+
+    /**
+     * This is the method used to read history from a file. Existing history is cleared.
+     * Previously used file directory is used.
+     * @throws IOException Thrown when a problem occurs during file creation.
+     */
+    public void read() throws IOException {
+        notes = new ArrayList<File>();
 
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(fileDir.toString()));
+            BufferedReader reader = new BufferedReader(new FileReader(filePath.toString()));
             String line = reader.readLine();
 
-            while (line != null && notes.size() < MAX_ITEMS) {
-                notes.add(line);
+            while (line != null && notes.size() < itemLimit) {
+                notes.add(new File(line));
                 line = reader.readLine();
             }
             reader.close();
         }
         catch (FileNotFoundException ex) {
-            new File(fileDir.toString()).createNewFile();
+            Files.createFile(filePath.toAbsolutePath());
         }
     }
 
@@ -136,11 +155,12 @@ public class NoteHistory {
     public void add(Note note) throws IllegalArgumentException {
 
         if (note!= null && note.getFilePath() != null) {
-            add(note.getFileDir());
+            add(note.getFilePath().toAbsolutePath().toString());
         } else {
             throw new IllegalArgumentException();
         }
     }
+
     /**
      * This method is used to add a note directory to the history. If the current note count is
      * equal to the max allowed count the oldest note is removed.
@@ -148,14 +168,15 @@ public class NoteHistory {
      * @throws IllegalArgumentException Thrown when the note's file directory is empty.
      */
     public void add(String str) throws IllegalArgumentException {
-        if (!"".equals(str)) {
-            int elementIndx = notes.indexOf(str);
+        if (str != null && !"".equals(str)) {
+            File newItem = new File(str);
+            int elementIndx = notes.indexOf(newItem);
             if (elementIndx != -1) {
                 notes.remove(elementIndx);
             }
 
-            notes.add(0, str);
-            if (notes.size() > MAX_ITEMS) {
+            notes.add(0, newItem);
+            if (notes.size() > itemLimit) {
                 notes.remove(notes.size() - 1);
             }
         } else {
@@ -170,18 +191,18 @@ public class NoteHistory {
      * @throws IOException Thrown when a problem occurs during file creation.
      */
     public void save(String filename) throws IOException{
-        fileDir = Paths.get(filename);
+        filePath = Paths.get(filename);
 
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(fileDir.toString(), false));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(filePath.toString(), false));
 
-            for (String noteDir : notes) {
-                writer.write(noteDir + "\n");
+            for (File note : notes) {
+                writer.write(note.getAbsolutePath() + "\n");
             }
             writer.close();
         }
         catch (FileNotFoundException ex) {
-            new File(fileDir.toString()).createNewFile();
+            new File(filePath.toString()).createNewFile();
         }
     }
 
@@ -191,6 +212,31 @@ public class NoteHistory {
      * @throws IOException Thrown when a problem occurs during file creation.
      */
     public void save() throws IOException{
-        save(fileDir.toString());
+        save(filePath.toString());
+    }
+
+    /**
+     * This method is used to get the current item limit of the history.
+     * @return Maximum number of items that the history can hold.
+     */
+    public int getItemLimit() {
+        return itemLimit;
+    }
+
+    /**
+     * This method is used to set the upper limit of items in the history.
+     * If the argument is lower than 0 then the limit is set to 0.
+     * If it is higher than MAX_ITEMS then the it is set to MAX_ITEMS.
+     * @param itemLimit new item limit.
+     */
+    public void setItemLimit(int itemLimit) {
+        if (itemLimit > MAX_ITEMS) {
+            this.itemLimit = MAX_ITEMS;
+        } else if (itemLimit < 0) {
+            this.itemLimit = 0;
+        } else {
+            this.itemLimit = itemLimit;
+        }
+
     }
 }

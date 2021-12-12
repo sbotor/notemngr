@@ -1,20 +1,13 @@
 package pl.polsl.lab.szymonbotor.notemanager.model;
 
+import pl.polsl.lab.szymonbotor.notemanager.enums.CryptMode;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.CryptException;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidCryptModeException;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.NoteTooLongException;
 
 import java.io.*;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 
 /**
  * Class representing a text note. The contents can be encrypted and saved to a file, or a file can be decrypted and read into a Note object.
@@ -26,7 +19,7 @@ public class Note {
     /**
      * Constant value representing the maximum size of a note in characters.
      */
-    public static final int MAX_NOTE_SIZE = 255;
+    public static final int MAX_NOTE_SIZE = 1024;
 
     public static final String FILE_EXTENSION = ".note";
 
@@ -36,32 +29,32 @@ public class Note {
     private String content;
 
     /**
-     * This method is used to set the file directory of the note using the specified String.
-     * @param fileDir String with the desired directory.
-     */
-    public void setFileDir(String fileDir) {
-        this.fileDir = Path.of(fileDir);
-    }
-
-    /**
-     * This method is used to set the file directory of the note using the specified Path object.
-     * @param fileDir Path with the desired directory.
-     */
-    public void setFileDir(Path fileDir) {
-        this.fileDir = fileDir;
-    }
-
-    /**
      * Path to the file that the note was created from or saved into.
      */
-    private Path fileDir;
+    private File file;
+
+    /**
+     * This is the hashed password used during encryption and decryption.
+     */
+    private byte[] passHash;
+
+    /**
+     * this is the AES object used during encryption and decryption of the note.
+     */
+    private AES aes;
+
+    /**
+     * This value is used to determine if the note was saved since the last change.
+     */
+    private boolean saved;
     
     /**
      * Default constructor of the Note class.
      */
     public Note() {
-        content = null;
-        fileDir = null;
+        content = "";
+        file = null;
+        saved = true;
     }
 
     /**
@@ -74,7 +67,7 @@ public class Note {
      */
     public Note(String fileName, String password)
             throws IOException, InvalidCryptModeException, CryptException {
-
+        this();
         read(fileName, password);
     }
 
@@ -90,7 +83,7 @@ public class Note {
      * This method is used to read an encrypted note from an input stream.
      * @param inpStream the stream to read data from.
      * @param password password used to encrypt the note.
-     * @return true if the operation was successful, false otherwise.
+     * @return true if the operation was successful and the user was authenticated, false otherwise.
      * @throws IOException Signals that an I/O exception of some sort has occurred.
      * @throws InvalidCryptModeException This exception is thrown when a decryption method on an encryption AES object is used or vice versa.
      * @throws CryptException This exception is thrown when a cryptographic exception occurs.
@@ -98,17 +91,17 @@ public class Note {
     private boolean read(FileInputStream inpStream, String password)
             throws IOException, InvalidCryptModeException, CryptException {
 
-        byte[] passHash = inpStream.readNBytes(32);
+        byte[] newPassHash = inpStream.readNBytes(32);
         byte[] salt = inpStream.readNBytes(8);
 
-        Authenticator auth = new Authenticator(passHash);
+        Authenticator auth = new Authenticator(newPassHash);
         if (auth.authenticate(password)) {
             byte[] iv = inpStream.readNBytes(16);
-            AES aes = new AES(password, salt, iv);
 
-            content = aes.decrypt(inpStream.readAllBytes());
-
-            inpStream.close();
+            AES newAes = new AES(password, salt, iv, CryptMode.BOTH);
+            content = newAes.decrypt(inpStream.readAllBytes());
+            passHash = newPassHash;
+            aes = newAes;
             return true;
         }
 
@@ -117,29 +110,28 @@ public class Note {
 
     /**
      * This method is used to open an encrypted note from a file and decrypt it with the given password.
-     * @param fileName directory to the encrypted note file. It should have a .note extension. If not then it will be appended.
+     * @param filename directory to the encrypted note file. It should have a .note extension. If not then it will be appended.
      * @param password password used to encrypt the note needed for decryption.
      * @return true if the authentication and decryption succeeded. False otherwise.
      * @throws IOException Signals that an I/O exception of some sort has occurred.
      * @throws InvalidCryptModeException This exception is thrown when a decryption method on an encryption AES object is used or vice versa.
      * @throws CryptException This exception is thrown when a cryptographic exception occurs.
      */
-    public boolean read(String fileName, String password)
+    public boolean read(String filename, String password)
             throws IOException, InvalidCryptModeException, CryptException {
 
-        if (!fileName.endsWith(FILE_EXTENSION)) {
-            fileName = fileName + FILE_EXTENSION;
+        if (!filename.endsWith(FILE_EXTENSION)) {
+            filename = filename + FILE_EXTENSION;
         }
-        Path newFileDir = Paths.get(fileName);
+        File newFile = new File(filename);
 
-        FileInputStream inpStream = new FileInputStream(newFileDir.toString());
-        boolean successful = false;
-
-        successful = read(inpStream, password);
+        FileInputStream inpStream = new FileInputStream(newFile);
+        boolean successful = read(inpStream, password);
         inpStream.close();
 
         if (successful) {
-            fileDir = newFileDir;
+            file = newFile;
+            saved = true;
         }
 
         return successful;
@@ -161,17 +153,20 @@ public class Note {
     private void save(FileOutputStream outStream, String password)
             throws IOException, InvalidCryptModeException, CryptException {
 
-        byte[] passHash = new byte[0];
-        passHash = Authenticator.hashPassword(password);
-        AES aes = new AES(password);
+        byte[] newPassHash = Authenticator.hashPassword(password);
+        if (aes == null) {
+            aes = new AES(password, CryptMode.BOTH);
+        }
         byte[] cipherText = aes.encrypt(content);
         byte[] iv = aes.getIV();
         byte[] salt = aes.getSalt();
 
-        outStream.write(passHash);
+        outStream.write(newPassHash);
         outStream.write(salt);
         outStream.write(iv);
         outStream.write(cipherText);
+
+        passHash = newPassHash;
     }
 
     /**
@@ -181,25 +176,48 @@ public class Note {
      * - Bytes 32-39: salt<br>
      * - Bytes 40-55: initialisation vector<br>
      * - Bytes 56-end: encrypted note content
-     * @param fileName directory to the output file
+     * @param filename directory to the output file
      * @param password password to use as a base in encryption. The same password must be provided during decryption to successfully decrypt the note.
      * @throws IOException Signals that an I/O exception of some sort has occurred.
      * @throws InvalidCryptModeException This exception is thrown when a decryption method on an encryption AES object is used or vice versa.
      * @throws CryptException This exception is thrown when a cryptographic exception occurs.
      */
-    public void save(String fileName, String password)
+    public void save(String filename, String password)
             throws IOException, InvalidCryptModeException, CryptException {
 
-        if (!fileName.endsWith(FILE_EXTENSION)) {
-            fileName = fileName + FILE_EXTENSION;
+        if (!filename.endsWith(FILE_EXTENSION)) {
+            filename = filename + FILE_EXTENSION;
         }
-        Path newFileDir = Paths.get(fileName);
+        File newFile = new File(filename);
 
-        FileOutputStream outStream = new FileOutputStream(newFileDir.toString());
+        FileOutputStream outStream = new FileOutputStream(newFile);
         save(outStream, password);
         outStream.close();
 
-        fileDir = newFileDir;
+        file = newFile;
+        saved = true;
+    }
+
+    /**
+     * This method is used to overwrite an opened note.
+     * @throws IOException Signals that an I/O exception of some sort has occurred.
+     * @throws InvalidCryptModeException This exception is thrown when a decryption method on an encryption AES object is used or vice versa.
+     * @throws CryptException This exception is thrown when a cryptographic exception occurs.
+     */
+    public void overwrite() throws IOException, InvalidCryptModeException, CryptException {
+        FileOutputStream outStream = new FileOutputStream(file);
+
+        byte[] cipherText = aes.encrypt(content);
+        byte[] iv = aes.getIV();
+        byte[] salt = aes.getSalt();
+
+        outStream.write(passHash);
+        outStream.write(salt);
+        outStream.write(iv);
+        outStream.write(cipherText);
+
+        outStream.close();
+        saved = true;
     }
     
     /**
@@ -214,23 +232,38 @@ public class Note {
         }
         
         content = str;
+        saved = false;
     }
 
     /**
-     * This method is used to get the last open/save directory (as String)
-     * of the note that was used (even if unsuccessful).
-     * @return Last directory that the note was opened from or saved to (even if unsuccessful).
+     * This method is used to get the last open/save File of the note that was used.
+     * @return Last File that the note was opened from or saved to.
      */
-    public String getFileDir() {
-        return fileDir.toString();
+    public File getFile() {
+        return file;
     }
 
     /**
-     * This method is used to get the last open/save directory (as a Path object)
-     * of the note that was used (even if unsuccessful).
-     * @return Path object of the directory.
+     * This method is used to get the last open/save File of the note that was used.
+     * @return File object of the directory.
      */
     public Path getFilePath() {
-        return fileDir;
+        return file.toPath();
+    }
+
+    /**
+     * This method used to check if the note has been saved.
+     * @return true if the note has been saved since the last change.
+     */
+    public boolean isSaved() {
+        return saved;
+    }
+
+    /**
+     * This method is used to determine if the note has a File.
+     * @return true if the note File is not null. False otherwise.
+     */
+    public boolean hasFile() {
+        return file != null;
     }
 }

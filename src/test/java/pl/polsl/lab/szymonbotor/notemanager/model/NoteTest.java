@@ -6,21 +6,11 @@ import org.junit.jupiter.params.provider.ValueSource;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.CryptException;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidCryptModeException;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.NoteTooLongException;
-import pl.polsl.lab.szymonbotor.notemanager.model.AES;
-import pl.polsl.lab.szymonbotor.notemanager.model.Authenticator;
-import pl.polsl.lab.szymonbotor.notemanager.model.Note;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -218,7 +208,7 @@ class NoteTest {
         Note note = new Note(existingPath.toString(), password);
 
         // When
-        note.save(note.getFileDir(), password);
+        note.save(note.getFile().toString(), password);
 
         // Then
         Note newNote = new Note(existingPath.toString(), password);
