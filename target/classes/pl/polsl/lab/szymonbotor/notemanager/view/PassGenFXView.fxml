@@ -34,7 +34,7 @@
             <HBox alignment="TOP_CENTER" spacing="50.0">
                <children>
                   <Button mnemonicParsing="false" onAction="#generateButtonClicked" text="Generate password" />
-                  <Button fx:id="copyButton" mnemonicParsing="false" onAction="#copyButtonClicked" text="Copy" />
+                  <Button mnemonicParsing="false" onAction="#copyButtonClicked" text="Copy" />
                </children>
             </HBox>
          </children>
