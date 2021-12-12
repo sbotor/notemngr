@@ -1,14 +1,11 @@
 package pl.polsl.lab.szymonbotor.notemanager.view;
 
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 
 public class NewPasswordDialog extends Dialog<String[]> {
 
-    public NewPasswordDialog(String title, String header) {
+    public NewPasswordDialog(String title, String header, PassGenFXView passGenView) {
         super();
 
         setTitle(title);
@@ -26,8 +23,19 @@ public class NewPasswordDialog extends Dialog<String[]> {
         grid.add(passField, 1, 0);
         grid.add(new Label("Repeat password: "), 0, 1);
         grid.add(repeatPassField, 1, 1);
-        getDialogPane().setContent(grid);
 
+        Button generateButton = new Button("Generate password");
+        if (passGenView == null) {
+            generateButton.setDisable(true);
+        } else {
+            generateButton.setOnAction(actionEvent -> {
+                passGenView.hide();
+                passGenView.show();
+            });
+        }
+        grid.add(generateButton, 0, 2);
+
+        getDialogPane().setContent(grid);
         setResultConverter(dialogButton -> {
             if (dialogButton == ButtonType.OK) {
                 return new String[] { passField.getText(), repeatPassField.getText() };

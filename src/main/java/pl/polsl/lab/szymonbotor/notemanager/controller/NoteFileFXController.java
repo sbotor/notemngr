@@ -198,12 +198,14 @@ public class NoteFileFXController {
      * @return optional String value that exists if the user inputs a password. It is empty if the operation is canceled.
      */
     private Optional<String> askForNewPasswordLoop() {
-        NewPasswordDialog dialog = new NewPasswordDialog("New password needed", "Enter a new password for the note.");
+        NewPasswordDialog dialog = new NewPasswordDialog("New password needed",
+                "Enter a new password for the note.", parent.getPassGenView());
         Optional<String[]> result = dialog.showAndWait();
 
         if (result.isPresent()) {
             while (!(result.get()[0]).equals(result.get()[1])) {
-                dialog = new NewPasswordDialog("New password needed", "Passwords do not match. Try again.");
+                dialog = new NewPasswordDialog("New password needed",
+                        "Passwords do not match. Try again.", parent.getPassGenView());
                 result = dialog.showAndWait();
 
                 if (result.isEmpty()) {

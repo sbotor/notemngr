@@ -319,4 +319,8 @@ public class MainFXController {
     public Scene getScene() {
         return noteList.getScene();
     }
+
+    public PassGenFXView getPassGenView() {
+        return passGen;
+    }
 }
