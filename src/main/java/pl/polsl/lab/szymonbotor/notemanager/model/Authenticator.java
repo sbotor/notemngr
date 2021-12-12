@@ -49,7 +49,7 @@ public class Authenticator {
             digest = MessageDigest.getInstance("SHA-256");
             return digest.digest(password.getBytes(StandardCharsets.UTF_8));
         } catch (NoSuchAlgorithmException e) {
-            throw new CryptException();
+            throw new CryptException(e.getMessage());
         }
     }
 }

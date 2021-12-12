@@ -21,7 +21,15 @@ public class Note {
      */
     public static final int MAX_NOTE_SIZE = 1024;
 
+    /**
+     * This is the file extension of the note files.
+     */
     public static final String FILE_EXTENSION = ".note";
+
+    /**
+     * This is the total header length of the note files.
+     */
+    public static final int HEADER_LENGTH = 32 + AES.IV_LENGTH + AES.SALT_LENGTH;
 
     /**
      * The content of the note.
@@ -55,6 +63,7 @@ public class Note {
         content = "";
         file = null;
         saved = true;
+        aes = null;
     }
 
     /**
@@ -92,15 +101,17 @@ public class Note {
             throws IOException, InvalidCryptModeException, CryptException {
 
         byte[] newPassHash = inpStream.readNBytes(32);
-        byte[] salt = inpStream.readNBytes(8);
+        byte[] salt = inpStream.readNBytes(AES.SALT_LENGTH);
 
         Authenticator auth = new Authenticator(newPassHash);
         if (auth.authenticate(password)) {
-            byte[] iv = inpStream.readNBytes(16);
+            byte[] iv = inpStream.readNBytes(AES.IV_LENGTH);
 
             AES newAes = new AES(password, salt, iv, CryptMode.BOTH);
-            content = newAes.decrypt(inpStream.readAllBytes());
+            String newContent = newAes.decrypt(inpStream.readAllBytes());
+
             passHash = newPassHash;
+            content = newContent;
             aes = newAes;
             return true;
         }
@@ -138,38 +149,6 @@ public class Note {
     }
 
     /**
-     * This method is used to save the encrypted note to an output stream using the provided password.
-     * The bytes of the file are divided into segments starting from 0:<br>
-     * - Bytes 0-31: password hash<br>
-     * - Bytes 32-39: salt<br>
-     * - Bytes 40-55: initialisation vector<br>
-     * - Bytes 56-end: encrypted note content
-     * @param outStream output stream to save to.
-     * @param password password to use as a base in encryption. The same password must be provided during decryption to successfully decrypt the note.
-     * @throws IOException Signals that an I/O exception of some sort has occurred.
-     * @throws InvalidCryptModeException This exception is thrown when a decryption method on an encryption AES object is used or vice versa.
-     * @throws CryptException This exception is thrown when a cryptographic exception occurs.
-     */
-    private void save(FileOutputStream outStream, String password)
-            throws IOException, InvalidCryptModeException, CryptException {
-
-        byte[] newPassHash = Authenticator.hashPassword(password);
-        if (aes == null) {
-            aes = new AES(password, CryptMode.BOTH);
-        }
-        byte[] cipherText = aes.encrypt(content);
-        byte[] iv = aes.getIV();
-        byte[] salt = aes.getSalt();
-
-        outStream.write(newPassHash);
-        outStream.write(salt);
-        outStream.write(iv);
-        outStream.write(cipherText);
-
-        passHash = newPassHash;
-    }
-
-    /**
      * This method is used to save the encrypted note to a file using the provided password.
      * The bytes of the file are divided into segments starting from 0:<br>
      * - Bytes 0-31: password hash<br>
@@ -190,12 +169,57 @@ public class Note {
         }
         File newFile = new File(filename);
 
-        FileOutputStream outStream = new FileOutputStream(newFile);
-        save(outStream, password);
-        outStream.close();
+        byte[] newPassHash = Authenticator.hashPassword(password);
+        aes = new AES(password, CryptMode.BOTH);
+        byte[] salt = aes.getSalt();
+        byte[] iv = aes.getIV();
+        byte[] cipherText = aes.encrypt(content);
 
+        byte[] buffer = createBuffer(newPassHash, salt, iv, cipherText);
+        save(newFile, buffer);
+
+        passHash = newPassHash;
         file = newFile;
         saved = true;
+    }
+
+    /**
+     * This is the private method used to save a note to a file. The file is truncated.
+     * @param outFile output note file.
+     * @param buffer data to write to the file.
+     * @throws IOException This exception is thrown when the output stream could not be opened or another IO error occurs.
+     */
+    private void save(File outFile, byte[] buffer) throws IOException {
+        FileOutputStream outStream = new FileOutputStream(outFile);
+        if (outStream.getChannel().isOpen()) {
+            outStream.write(buffer);
+            outStream.close();
+        } else {
+            throw new IOException("Cannot save the note.");
+        }
+    }
+
+    /**
+     * This method is used to create the output buffer with the specified data.
+     * @param hash hashed password of the note.
+     * @param salt cryptographic salt used to encrypt the note.
+     * @param iv initialization vector of the encryption.
+     * @param cipherText encrypted text to save.
+     * @return created buffer ready for file output.
+     */
+    private byte[] createBuffer(byte[] hash, byte[] salt, byte[] iv, byte[] cipherText) {
+        byte[] buffer = new byte[HEADER_LENGTH + cipherText.length];
+        int bufferPos = 0;
+
+        System.arraycopy(hash, 0, buffer, bufferPos, hash.length);
+        bufferPos += hash.length;
+        System.arraycopy(salt, 0, buffer, bufferPos, salt.length);
+        bufferPos += salt.length;
+        System.arraycopy(iv, 0, buffer, bufferPos, iv.length);
+        bufferPos += iv.length;
+        System.arraycopy(cipherText, 0, buffer, bufferPos, cipherText.length);
+
+        return buffer;
     }
 
     /**
@@ -208,12 +232,10 @@ public class Note {
         FileOutputStream outStream = new FileOutputStream(file);
 
         byte[] cipherText = aes.encrypt(content);
-        byte[] iv = aes.getIV();
-        byte[] salt = aes.getSalt();
 
         outStream.write(passHash);
-        outStream.write(salt);
-        outStream.write(iv);
+        outStream.write(aes.getSalt());
+        outStream.write(aes.getIV());
         outStream.write(cipherText);
 
         outStream.close();

@@ -17,7 +17,6 @@ import java.nio.file.Path;
 import java.util.Optional;
 
 public class MainFXController {
-
     public static final String MISSING_FILE_PREF = "[MISSING]";
     private static final String HISTORY_ERROR_MSG = "Could not load note history.";
 
@@ -54,7 +53,8 @@ public class MainFXController {
             try {
                 note.change(noteContent.getText());
             } catch (NoteTooLongException e) {
-                e.printStackTrace();
+                Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage());
+                alert.showAndWait();
             }
             updateNoteInfo();
         });
@@ -66,14 +66,16 @@ public class MainFXController {
         try {
             passGen =  new PassGenFXView();
         } catch (IOException e) {
-            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage());
+            alert.showAndWait();
         }
 
         history = null;
         try {
             history = new NoteHistory(historyPath.toAbsolutePath().toString());
         } catch (IOException e) {
-            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage());
+            alert.showAndWait();
         }
         reloadNoteList();
 
@@ -89,19 +91,20 @@ public class MainFXController {
 
     private void initNoteListContextMenu() {
         MenuItem open = new MenuItem("Open");
+        open.setOnAction(actionEvent -> {
+            openFromNoteList(noteList.getFocusModel().getFocusedIndex());
+        });
 
         MenuItem remove = new MenuItem("Remove");
         remove.setOnAction(actionEvent -> {
             int index = noteList.getFocusModel().getFocusedIndex();
-            history.getNotes().remove(index);
-            try {
-                updateHistoryAndReloadList();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            removeNote(index);
         });
 
         MenuItem delete = new MenuItem("Delete");
+        delete.setOnAction(actionEvent -> {
+            deleteNote(noteList.getFocusModel().getFocusedIndex());
+        });
 
         ContextMenu menu = new ContextMenu();
         menu.getItems().addAll(open, remove, delete);
@@ -131,13 +134,17 @@ public class MainFXController {
     private void newNoteClicked(ActionEvent event) {
         try {
             if (note.isSaved() || noteFileController.save(note, true)) {
-                // If the saving was not canceled
-                note = new Note();
+                if (note.hasFile()) {
+                    updateHistoryAndReloadList(note);
+                }
+
                 noteContent.clear();
+                note = new Note();
                 updateNoteInfo();
             }
         } catch (InvalidCryptModeException | CryptException | IOException e) {
-            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage());
+            alert.showAndWait();
         }
     }
 
@@ -145,12 +152,14 @@ public class MainFXController {
     private void saveButtonClicked(ActionEvent event) {
         try {
             if (!note.isSaved() && noteFileController.save(note, false)) {
-                // If saving was not canceled
-                updateHistoryAndReloadList(note);
-                updateNoteInfo();
+                if (note.hasFile()) {
+                    updateHistoryAndReloadList(note);
+                    updateNoteInfo();
+                }
             }
         } catch (InvalidCryptModeException | CryptException | IOException e) {
-            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage());
+            alert.showAndWait();
         }
     }
 
@@ -163,14 +172,19 @@ public class MainFXController {
                 updateNoteInfo();
             }
         } catch (InvalidCryptModeException | CryptException | IOException e) {
-            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage());
+            alert.showAndWait();
         }
     }
 
     @FXML
     private void openNoteClicked(ActionEvent event) {
         try {
-            if (note.isSaved() || noteFileController.save(note, true)){
+            if (note.isSaved() || noteFileController.save(note, true)) {
+                if (note.hasFile()) {
+                    updateHistoryAndReloadList(note);
+                }
+
                 Optional<Note> newNote = noteFileController.openNote();
                 if (newNote.isPresent()) {
                     noteContent.setText(newNote.get().getContent());
@@ -180,7 +194,8 @@ public class MainFXController {
                 }
             }
         } catch (InvalidCryptModeException | CryptException | IOException e) {
-            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage());
+            alert.showAndWait();
         }
     }
 
@@ -242,6 +257,63 @@ public class MainFXController {
     private void updateHistoryAndReloadList(Note note) throws IOException {
         history.add(note);
         updateHistoryAndReloadList();
+    }
+
+    private void openFromNoteList(int itemIndex) {
+        File file = history.get(itemIndex);
+
+        try {
+            if (note.isSaved() || noteFileController.save(note, true)) {
+                if (note.hasFile()) {
+                    updateHistoryAndReloadList(note);
+                }
+                Optional<Note> newNote = noteFileController.openNote(file);
+                if (newNote.isPresent()) {
+                    noteContent.setText(newNote.get().getContent());
+                    note = newNote.get();
+                    updateHistoryAndReloadList(note);
+                    updateNoteInfo();
+                }
+            }
+        } catch (InvalidCryptModeException | CryptException | IOException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage());
+            alert.showAndWait();
+        }
+    }
+
+    private void removeNote(int itemIndex) {
+        File removedNote = history.get(itemIndex);
+        try {
+            if (note.hasFile() && note.getFile().getAbsolutePath().equals(removedNote.getAbsolutePath())) {
+                newNoteClicked(null);
+            }
+            history.getNotes().remove(itemIndex);
+            updateHistoryAndReloadList();
+            updateNoteInfo();
+        } catch (IOException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage());
+            alert.showAndWait();
+        }
+    }
+
+    private void deleteNote(int itemIndex) {
+        File deletedNote = history.get(itemIndex);
+        try {
+            boolean deleted = noteFileController.deleteNote(deletedNote);
+            if (note.hasFile() &&
+                    note.getFile().getAbsolutePath().equals(deletedNote.getAbsolutePath()) &&
+                    deleted) {
+                newNoteClicked(null);
+            }
+            if (deleted) {
+                history.getNotes().remove(itemIndex);
+                updateHistoryAndReloadList();
+                updateNoteInfo();
+            }
+        } catch (IOException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage());
+            alert.showAndWait();
+        }
     }
 
     public Scene getScene() {

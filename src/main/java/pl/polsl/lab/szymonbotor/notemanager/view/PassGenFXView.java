@@ -11,7 +11,7 @@ public class PassGenFXView extends Stage {
     public PassGenFXView() throws IOException {
         super();
         setTitle("Password generator");
-        setScene(new Scene(FXMLLoader.load(MainFXView.class.getResource("PassGenFXView.fxml"))));
+        setScene(new Scene(FXMLLoader.load(PassGenFXView.class.getResource("PassGenFXView.fxml"))));
     }
 
 }

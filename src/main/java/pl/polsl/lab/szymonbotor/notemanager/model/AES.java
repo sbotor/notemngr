@@ -104,7 +104,7 @@ public class AES {
             new SecureRandom().nextBytes(ivArray);
             iv = new IvParameterSpec(ivArray);
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-            throw new CryptException();
+            throw new CryptException(e.getMessage());
         }
     }
     
@@ -118,7 +118,6 @@ public class AES {
      */
     public AES(String password, byte[] salt, byte[] ivArray)
             throws CryptException {
-
         this(password, salt, ivArray, CryptMode.DECRYPTION);
     }
 
@@ -134,16 +133,17 @@ public class AES {
     public AES(String password, byte[] salt, byte[] ivArray, CryptMode mode)
             throws CryptException {
 
-        cryptMode = mode;
-
         SecretKeyFactory factory = null;
         try {
             factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
             KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, ITER_COUNT, KEY_LENGTH);
+
             key = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
             iv = new IvParameterSpec(ivArray);
+            this.salt = salt;
+            cryptMode = mode;
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-            throw new CryptException();
+            throw new CryptException(e.getMessage());
         }
     }
     
@@ -202,7 +202,7 @@ public class AES {
                     BadPaddingException |
                     NoSuchAlgorithmException |
                     NoSuchPaddingException e) {
-                throw new CryptException();
+                throw new CryptException(e.getMessage());
             }
         }
     }
@@ -232,7 +232,7 @@ public class AES {
                     InvalidAlgorithmParameterException |
                     IllegalBlockSizeException |
                     BadPaddingException e) {
-                throw new CryptException();
+                throw new CryptException(e.getMessage());
             }
         }
     }

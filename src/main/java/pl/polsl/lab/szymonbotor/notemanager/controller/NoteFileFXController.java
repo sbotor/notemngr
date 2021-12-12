@@ -215,4 +215,12 @@ public class NoteFileFXController {
             return Optional.empty();
         }
     }
+
+    /**
+     * Method used to delete note from disk.
+     * @param file note file to remove from disk.
+     */
+    public boolean deleteNote(File file) {
+        return (!file.exists() || file.delete());
+    }
 }
