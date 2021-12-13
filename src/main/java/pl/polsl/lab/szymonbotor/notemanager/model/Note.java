@@ -12,7 +12,7 @@ import java.nio.file.Paths;
 /**
  * Class representing a text note. The contents can be encrypted and saved to a file, or a file can be decrypted and read into a Note object.
  * @author Szymon Botor
- * @version 1.1
+ * @version 2.0
  */
 public class Note {
     
@@ -77,7 +77,9 @@ public class Note {
     public Note(String fileName, String password)
             throws IOException, InvalidCryptModeException, CryptException {
         this();
-        read(fileName, password);
+        if (!read(fileName, password)) {
+            content = null;
+        }
     }
 
     /**

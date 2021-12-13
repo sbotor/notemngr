@@ -14,7 +14,7 @@ import pl.polsl.lab.szymonbotor.notemanager.model.*;
 /**
  * The main controller class of the whole program in the console.
  * @author Szymon Botor
- * @version 1.1
+ * @version 1.2
  */
 public class ConsoleController {
 

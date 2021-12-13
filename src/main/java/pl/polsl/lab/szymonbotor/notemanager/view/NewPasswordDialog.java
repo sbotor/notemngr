@@ -3,8 +3,22 @@ package pl.polsl.lab.szymonbotor.notemanager.view;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 
+/**
+ * Class representing a dialog asking the user for a new password. The password has to be specified twice.
+ * The user can open a password generator window from the dialog to generate a password. The class extends the
+ * built-in Dialog class returning a String array of size two holding the provided passwords. The dialog performs no
+ * checking on itself.
+ * @author Szymon Botor
+ * @version 1.0
+ */
 public class NewPasswordDialog extends Dialog<String[]> {
 
+    /**
+     * Constructor of the dialog class.
+     * @param title dialog title.
+     * @param header dialog header text.
+     * @param passGenView password generator view to be opened when the user wants to generate a password.
+     */
     public NewPasswordDialog(String title, String header, PassGenFXView passGenView) {
         super();
 

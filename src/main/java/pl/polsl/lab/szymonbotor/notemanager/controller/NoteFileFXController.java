@@ -13,6 +13,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 
+/**
+ * Controller class watching over note file IO.
+ * @author Szymon Botor
+ * @version 1.0
+ */
 public class NoteFileFXController {
 
     /**
@@ -39,9 +44,9 @@ public class NoteFileFXController {
      * The user is asked for the password in a loop.
      * @param file note file to read from.
      * @return optional Note object that exists if the user was authenticated and the file was read.
-     * @throws InvalidCryptModeException
-     * @throws CryptException
-     * @throws IOException
+     * @throws IOException Thrown when the note could not be opened.
+     * @throws InvalidCryptModeException This exception is thrown when the note is decrypted by an AES object set to encryption only.
+     * @throws CryptException This exception is thrown when a cryptographic exception occurs.
      */
     public Optional<Note> openNote(File file) throws InvalidCryptModeException, CryptException, IOException {
         Optional<String> password =  askForPassword("Password needed",
@@ -68,9 +73,9 @@ public class NoteFileFXController {
      * This method is used to read a note from a file that is provided by the user with a dialog.
      * It asks the user for the password in a loop.
      * @return optional Note object that exists if the user was authenticated and the file was read.
-     * @throws InvalidCryptModeException
-     * @throws CryptException
-     * @throws IOException
+     * @throws IOException Thrown when the note could not be opened.
+     * @throws InvalidCryptModeException This exception is thrown when the note is decrypted by an AES object set to encryption only.
+     * @throws CryptException This exception is thrown when a cryptographic exception occurs.
      */
     public Optional<Note> openNote() throws InvalidCryptModeException, CryptException, IOException {
         FileChooser fileChooser = new FileChooser();
@@ -88,13 +93,13 @@ public class NoteFileFXController {
 
     /**
      * This method is used to save a note to a file that the note is bound to.
-     * Otherwise the user is asked to provide a file path.
+     * Otherwise, the user is asked to provide a file path.
      * @param note note to save.
      * @param confirmation if the user should be asked if they want to save.
      * @return false if the saving was interrupted. True if it was successful or the user did not want to save.
-     * @throws InvalidCryptModeException
-     * @throws CryptException
-     * @throws IOException
+     * @throws IOException Thrown when the note could not be saved.
+     * @throws InvalidCryptModeException This exception is thrown when the note is encrypted by an AES object set to decryption only.
+     * @throws CryptException This exception is thrown when a cryptographic exception occurs.
      */
     public boolean save(Note note, boolean confirmation) throws InvalidCryptModeException, CryptException, IOException {
         if (note.hasFile()) {
@@ -112,9 +117,9 @@ public class NoteFileFXController {
      @param note note to save.
      @param confirmation if the user should be asked if they want to save.
      * @return false if the saving was interrupted. True if it was successful or the user did not want to save.
-     * @throws InvalidCryptModeException
-     * @throws CryptException
-     * @throws IOException
+     * @throws IOException Thrown when the note could not be saved.
+     * @throws InvalidCryptModeException This exception is thrown when the note is encrypted by an AES object set to decryption only.
+     * @throws CryptException This exception is thrown when a cryptographic exception occurs.
      */
     public boolean saveAs(Note note, boolean confirmation) throws InvalidCryptModeException, CryptException, IOException {
         if (!confirmation || askToSave()) {
@@ -128,9 +133,9 @@ public class NoteFileFXController {
      * Private method used during saving to a new file.
      * @param note note to save.
      * @return false if the saving was interrupted. True if it was successful or the user did not want to save.
-     * @throws InvalidCryptModeException
-     * @throws CryptException
-     * @throws IOException
+     * @throws IOException Thrown when the note could not be saved.
+     * @throws InvalidCryptModeException This exception is thrown when the note is encrypted by an AES object set to decryption only.
+     * @throws CryptException This exception is thrown when a cryptographic exception occurs.
      */
     private boolean saveNoteAs(Note note) throws InvalidCryptModeException, CryptException, IOException {
         String saveDir, fileName;
@@ -221,6 +226,7 @@ public class NoteFileFXController {
     /**
      * Method used to delete note from disk.
      * @param file note file to remove from disk.
+     * @return true if the note was successfully deleted from disk.
      */
     public boolean deleteNote(File file) {
         return (!file.exists() || file.delete());

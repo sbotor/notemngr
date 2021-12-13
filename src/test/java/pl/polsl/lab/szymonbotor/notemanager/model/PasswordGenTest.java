@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * This is the testing class for the PasswordGen class.
  * @author Szymon Botor
- * @version 1.0
+ * @version 1.1
  */
 class PasswordGenTest {
 
@@ -31,15 +31,14 @@ class PasswordGenTest {
         // When
         boolean testSuccess = false;
         try {
-            PasswordGen passGen = new PasswordGen(passSize, symbols);
+            new PasswordGen(passSize, symbols);
             testSuccess = true;
         }
-        catch (InvalidCharacterException | InvalidPasswordLengthException ex) {
-            testSuccess = false;
+        catch (InvalidCharacterException | InvalidPasswordLengthException ignored) {
         }
 
         // Then
-        assertTrue(testSuccess);
+        assertTrue(testSuccess, "A new PasswordGen object was not successfully created.");
     }
 
     /**
@@ -54,15 +53,14 @@ class PasswordGenTest {
         // When
         boolean testSuccess = false;
         try {
-            PasswordGen passGen = new PasswordGen(passSize, symbols);
-            testSuccess = passGen != null;
+            new PasswordGen(passSize, symbols);
+            testSuccess = true;
         }
-        catch (InvalidCharacterException | InvalidPasswordLengthException ex) {
-            testSuccess = false;
+        catch (InvalidCharacterException | InvalidPasswordLengthException ignored) {
         }
 
         // Then
-        assertTrue(testSuccess);
+        assertTrue(testSuccess, "A new PasswordGen object was not successfully created.");
     }
 
     /**
@@ -77,18 +75,16 @@ class PasswordGenTest {
         // When
         boolean testSuccess = false;
         try {
-            PasswordGen passGen = new PasswordGen(passSize, symbols);
-            testSuccess = false;
+            new PasswordGen(passSize, symbols);
         }
         catch (InvalidCharacterException ex) {
             testSuccess = true;
         }
-        catch (InvalidPasswordLengthException ex) {
-            testSuccess = false;
+        catch (InvalidPasswordLengthException ignored) {
         }
 
         // Then
-        assertTrue(testSuccess);
+        assertTrue(testSuccess, "InvalidCharacterException was not thrown.");
     }
 
     /**
@@ -103,18 +99,16 @@ class PasswordGenTest {
         // When
         boolean testSuccess = false;
         try {
-            PasswordGen passGen = new PasswordGen(passSize, symbols);
-            testSuccess = false;
+            new PasswordGen(passSize, symbols);
         }
-        catch (InvalidCharacterException ex) {
-            testSuccess = false;
+        catch (InvalidCharacterException ignored) {
         }
         catch (InvalidPasswordLengthException ex) {
             testSuccess = true;
         }
 
         // Then
-        assertTrue(testSuccess);
+        assertTrue(testSuccess, "InvalidPasswordLengthException not thrown.");
     }
 
     /**
@@ -129,43 +123,38 @@ class PasswordGenTest {
         // When
         boolean testSuccess = false;
         try {
-            PasswordGen passGen = new PasswordGen(passSize, symbols);
-            testSuccess = false;
+            new PasswordGen(passSize, symbols);
         }
-        catch (InvalidCharacterException ex) {
-            testSuccess = false;
+        catch (InvalidCharacterException ignored) {
         }
         catch (InvalidPasswordLengthException ex) {
             testSuccess = true;
         }
 
         // Then
-        assertTrue(testSuccess);
+        assertTrue(testSuccess, "InvalidPasswordLengthException not thrown.");
     }
 
     /**
      * This method is used to test the behaviour when the parameters are correct.
      * @param passSize size of the password to generate.
      * @param symbols a string symbolising the list of symbols to pick from during generation.
+     * @throws InvalidCharacterException Thrown when the generator encounters an invalid symbol in the symbol string.
+     * @throws InvalidPasswordLengthException Thrown when the password length is incorrect.
      * @see PasswordGenTest#intAndStringParamSource()
      */
     @ParameterizedTest
     @MethodSource("intAndStringParamSource")
-    void generateWhenCorrectParameters(int passSize, String symbols) {
+    void generateWhenCorrectParameters(int passSize, String symbols) throws InvalidCharacterException, InvalidPasswordLengthException {
         // Given
 
         // When
         String generated = "";
-        try {
-            PasswordGen passGen = new PasswordGen(passSize, symbols);
-            generated = passGen.generate();
-        }
-        catch (InvalidCharacterException | InvalidPasswordLengthException ex) {
-            fail();
-        }
+        PasswordGen passGen = new PasswordGen(passSize, symbols);
+        generated = passGen.generate();
 
         // Then
-        assertEquals(passSize, generated.length());
+        assertEquals(passSize, generated.length(), "Generated and expected password lengths are not equal.");
     }
 
     /**

@@ -162,7 +162,6 @@ class NoteHistoryTest {
         try {
             history.add(note);
             history.add("");
-            testSuccess = false;
         } catch (IllegalArgumentException e) {
             testSuccess = true;
         }

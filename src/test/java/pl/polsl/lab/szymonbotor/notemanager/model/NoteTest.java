@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * This is the testing class for the Note class.
  * @author Szymon Botor
- * @version 1.0
+ * @version 1.1
  */
 class NoteTest {
 
@@ -98,23 +98,23 @@ class NoteTest {
     /**
      * This test is used to check input when the file does not exist.
      * @throws InvalidCryptModeException Thrown when an AES object created to encrypt is used to decrypt or vice versa.
+     * @throws CryptException Thrown when a cryptographic error occurs.
      */
     @Test
-    void testReadWhenFileDoesNotExist() throws InvalidCryptModeException {
+    void testReadWhenFileDoesNotExist() throws InvalidCryptModeException, CryptException {
 
         // Given
 
         // When
         boolean testSuccess = false;
-        Note note;
         try {
-            note = new Note(newPath.toString(), password);
-        } catch (IOException | CryptException e) {
+            new Note(newPath.toString(), password);
+        } catch (IOException e) {
             testSuccess = true;
         }
 
         // Then
-        assertTrue(testSuccess);
+        assertTrue(testSuccess, "Input exception was not thrown.");
     }
 
     /**
@@ -132,7 +132,7 @@ class NoteTest {
         Note note = new Note(existingPath.toString(), password);
 
         // Then
-        assertEquals(plainText, note.getContent());
+        assertEquals(plainText, note.getContent(), "Expected and read note contents are not equal.");
     }
 
     /**
@@ -150,7 +150,7 @@ class NoteTest {
         Note note = new Note(existingPath.toString(), "@incorrect_password#890");
 
         // Then
-        assertEquals(null, note.getContent());
+        assertNull(note.getContent(), "Note content is not null.");
     }
 
     /**
@@ -171,7 +171,7 @@ class NoteTest {
         }
 
         // Then
-        assertEquals(newContent, note.getContent());
+        assertEquals(newContent, note.getContent(), "The expected and read note contents are not equal.");
     }
 
     /**
@@ -187,13 +187,12 @@ class NoteTest {
         boolean testSuccess = false;
         try {
             note.change(str);
-            testSuccess = false;
         } catch (NoteTooLongException e) {
             testSuccess = true;
         }
 
         // Then
-        assertTrue(testSuccess);
+        assertTrue(testSuccess, "NoteTooLongException was not thrown.");
     }
 
     /**
@@ -213,7 +212,7 @@ class NoteTest {
         // Then
         Note newNote = new Note(existingPath.toString(), password);
 
-        assertEquals(plainText, newNote.getContent());
+        assertEquals(plainText, newNote.getContent(), "Expected and reread note content are different.");
     }
 
     /**
@@ -233,7 +232,12 @@ class NoteTest {
         // Then
         Note newNote = new Note(existingPath.toString(), password);
 
-        assertEquals(plainText, newNote.getContent());
+        assertEquals(plainText, newNote.getContent(), "Expected and reread note content are different.");
+    }
+
+    @Test
+    void testOverwrite() {
+        fail("Not implemented");
     }
 
     /**

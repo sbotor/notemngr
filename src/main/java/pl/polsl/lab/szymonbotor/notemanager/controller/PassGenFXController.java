@@ -1,6 +1,5 @@
 package pl.polsl.lab.szymonbotor.notemanager.controller;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.CheckBox;
@@ -11,22 +10,54 @@ import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidCharacterException
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidPasswordLengthException;
 import pl.polsl.lab.szymonbotor.notemanager.model.PasswordGen;
 
+/**
+ * Controller class of the password generator view.
+ * @author Szymon Botor
+ * @version 1.0
+ */
 public class PassGenFXController {
 
+    /**
+     * Check box controlling whether the generated password should include uppercase letters.
+     */
     @FXML
     private CheckBox uppercaseCheckBox;
+    /**
+     * Check box controlling whether the generated password should include digits.
+     */
     @FXML
     private CheckBox digitsCheckBox;
+    /**
+     * Check box controlling whether the generated password should include special symbols.
+     */
     @FXML
     private CheckBox otherSymbols;
 
+    /**
+     * Text field in which the generated password appears. It is read only.
+     */
     @FXML
     private TextField generatedPassword;
+    /**
+     * Text field in which the password length should be specified.
+     */
     @FXML
     private TextField passLenField;
 
+    /**
+     * Constructor of the PassGenFXController class.
+     */
+    public PassGenFXController() {
+    }
+
+    /**
+     * This method is called when the generate button is clicked. A new password is generated and displayed according to the specified parameters.
+     * If the password length is incorrect (empty, contains non-digits or the value is too long) an error is displayed.
+     * @see PassGenFXController#generatedPassword
+     * @see PassGenFXController#passLenField
+     */
     @FXML
-    private void generateButtonClicked(ActionEvent event) {
+    private void generateButtonClicked() {
         String symbolStr = "";
 
         if (uppercaseCheckBox.isSelected()) {
@@ -52,8 +83,11 @@ public class PassGenFXController {
         }
     }
 
+    /**
+     * This method is called when the copy button is clicked. If the password has been generated it is copied to the clipboard.
+     */
     @FXML
-    private void copyButtonClicked(ActionEvent event) {
+    private void copyButtonClicked() {
         String password = generatedPassword.getText();
         if (!password.isEmpty()) {
             Clipboard clipboard = Clipboard.getSystemClipboard();

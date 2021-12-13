@@ -10,7 +10,7 @@ import java.util.Vector;
 /**
  * Class for storing and managing note history.
  * @author Szymon Botor
- * @version 1.0
+ * @version 2.0
  */
 public class NoteHistory {
     /**
