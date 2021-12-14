@@ -36,7 +36,7 @@ public class NoteFileFXController {
      */
     public NoteFileFXController(MainFXController parentController) {
         parent = parentController;
-        noteFileFilter = new FileChooser.ExtensionFilter("Notes", "*.note");
+        noteFileFilter = new FileChooser.ExtensionFilter("Notes", Note.FILE_EXTENSION);
     }
 
     /**
