@@ -11,6 +11,7 @@ import pl.polsl.lab.szymonbotor.notemanager.view.PasswordDialog;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Optional;
 
 /**
@@ -36,7 +37,7 @@ public class NoteFileFXController {
      */
     public NoteFileFXController(MainFXController parentController) {
         parent = parentController;
-        noteFileFilter = new FileChooser.ExtensionFilter("Notes", Note.FILE_EXTENSION);
+        noteFileFilter = new FileChooser.ExtensionFilter("Notes", "*" + Note.FILE_EXTENSION);
     }
 
     /**
@@ -140,8 +141,9 @@ public class NoteFileFXController {
     private boolean saveNoteAs(Note note) throws InvalidCryptModeException, CryptException, IOException {
         String saveDir, fileName;
         if (note.hasFile()) {
-            saveDir = note.getFilePath().toAbsolutePath().getParent().toString();
-            fileName = note.getFilePath().getFileName().toString();
+            Path notePath = Path.of(note.getFile().toString());
+            saveDir = notePath.getParent().toString();
+            fileName = notePath.getFileName().toString();
         } else {
             saveDir = System.getProperty("user.dir");
             fileName = "";

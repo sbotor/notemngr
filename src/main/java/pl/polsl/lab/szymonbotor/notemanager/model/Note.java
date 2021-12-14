@@ -6,8 +6,6 @@ import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidCryptModeException
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.NoteTooLongException;
 
 import java.io.*;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 /**
  * Class representing a text note. The contents can be encrypted and saved to a file, or a file can be decrypted and read into a Note object.
@@ -37,7 +35,7 @@ public class Note {
     private String content;
 
     /**
-     * Path to the file that the note was created from or saved into.
+     * The file that the note was created from or saved into.
      */
     private File file;
 
@@ -265,14 +263,6 @@ public class Note {
      */
     public File getFile() {
         return file;
-    }
-
-    /**
-     * This method is used to get the last open/save File of the note that was used.
-     * @return File object of the directory.
-     */
-    public Path getFilePath() {
-        return file.toPath();
     }
 
     /**

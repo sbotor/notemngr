@@ -3,6 +3,7 @@ package pl.polsl.lab.szymonbotor.notemanager.controller;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.stage.WindowEvent;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.CryptException;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidCryptModeException;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.NoteTooLongException;
@@ -58,6 +59,11 @@ public class MainFXController {
     private boolean historyEmpty;
 
     /**
+     * Boolean value representing if the on close property of the window has been initialized.
+     */
+    private boolean onCloseInitialized;
+
+    /**
      * This is the ListView object in which note history is displayed.
      */
     @FXML
@@ -111,28 +117,9 @@ public class MainFXController {
      */
     @FXML
     private void initialize() {
-
-        note = new Note();
-        noteContent.textProperty().addListener((observableValue, s, t1) -> {
-            try {
-                note.change(noteContent.getText());
-            } catch (NoteTooLongException e) {
-                Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage());
-                alert.showAndWait();
-            }
-            updateNoteInfo();
-        });
-        noteFileController = new NoteFileFXController(this);
-
         initButtons();
 
-        passGen = null;
-        try {
-            passGen =  new PassGenFXView();
-        } catch (IOException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage());
-            alert.showAndWait();
-        }
+        initNoteListContextMenu();
 
         history = null;
         try {
@@ -143,7 +130,66 @@ public class MainFXController {
         }
         reloadNoteList();
 
-        initNoteListContextMenu();
+        onCloseInitialized = false;
+        noteContent.textProperty().addListener((observableValue, s, t1) -> {
+            try {
+                note.change(noteContent.getText());
+            } catch (NoteTooLongException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage());
+                alert.showAndWait();
+            }
+            updateNoteInfo();
+
+            if (!onCloseInitialized && getScene() != null && getScene().getWindow() != null) {
+                getScene().getWindow().setOnCloseRequest(this::saveOnQuit);
+                onCloseInitialized = true;
+            }
+        });
+
+        passGen = null;
+        try {
+            passGen =  new PassGenFXView();
+        } catch (IOException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage());
+            alert.showAndWait();
+        }
+
+        note = new Note();
+        noteFileController = new NoteFileFXController(this);
+    }
+
+    /**
+     * This method is called when the main application window gets a request to close the window.
+     * If the current note is unsaved the user is asked if they want to save the note. If the saving is
+     * canceled the program does not quit and the event is consumed.
+     * @param event event representing the request to close the window.
+     */
+    private void saveOnQuit(WindowEvent event) {
+        try {
+            if (note.isSaved() || noteFileController.save(note, true)) {
+                if (!historyEmpty && note.hasFile()) {
+                    history.add(note);
+                    history.save();
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION, "Note saved.");
+                    alert.showAndWait();
+                }
+            } else {
+                event.consume();
+            }
+        } catch (InvalidCryptModeException | CryptException | IOException e) {
+            Dialog<ButtonType> dialog = new Dialog<ButtonType>();
+            dialog.setTitle("Error");
+            dialog.setHeaderText("Error saving the note.");
+            dialog.setContentText(e.getMessage());
+            ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+            ButtonType quitButton = new ButtonType("Quit anyway", ButtonBar.ButtonData.OK_DONE);
+            dialog.getDialogPane().getButtonTypes().addAll(cancelButton, quitButton);
+
+            Optional<ButtonType> result = dialog.showAndWait();
+            if (result.isPresent() && result.get() != quitButton) {
+                event.consume();
+            }
+        }
     }
 
     /**
@@ -307,8 +353,8 @@ public class MainFXController {
     private void updateNoteInfo() {
         String noteName, noteDir;
         if (note.hasFile()) {
-            noteName = note.getFilePath().getFileName().toString();
-            noteDir = "(" + note.getFilePath().toAbsolutePath() + ")";
+            noteName = note.getFile().getName();
+            noteDir = "(" + note.getFile().getAbsolutePath() + ")";
         } else {
             noteName = "New Note";
             noteDir = "";
@@ -359,8 +405,10 @@ public class MainFXController {
      * @see MainFXController#history
      */
     private void updateHistoryAndReloadList() throws IOException {
-        history.save();
-        reloadNoteList();
+        if (!historyEmpty) {
+            history.save();
+            reloadNoteList();
+        }
     }
 
     /**
@@ -371,8 +419,11 @@ public class MainFXController {
      * @see MainFXController#history
      */
     private void updateHistoryAndReloadList(Note note) throws IOException {
-        history.add(note);
-        updateHistoryAndReloadList();
+        if (!historyEmpty) {
+            history.add(note);
+            history.save();
+            reloadNoteList();
+        }
     }
 
     /**

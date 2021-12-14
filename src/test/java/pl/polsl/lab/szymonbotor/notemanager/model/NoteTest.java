@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * This is the testing class for the Note class.
  * @author Szymon Botor
- * @version 1.1
+ * @version 2.0
  */
 class NoteTest {
 
@@ -235,9 +235,27 @@ class NoteTest {
         assertEquals(plainText, newNote.getContent(), "Expected and reread note content are different.");
     }
 
+    /**
+     * This method is used to test if the note can be successfully overwritten.
+     * @throws InvalidCryptModeException Thrown when an AES object created to encrypt is used to decrypt or vice versa.
+     * @throws IOException Thrown when an error occurs during file IO.
+     * @throws CryptException Thrown when a cryptographic error occurs.
+     * @throws NoteTooLongException Thrown when the new note content is longer than max length.
+     */
     @Test
-    void testOverwrite() {
-        fail("Not implemented");
+    void testOverwrite() throws InvalidCryptModeException, CryptException, IOException, NoteTooLongException {
+        // Given
+        final String additionalText = "\nTest";
+        Note note = new Note(existingPath.toString(), password);
+
+        // When
+        note.change(plainText + additionalText);
+        note.overwrite();
+
+        // Then
+        Note newNote = new Note(existingPath.toString(), password);
+
+        assertEquals(plainText + additionalText, newNote.getContent(), "Expected and reread note content are different.");
     }
 
     /**

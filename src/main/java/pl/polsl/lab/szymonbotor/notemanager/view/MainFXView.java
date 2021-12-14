@@ -5,10 +5,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
-import pl.polsl.lab.szymonbotor.notemanager.controller.MainFXController;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.net.URL;
 
 /**

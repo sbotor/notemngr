@@ -5,9 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import pl.polsl.lab.szymonbotor.notemanager.model.Note;
-import pl.polsl.lab.szymonbotor.notemanager.model.NoteHistory;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -39,9 +38,9 @@ class NoteHistoryTest {
     private static final String noteString = "c:\\folder$\\notes\\$note$";
 
     /**
-     * This is the array storing the note directory strings.
+     * This is the array storing the note files.
      */
-    private String[] noteArray;
+    private File[] noteFilesArray;
 
     /**
      * This is the static method used to prepare a string array using the provided string template.
@@ -49,10 +48,10 @@ class NoteHistoryTest {
      * @param end ending index of the note template parameter. Exclusive.
      * @return the constructed array.
      */
-    static String[] prepareStrings(int start, int end) {
+    static File[] prepareFiles(int start, int end) {
         return IntStream.range(start, end)
-                .mapToObj(i -> noteString.replace("$", Integer.toString(end - i - 1)))
-                .toArray(String[]::new);
+                .mapToObj(i -> new File(noteString.replace("$", Integer.toString(end - i - 1))))
+                .toArray(File[]::new);
     }
 
     /**
@@ -61,10 +60,10 @@ class NoteHistoryTest {
      * @param end ending index of the note template parameter. Exclusive.
      * @return the constructed array.
      */
-    static String[] prepareStringsReverse(int start, int end) {
+    static File[] preparePathsReverse(int start, int end) {
         return IntStream.range(start, end)
-                .mapToObj(i -> noteString.replace("$", Integer.toString(i)))
-                .toArray(String[]::new);
+                .mapToObj(i -> new File(noteString.replace("$", Integer.toString(i))))
+                .toArray(File[]::new);
     }
 
     /**
@@ -77,11 +76,11 @@ class NoteHistoryTest {
         Files.deleteIfExists(newPath);
 
         // Prepare file
-        noteArray = prepareStrings(0, NoteHistory.MAX_ITEMS);
+        noteFilesArray = prepareFiles(0, NoteHistory.MAX_ITEMS);
 
         Files.createFile(existingPath);
-        for (String str : noteArray) {
-            Files.writeString(existingPath, str + "\n", StandardOpenOption.APPEND);
+        for (File file : noteFilesArray) {
+            Files.writeString(existingPath, file.getAbsolutePath() + "\n", StandardOpenOption.APPEND);
         }
     }
 
@@ -110,15 +109,16 @@ class NoteHistoryTest {
         // Given
 
         // When
-        NoteHistory history = null;
+        NoteHistory history;
         try {
             history = new NoteHistory(existingPath.toString());
         } catch (IOException e) {
             e.printStackTrace();
+            history = new NoteHistory();
         }
 
         // Then
-        assertArrayEquals(noteArray, history.getNotes().toArray(), "The history is different than expected.");
+        assertArrayEquals(noteFilesArray, history.getNotes().toArray(), "The history is different than expected.");
     }
 
     /**
@@ -129,22 +129,23 @@ class NoteHistoryTest {
     @Test
     void testInputWhenFileExistsAndTooLong() throws IOException {
         // Given
-        String[] additionalArray = prepareStrings(NoteHistory.MAX_ITEMS, 2 * NoteHistory.MAX_ITEMS);
+        File[] additionalArray = prepareFiles(NoteHistory.MAX_ITEMS, 2 * NoteHistory.MAX_ITEMS);
 
-        for (String str : additionalArray) {
-            Files.writeString(existingPath, str + "\n", StandardOpenOption.APPEND);
+        for (File file : additionalArray) {
+            Files.writeString(existingPath, file.getAbsolutePath() + "\n", StandardOpenOption.APPEND);
         }
 
         // When
-        NoteHistory history = null;
+        NoteHistory history;
         try {
             history = new NoteHistory(existingPath.toString());
         } catch (IOException e) {
             e.printStackTrace();
+            history = new NoteHistory();
         }
 
         // Then
-        assertArrayEquals(noteArray, history.getNotes().toArray(), "The history is different than expected.");
+        assertArrayEquals(noteFilesArray, history.getNotes().toArray(), "The history is different than expected.");
     }
 
     /**
@@ -167,7 +168,7 @@ class NoteHistoryTest {
         }
 
         // Then
-        assertTrue(testSuccess);
+        assertTrue(testSuccess, "Exception was not thrown.");
     }
 
     /**
@@ -177,18 +178,18 @@ class NoteHistoryTest {
     @Test
     void testAddWhenTextNotDuplicate() throws IOException {
         // Given
-        String newElement = "c:\\testNotes\\testnote";
+        File newElement = new File("c:\\testNotes\\testnote");
         NoteHistory history = new NoteHistory(existingPath.toString());
 
-        String[] newNoteArray = new String[noteArray.length];
-        System.arraycopy(noteArray, 0, newNoteArray,1, noteArray.length - 1);
+        File[] newNoteArray = new File[noteFilesArray.length];
+        System.arraycopy(noteFilesArray, 0, newNoteArray,1, noteFilesArray.length - 1);
         newNoteArray[0] = newElement;
 
         // When
         history.add(newElement);
 
         // Then
-        assertArrayEquals(newNoteArray, history.getNotes().toArray());
+        assertArrayEquals(newNoteArray, history.getNotes().toArray(), "The new element was not correctly added.");
     }
 
     /**
@@ -200,19 +201,19 @@ class NoteHistoryTest {
     @ValueSource(ints = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9})
     void testAddWhenTextDuplicate(int elementIndx) throws IOException {
         // Given
-        String newElement = noteArray[elementIndx];
+        File newElement = noteFilesArray[elementIndx];
         NoteHistory history = new NoteHistory(existingPath.toString());
 
-        String[] newNoteArray = new String[noteArray.length];
-        newNoteArray[0] = noteArray[elementIndx];
-        System.arraycopy(noteArray, 0, newNoteArray,1, elementIndx);
-        System.arraycopy(noteArray, elementIndx + 1, newNoteArray, elementIndx + 1, noteArray.length - elementIndx - 1);
+        File[] newNoteArray = new File[noteFilesArray.length];
+        newNoteArray[0] = noteFilesArray[elementIndx];
+        System.arraycopy(noteFilesArray, 0, newNoteArray,1, elementIndx);
+        System.arraycopy(noteFilesArray, elementIndx + 1, newNoteArray, elementIndx + 1, noteFilesArray.length - elementIndx - 1);
 
         // When
         history.add(newElement);
 
         // Then
-        assertArrayEquals(newNoteArray, history.getNotes().toArray());
+        assertArrayEquals(newNoteArray, history.getNotes().toArray(), "The new element was not correctly added.");
     }
 
     /**
@@ -225,10 +226,10 @@ class NoteHistoryTest {
     void testSaveWhenFileExists(int strCount) throws IOException {
         // Given
         NoteHistory history = new NoteHistory();
-        String[] testStrings = prepareStringsReverse(0, strCount);
+        File[] testFiles = preparePathsReverse(0, strCount);
 
-        for (String str : testStrings) {
-            history.add(str);
+        for (File file : testFiles) {
+            history.add(file);
         }
 
         // When
@@ -237,7 +238,7 @@ class NoteHistoryTest {
         // Then
         NoteHistory newHistory = new NoteHistory(existingPath.toString());
 
-        assertArrayEquals(history.getNotes().toArray(), newHistory.getNotes().toArray());
+        assertArrayEquals(history.getNotes().toArray(), newHistory.getNotes().toArray(), "Original and saved histories are not equal.");
     }
 
     /**
@@ -250,10 +251,10 @@ class NoteHistoryTest {
     void testSaveWhenFileDoesNotExist(int strCount) throws IOException {
         // Given
         NoteHistory history = new NoteHistory();
-        String[] testStrings = prepareStringsReverse(0, strCount);
+        File[] testFiles = preparePathsReverse(0, strCount);
 
-        for (String str : testStrings) {
-            history.add(str);
+        for (File file : testFiles) {
+            history.add(file);
         }
 
         // When
@@ -262,7 +263,7 @@ class NoteHistoryTest {
         // Then
         NoteHistory newHistory = new NoteHistory(newPath.toString());
 
-        assertArrayEquals(history.getNotes().toArray(), newHistory.getNotes().toArray());
+        assertArrayEquals(history.getNotes().toArray(), newHistory.getNotes().toArray(), "Original and saved histories are not equal.");
     }
 
     /**

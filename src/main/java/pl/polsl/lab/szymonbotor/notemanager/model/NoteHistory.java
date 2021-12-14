@@ -154,8 +154,8 @@ public class NoteHistory {
      */
     public void add(Note note) throws IllegalArgumentException {
 
-        if (note!= null && note.getFilePath() != null) {
-            add(note.getFilePath().toAbsolutePath().toString());
+        if (note!= null && note.getFile() != null) {
+            add(note.getFile());
         } else {
             throw new IllegalArgumentException();
         }
@@ -169,13 +169,26 @@ public class NoteHistory {
      */
     public void add(String str) throws IllegalArgumentException {
         if (str != null && !"".equals(str)) {
-            File newItem = new File(str);
-            int elementIndx = notes.indexOf(newItem);
+            add(new File(str));
+        } else {
+            throw new IllegalArgumentException("The note file dir is empty.");
+        }
+    }
+
+    /**
+     * This method is used to add a note directory to the history. If the current note count is
+     * equal to the max allowed count the oldest note is removed.
+     * @param file note directory to be added to the history.
+     * @throws IllegalArgumentException Thrown when the note's file directory is empty.
+     */
+    public void add(File file) throws IllegalArgumentException {
+        if (!"".equals(file.getAbsolutePath())) {
+            int elementIndx = notes.indexOf(file);
             if (elementIndx != -1) {
                 notes.remove(elementIndx);
             }
 
-            notes.add(0, newItem);
+            notes.add(0, file);
             if (notes.size() > itemLimit) {
                 notes.remove(notes.size() - 1);
             }
