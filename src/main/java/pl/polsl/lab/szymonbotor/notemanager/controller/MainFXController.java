@@ -405,7 +405,7 @@ public class MainFXController {
      * @see MainFXController#history
      */
     private void updateHistoryAndReloadList() throws IOException {
-        if (!historyEmpty) {
+        if (history != null) {
             history.save();
             reloadNoteList();
         }
@@ -419,7 +419,7 @@ public class MainFXController {
      * @see MainFXController#history
      */
     private void updateHistoryAndReloadList(Note note) throws IOException {
-        if (!historyEmpty) {
+        if (history != null) {
             history.add(note);
             history.save();
             reloadNoteList();
