@@ -23,12 +23,12 @@ import java.util.Optional;
  */
 public class MainFXController {
     /**
-     * This is the prefix appended to note's name in the history list if it is not found on disk.
+     * This is the prefix appended to note's name in the history tree if it is not found on disk.
      */
     public static final String MISSING_FILE_PREF = "[MISSING]";
 
     /**
-     * The text displayed in the history list if no history could be loaded.
+     * The text displayed in the history tree if no history could be loaded.
      */
     private static final String HISTORY_ERROR_MSG = "Could not load note history.";
 
@@ -64,10 +64,10 @@ public class MainFXController {
     private boolean onCloseInitialized;
 
     /**
-     * This is the ListView object in which note history is displayed.
+     * This is the TreeView object in which note history is displayed.
      */
     @FXML
-    private ListView<String> noteList;
+    private TreeView<String> noteTree;
 
     /**
      * This label is used to display the name and path of the currently opened note or "NewNote" if
@@ -119,7 +119,7 @@ public class MainFXController {
     private void initialize() {
         initButtons();
 
-        initNoteListContextMenu();
+        initHistoryContextMenu();
 
         contentLabel.setWrapText(true);
 
@@ -130,7 +130,7 @@ public class MainFXController {
             Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage());
             alert.showAndWait();
         }
-        reloadNoteList();
+        reloadHistoryTree();
 
         onCloseInitialized = false;
         noteContent.textProperty().addListener((observableValue, s, t1) -> {
@@ -207,48 +207,58 @@ public class MainFXController {
     }
 
     /**
-     * This method creates the context menu and binds it to the noteHistory ListView.
-     * @see MainFXController#noteList
+     * This method creates the context menu and binds it to the noteHistory TreeView.
+     * @see MainFXController#noteTree
      */
-    private void initNoteListContextMenu() {
+    private void initHistoryContextMenu() {
         MenuItem open = new MenuItem("Open");
         open.setOnAction(actionEvent -> {
-            openFromNoteList(noteList.getFocusModel().getFocusedIndex());
+            TreeItem<String> item = noteTree.getFocusModel().getFocusedItem();
+            openFromNoteTree(item);
         });
 
         MenuItem remove = new MenuItem("Remove");
         remove.setOnAction(actionEvent -> {
-            int index = noteList.getFocusModel().getFocusedIndex();
-            removeNote(index);
+            TreeItem<String> item = noteTree.getFocusModel().getFocusedItem();
+            removeNote(item);
         });
 
         MenuItem delete = new MenuItem("Delete");
         delete.setOnAction(actionEvent -> {
-            deleteNote(noteList.getFocusModel().getFocusedIndex());
+            TreeItem<String> item = noteTree.getFocusModel().getFocusedItem();
+            deleteNote(item);
         });
 
         ContextMenu menu = new ContextMenu();
         menu.getItems().addAll(open, remove, delete);
         menu.setOnShown(windowEvent -> {
-            String item = noteList.getFocusModel().getFocusedItem();
-            if (!item.startsWith(MISSING_FILE_PREF) && !historyEmpty) {
-                open.setDisable(false);
-                remove.setDisable(false);
-                delete.setDisable(false);
-            } else if (item.startsWith(MISSING_FILE_PREF)) {
-                open.setDisable(true);
-                remove.setDisable(false);
-                delete.setDisable(true);
-            } else {
+            TreeItem<String> item = noteTree.getFocusModel().getFocusedItem();
+            if (item.isLeaf()) {
                 open.setDisable(true);
                 remove.setDisable(true);
                 delete.setDisable(true);
+            } else {
+                if (!item.getValue().startsWith(MISSING_FILE_PREF) && !historyEmpty) {
+                    open.setDisable(false);
+                    remove.setDisable(false);
+                    delete.setDisable(false);
+                }
+                else if (item.getValue().startsWith(MISSING_FILE_PREF)) {
+                    open.setDisable(true);
+                    remove.setDisable(false);
+                    delete.setDisable(true);
+                }
+                else {
+                    open.setDisable(true);
+                    remove.setDisable(true);
+                    delete.setDisable(true);
+                }
             }
         });
 
-        noteList.setContextMenu(menu);
+        noteTree.setContextMenu(menu);
 
-        reloadNoteList();
+        reloadHistoryTree();
     }
 
     /**
@@ -261,7 +271,7 @@ public class MainFXController {
         try {
             if (note.isSaved() || noteFileController.save(note, true)) {
                 if (note.hasFile()) {
-                    updateHistoryAndReloadList(note);
+                    updateHistoryAndReloadTree(note);
                 }
 
                 noteContent.clear();
@@ -284,7 +294,7 @@ public class MainFXController {
         try {
             if (!note.isSaved() && noteFileController.save(note, false)) {
                 if (note.hasFile()) {
-                    updateHistoryAndReloadList(note);
+                    updateHistoryAndReloadTree(note);
                     updateNoteInfo();
                 }
             }
@@ -303,7 +313,7 @@ public class MainFXController {
         try {
             if (noteFileController.saveAs(note, false)) {
                 // If saving was not canceled
-                updateHistoryAndReloadList(note);
+                updateHistoryAndReloadTree(note);
                 updateNoteInfo();
             }
         } catch (InvalidCryptModeException | CryptException | IOException e) {
@@ -321,14 +331,14 @@ public class MainFXController {
         try {
             if (note.isSaved() || noteFileController.save(note, true)) {
                 if (note.hasFile()) {
-                    updateHistoryAndReloadList(note);
+                    updateHistoryAndReloadTree(note);
                 }
 
                 Optional<Note> newNote = noteFileController.openNote();
                 if (newNote.isPresent()) {
                     noteContent.setText(newNote.get().getContent());
                     note = newNote.get();
-                    updateHistoryAndReloadList(note);
+                    updateHistoryAndReloadTree(note);
                     updateNoteInfo();
                 }
             }
@@ -372,22 +382,28 @@ public class MainFXController {
     }
 
     /**
-     * This method is used to reload the noteList view according to the current history.
-     * @see MainFXController#noteList
+     * This method is used to reload the noteTree view according to the current history.
+     * @see MainFXController#noteTree
      * @see MainFXController#history
      */
-    private void reloadNoteList() {
-        noteList.getItems().clear();
-
+    private void reloadHistoryTree() {
         if (history == null) {
-            noteList.getItems().add(HISTORY_ERROR_MSG);
+            TreeItem<String> root = new TreeItem<>(HISTORY_ERROR_MSG);
+            noteTree.setRoot(root);
+            noteTree.setShowRoot(true);
             historyEmpty = true;
             return;
         } else if (history.getNotes().isEmpty()) {
-            noteList.getItems().add("History is empty");
+            TreeItem<String> root = new TreeItem<>("History empty");
+            noteTree.setRoot(root);
+            noteTree.setShowRoot(true);
             historyEmpty = true;
             return;
         }
+
+        TreeItem<String> root = new TreeItem<String>();
+        noteTree.setRoot(root);
+        noteTree.setShowRoot(false);
 
         for (File noteFile: history.getNotes()) {
             String fileCatalog = Path.of(noteFile.getAbsolutePath()).getParent().toString();
@@ -397,58 +413,69 @@ public class MainFXController {
                 fileName = MISSING_FILE_PREF + " " + fileName;
             }
 
-            noteList.getItems().add(fileName + " (" + fileCatalog + ")");
+            TreeItem<String> filenameItem = new TreeItem<String>(fileName);
+            filenameItem.getChildren().add(new TreeItem<String>(fileCatalog));
+
+            noteTree.getRoot().getChildren().add(filenameItem);
         }
         historyEmpty = false;
     }
 
     /**
-     * This method is used to save the note history to disk and reload the noteList view.
+     * This method is used to save the note history to disk and reload the noteTree view.
      * @throws IOException Thrown when a file error occurs during history saving.
-     * @see MainFXController#noteList
+     * @see MainFXController#noteTree
      * @see MainFXController#history
      */
-    private void updateHistoryAndReloadList() throws IOException {
+    private void updateHistoryAndReloadTree() throws IOException {
         if (history != null) {
             history.save();
-            reloadNoteList();
+            reloadHistoryTree();
         }
     }
 
     /**
-     * This method is used to add a new note to the note history, save it to disk and reload the noteList view.
+     * This method is used to add a new note to the note history, save it to disk and reload the noteTree view.
      * @param note note to add to the note history.
      * @throws IOException Thrown when a file error occurs during history saving.
-     * @see MainFXController#noteList
+     * @see MainFXController#noteTree
      * @see MainFXController#history
      */
-    private void updateHistoryAndReloadList(Note note) throws IOException {
+    private void updateHistoryAndReloadTree(Note note) throws IOException {
         if (history != null) {
             history.add(note);
             history.save();
-            reloadNoteList();
+            reloadHistoryTree();
         }
     }
 
     /**
      * This method is used to open a note from the history. The note is
      * specified by the passed parameter.
-     * @param itemIndex index of the note to be opened from the current note history.
+     * @param item note to be opened from the current note history.
      * @see MainFXController#history
      */
-    private void openFromNoteList(int itemIndex) {
-        File file = history.get(itemIndex);
+    private void openFromNoteTree(TreeItem<String> item) {
+        String filename = item.getValue();
+        String catalog = item.getChildren().get(0).getValue();
+        Path filePath = Path.of(catalog, filename);
+
+        int itemIndex = history.getNotes().indexOf(new File(filePath.toString()));
+        if (itemIndex == -1) {
+            return;
+        }
 
         try {
             if (note.isSaved() || noteFileController.save(note, true)) {
                 if (note.hasFile()) {
-                    updateHistoryAndReloadList(note);
+                    updateHistoryAndReloadTree(note);
                 }
-                Optional<Note> newNote = noteFileController.openNote(file);
+
+                Optional<Note> newNote = noteFileController.openNote(history.get(itemIndex));
                 if (newNote.isPresent()) {
                     noteContent.setText(newNote.get().getContent());
                     note = newNote.get();
-                    updateHistoryAndReloadList(note);
+                    updateHistoryAndReloadTree(note);
                     updateNoteInfo();
                 }
             }
@@ -461,17 +488,29 @@ public class MainFXController {
     /**
      * This method is used to remove a note from the history. The note is
      * specified by the passed parameter.
-     * @param itemIndex index of the note to be removed from the current note history.
+     * @param item note to be removed from the current note history.
      * @see MainFXController#history
      */
-    private void removeNote(int itemIndex) {
-        File removedNote = history.get(itemIndex);
+    private void removeNote(TreeItem<String> item) {
+        String filename = item.getValue();
+        if (filename.startsWith(MISSING_FILE_PREF)) {
+            filename = filename.split(" ")[1];
+        }
+
+        String catalog = item.getChildren().get(0).getValue();
+        Path filePath = Path.of(catalog, filename);
+
+        int itemIndex = history.getNotes().indexOf(new File(filePath.toString()));
+        if (itemIndex == -1) {
+            return;
+        }
+
         try {
-            if (note.hasFile() && note.getFile().getAbsolutePath().equals(removedNote.getAbsolutePath())) {
+            if (note.hasFile() && note.getFile().getAbsolutePath().equals(filePath.toString())) {
                 newNoteClicked();
             }
             history.getNotes().remove(itemIndex);
-            updateHistoryAndReloadList();
+            updateHistoryAndReloadTree();
             updateNoteInfo();
         } catch (IOException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage());
@@ -482,21 +521,29 @@ public class MainFXController {
     /**
      * This method is used to delete a note from the history and remove it from disk.
      * The note is specified by the passed parameter.
-     * @param itemIndex index of the note to be deleted from the current note history and from disk.
+     * @param item index of the note to be deleted from the current note history and from disk.
      * @see MainFXController#history
      */
-    private void deleteNote(int itemIndex) {
-        File deletedNote = history.get(itemIndex);
+    private void deleteNote(TreeItem<String> item) {
+        String filename = item.getValue();
+        String catalog = item.getChildren().get(0).getValue();
+        Path filePath = Path.of(catalog, filename);
+
+        int itemIndex = history.getNotes().indexOf(new File(filePath.toString()));
+        if (itemIndex == -1) {
+            return;
+        }
+
         try {
-            boolean deleted = noteFileController.deleteNote(deletedNote);
+            boolean deleted = noteFileController.deleteNote(history.get(itemIndex));
             if (note.hasFile() &&
-                    note.getFile().getAbsolutePath().equals(deletedNote.getAbsolutePath()) &&
+                    note.getFile().getAbsolutePath().equals(filePath.toString()) &&
                     deleted) {
                 newNoteClicked();
             }
             if (deleted) {
                 history.getNotes().remove(itemIndex);
-                updateHistoryAndReloadList();
+                updateHistoryAndReloadTree();
                 updateNoteInfo();
             }
         } catch (IOException e) {
@@ -508,11 +555,11 @@ public class MainFXController {
     /**
      * This method is used to get the scene that the controller is attached to.
      * @return Scene object that the current controller is bound to. To find the scene it uses the
-     * noteList view.
-     * @see MainFXController#noteList
+     * noteTree view.
+     * @see MainFXController#noteTree
      */
     public Scene getScene() {
-        return noteList.getScene();
+        return noteTree.getScene();
     }
 
     /**
