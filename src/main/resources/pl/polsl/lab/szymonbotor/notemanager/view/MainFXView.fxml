@@ -12,10 +12,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
-<VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.polsl.lab.szymonbotor.notemanager.controller.MainFXController">
+<VBox alignment="TOP_CENTER" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.polsl.lab.szymonbotor.notemanager.controller.MainFXController">
    <children>
-      <ButtonBar fx:id="upperButtonBar" buttonMinWidth="40.0">
+      <ButtonBar fx:id="upperButtonBar" buttonMinWidth="30.0">
          <buttons>
             <MenuButton fx:id="addButton" mnemonicParsing="false" text="Add">
                <items>
@@ -52,7 +51,7 @@
                         <Font size="18.0" />
                      </font>
                   </Label>
-                  <ListView fx:id="noteList" prefWidth="248.0" />
+                  <ListView fx:id="noteList" />
                </children>
             </VBox>
             <VBox alignment="CENTER" spacing="2.0">
@@ -62,7 +61,7 @@
                         <Font size="18.0" />
                      </font>
                   </Label>
-                  <TextArea fx:id="noteContent" maxWidth="1.7976931348623157E308" promptText="Write your note here.">
+                  <TextArea fx:id="noteContent" prefWidth="600.0" promptText="Write your note here.">
                      <font>
                         <Font size="24.0" />
                      </font>

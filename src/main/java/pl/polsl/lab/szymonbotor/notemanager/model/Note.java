@@ -17,7 +17,7 @@ public class Note {
     /**
      * Constant value representing the maximum size of a note in characters.
      */
-    public static final int MAX_NOTE_SIZE = 1024;
+    public static final int MAX_NOTE_SIZE = 1000;
 
     /**
      * This is the file extension of the note files.

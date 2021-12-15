@@ -181,7 +181,7 @@ public class NoteFileFXController {
         ObservableList<ButtonType> buttons = dialog.getDialogPane().getButtonTypes();
         ButtonType confirmButton = new ButtonType("Yes", ButtonBar.ButtonData.OK_DONE);
         buttons.add(confirmButton);
-        buttons.add(new ButtonType("No", ButtonBar.ButtonData.CANCEL_CLOSE));
+        buttons.add(new ButtonType("No", ButtonBar.ButtonData.NO));
 
         Optional<ButtonType> choice = dialog.showAndWait();
 

@@ -121,6 +121,8 @@ public class MainFXController {
 
         initNoteListContextMenu();
 
+        contentLabel.setWrapText(true);
+
         history = null;
         try {
             history = new NoteHistory(historyPath.toAbsolutePath().toString());
@@ -135,6 +137,7 @@ public class MainFXController {
             try {
                 note.change(noteContent.getText());
             } catch (NoteTooLongException e) {
+                noteContent.setText(note.getContent());
                 Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage());
                 alert.showAndWait();
             }
@@ -145,6 +148,7 @@ public class MainFXController {
                 onCloseInitialized = true;
             }
         });
+        noteContent.setWrapText(true);
 
         passGen = null;
         try {
