@@ -6,19 +6,11 @@ import pl.polsl.lab.szymonbotor.notemanager.exceptions.NoteTooLongException;
 import java.io.Console;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Scanner;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 
 import pl.polsl.lab.szymonbotor.notemanager.model.*;
 

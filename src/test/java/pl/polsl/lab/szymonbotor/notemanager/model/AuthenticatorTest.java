@@ -2,9 +2,6 @@ package pl.polsl.lab.szymonbotor.notemanager.model;
 
 import org.junit.jupiter.api.Test;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.CryptException;
-import pl.polsl.lab.szymonbotor.notemanager.model.Authenticator;
-
-import java.security.NoSuchAlgorithmException;
 
 import static org.junit.jupiter.api.Assertions.*;
 

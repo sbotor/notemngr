@@ -64,7 +64,7 @@ public class PasswordGen {
         allowUppercase = false;
         allowDigits = false;
         allowAllSpecial = false;
-        allowedSymbols = new HashSet();
+        allowedSymbols = new HashSet<Character>();
         
         parseSymbols(symbols);
         

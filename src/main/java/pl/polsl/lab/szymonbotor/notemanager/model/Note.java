@@ -195,6 +195,7 @@ public class Note {
             outStream.write(buffer);
             outStream.close();
         } else {
+            outStream.close();
             throw new IOException("Cannot save the note.");
         }
     }

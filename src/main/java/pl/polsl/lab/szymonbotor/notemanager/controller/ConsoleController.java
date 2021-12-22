@@ -59,7 +59,7 @@ public class ConsoleController {
             noteHistory = new NoteHistory(HISTORY_DIR);
         }
         catch (IOException ex) {
-            view.display("Warning: cannot open or create the note history file.\n");
+            ConsoleView.display("Warning: cannot open or create the note history file.\n");
         }
 
         if (args.length < 1) {
@@ -80,7 +80,7 @@ public class ConsoleController {
                 generatePassword(args);
                 break;
             default:
-                view.display("Unrecognised parameters. Try again.");
+                ConsoleView.display("Unrecognised parameters. Try again.");
         }
     }
 
@@ -101,7 +101,7 @@ public class ConsoleController {
                 note = view.openNote(args[1]);
             }
             catch (InvalidCryptModeException ex) {
-                view.display(ex.getMessage());
+                ConsoleView.display(ex.getMessage());
             }
 
             if (note != null) {
@@ -114,20 +114,20 @@ public class ConsoleController {
                     noteHistory.save();
                 }
                 catch (IOException ex) {
-                    view.display("Warning: cannot save or create the note history file.\n");
+                    ConsoleView.display("Warning: cannot save or create the note history file.\n");
                 }
                 catch (IllegalArgumentException ex) {
-                    view.display("The note file directory is empty.");
+                    ConsoleView.display("The note file directory is empty.");
                 }
                 catch (InvalidCryptModeException ex) {
-                    view.display(ex.getMessage());
+                    ConsoleView.display(ex.getMessage());
                 }
             }
         }
         catch (IOException | InvalidPathException ex) {
-            view.display("Cannot open file \"" + args[1] + "\".");
+            ConsoleView.display("Cannot open file \"" + args[1] + "\".");
         } catch (CryptException e) {
-            view.display("Error during decryption. " + e.getMessage());
+            ConsoleView.display("Error during decryption. " + e.getMessage());
         }
     }
 
@@ -148,9 +148,9 @@ public class ConsoleController {
                     throw ex;
                 }
                 catch (InvalidCryptModeException ex) {
-                    view.display(ex.getMessage());
+                    ConsoleView.display(ex.getMessage());
                 } catch (CryptException e) {
-                    view.display("Error during encryption. " + e.getMessage());
+                    ConsoleView.display("Error during encryption. " + e.getMessage());
                 }
 
                 try {
@@ -158,15 +158,15 @@ public class ConsoleController {
                     noteHistory.save();
                 }
                 catch (IOException ex) {
-                    view.display("Warning: cannot save or create the note history file.\n");
+                    ConsoleView.display("Warning: cannot save or create the note history file.\n");
                 }
                 catch (IllegalArgumentException ex) {
-                    view.display("The note file directory is empty.");
+                    ConsoleView.display("The note file directory is empty.");
                 }
             }
         }
         catch (IOException | InvalidPathException ex) {
-            view.display("Cannot write to the output file.");
+            ConsoleView.display("Cannot write to the output file.");
         }
     }
 
@@ -189,11 +189,11 @@ public class ConsoleController {
             view.display(passGen);
         }
         catch (NumberFormatException ex) {
-            view.display("Invalid character count format during password generation.");
+            ConsoleView.display("Invalid character count format during password generation.");
         }
         catch (InvalidPasswordLengthException |
                 InvalidCharacterException ex) {
-            view.display(ex.getMessage());
+            ConsoleView.display(ex.getMessage());
         }
     }
 }
