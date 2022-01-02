@@ -1,0 +1,7 @@
+-------------------------------------------------------------------------------
+Test set: pl.polsl.lab.szymonbotor.notemanager.model.NoteTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0 s <<< FAILURE! - in pl.polsl.lab.szymonbotor.notemanager.model.NoteTest
+pl.polsl.lab.szymonbotor.notemanager.model.NoteTest  Time elapsed: 0 s  <<< ERROR!
+java.lang.reflect.InaccessibleObjectException: Unable to make static void pl.polsl.lab.szymonbotor.notemanager.model.NoteTest.init() throws pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidCryptModeException,pl.polsl.lab.szymonbotor.notemanager.exceptions.CryptException accessible: module pl.polsl.lab.szymonbotor.notemanager does not "opens pl.polsl.lab.szymonbotor.notemanager.model" to unnamed module @32b260fa
+
