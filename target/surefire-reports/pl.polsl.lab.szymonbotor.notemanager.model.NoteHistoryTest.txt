@@ -1,17 +1,17 @@
 -------------------------------------------------------------------------------
 Test set: pl.polsl.lab.szymonbotor.notemanager.model.NoteHistoryTest
 -------------------------------------------------------------------------------
-Tests run: 30, Failures: 0, Errors: 30, Skipped: 0, Time elapsed: 0.047 s <<< FAILURE! - in pl.polsl.lab.szymonbotor.notemanager.model.NoteHistoryTest
+Tests run: 30, Failures: 0, Errors: 30, Skipped: 0, Time elapsed: 0.046 s <<< FAILURE! - in pl.polsl.lab.szymonbotor.notemanager.model.NoteHistoryTest
 testAddWhenTextDuplicate{int}[1]  Time elapsed: 0 s  <<< ERROR!
 java.lang.reflect.InaccessibleObjectException: Unable to make pl.polsl.lab.szymonbotor.notemanager.model.NoteHistoryTest() accessible: module pl.polsl.lab.szymonbotor.notemanager does not "opens pl.polsl.lab.szymonbotor.notemanager.model" to unnamed module @32b260fa
 
 testAddWhenTextDuplicate{int}[2]  Time elapsed: 0 s  <<< ERROR!
 java.lang.reflect.InaccessibleObjectException: Unable to make pl.polsl.lab.szymonbotor.notemanager.model.NoteHistoryTest() accessible: module pl.polsl.lab.szymonbotor.notemanager does not "opens pl.polsl.lab.szymonbotor.notemanager.model" to unnamed module @32b260fa
 
-testAddWhenTextDuplicate{int}[3]  Time elapsed: 0 s  <<< ERROR!
+testAddWhenTextDuplicate{int}[3]  Time elapsed: 0.001 s  <<< ERROR!
 java.lang.reflect.InaccessibleObjectException: Unable to make pl.polsl.lab.szymonbotor.notemanager.model.NoteHistoryTest() accessible: module pl.polsl.lab.szymonbotor.notemanager does not "opens pl.polsl.lab.szymonbotor.notemanager.model" to unnamed module @32b260fa
 
-testAddWhenTextDuplicate{int}[4]  Time elapsed: 0 s  <<< ERROR!
+testAddWhenTextDuplicate{int}[4]  Time elapsed: 0.001 s  <<< ERROR!
 java.lang.reflect.InaccessibleObjectException: Unable to make pl.polsl.lab.szymonbotor.notemanager.model.NoteHistoryTest() accessible: module pl.polsl.lab.szymonbotor.notemanager does not "opens pl.polsl.lab.szymonbotor.notemanager.model" to unnamed module @32b260fa
 
 testAddWhenTextDuplicate{int}[5]  Time elapsed: 0 s  <<< ERROR!
@@ -29,31 +29,31 @@ java.lang.reflect.InaccessibleObjectException: Unable to make pl.polsl.lab.szymo
 testAddWhenTextDuplicate{int}[9]  Time elapsed: 0 s  <<< ERROR!
 java.lang.reflect.InaccessibleObjectException: Unable to make pl.polsl.lab.szymonbotor.notemanager.model.NoteHistoryTest() accessible: module pl.polsl.lab.szymonbotor.notemanager does not "opens pl.polsl.lab.szymonbotor.notemanager.model" to unnamed module @32b260fa
 
-testAddWhenTextDuplicate{int}[10]  Time elapsed: 0 s  <<< ERROR!
+testAddWhenTextDuplicate{int}[10]  Time elapsed: 0.001 s  <<< ERROR!
 java.lang.reflect.InaccessibleObjectException: Unable to make pl.polsl.lab.szymonbotor.notemanager.model.NoteHistoryTest() accessible: module pl.polsl.lab.szymonbotor.notemanager does not "opens pl.polsl.lab.szymonbotor.notemanager.model" to unnamed module @32b260fa
 
-testSaveWhenFileDoesNotExist{int}[1]  Time elapsed: 0 s  <<< ERROR!
+testSaveWhenFileDoesNotExist{int}[1]  Time elapsed: 0.001 s  <<< ERROR!
 java.lang.reflect.InaccessibleObjectException: Unable to make pl.polsl.lab.szymonbotor.notemanager.model.NoteHistoryTest() accessible: module pl.polsl.lab.szymonbotor.notemanager does not "opens pl.polsl.lab.szymonbotor.notemanager.model" to unnamed module @32b260fa
 
-testSaveWhenFileDoesNotExist{int}[2]  Time elapsed: 0 s  <<< ERROR!
+testSaveWhenFileDoesNotExist{int}[2]  Time elapsed: 0.001 s  <<< ERROR!
 java.lang.reflect.InaccessibleObjectException: Unable to make pl.polsl.lab.szymonbotor.notemanager.model.NoteHistoryTest() accessible: module pl.polsl.lab.szymonbotor.notemanager does not "opens pl.polsl.lab.szymonbotor.notemanager.model" to unnamed module @32b260fa
 
-testSaveWhenFileDoesNotExist{int}[3]  Time elapsed: 0.001 s  <<< ERROR!
+testSaveWhenFileDoesNotExist{int}[3]  Time elapsed: 0 s  <<< ERROR!
 java.lang.reflect.InaccessibleObjectException: Unable to make pl.polsl.lab.szymonbotor.notemanager.model.NoteHistoryTest() accessible: module pl.polsl.lab.szymonbotor.notemanager does not "opens pl.polsl.lab.szymonbotor.notemanager.model" to unnamed module @32b260fa
 
 testSaveWhenFileDoesNotExist{int}[4]  Time elapsed: 0.001 s  <<< ERROR!
 java.lang.reflect.InaccessibleObjectException: Unable to make pl.polsl.lab.szymonbotor.notemanager.model.NoteHistoryTest() accessible: module pl.polsl.lab.szymonbotor.notemanager does not "opens pl.polsl.lab.szymonbotor.notemanager.model" to unnamed module @32b260fa
 
-testSaveWhenFileDoesNotExist{int}[5]  Time elapsed: 0.001 s  <<< ERROR!
+testSaveWhenFileDoesNotExist{int}[5]  Time elapsed: 0 s  <<< ERROR!
 java.lang.reflect.InaccessibleObjectException: Unable to make pl.polsl.lab.szymonbotor.notemanager.model.NoteHistoryTest() accessible: module pl.polsl.lab.szymonbotor.notemanager does not "opens pl.polsl.lab.szymonbotor.notemanager.model" to unnamed module @32b260fa
 
-testSaveWhenFileDoesNotExist{int}[6]  Time elapsed: 0.001 s  <<< ERROR!
+testSaveWhenFileDoesNotExist{int}[6]  Time elapsed: 0 s  <<< ERROR!
 java.lang.reflect.InaccessibleObjectException: Unable to make pl.polsl.lab.szymonbotor.notemanager.model.NoteHistoryTest() accessible: module pl.polsl.lab.szymonbotor.notemanager does not "opens pl.polsl.lab.szymonbotor.notemanager.model" to unnamed module @32b260fa
 
 testSaveWhenFileDoesNotExist{int}[7]  Time elapsed: 0 s  <<< ERROR!
 java.lang.reflect.InaccessibleObjectException: Unable to make pl.polsl.lab.szymonbotor.notemanager.model.NoteHistoryTest() accessible: module pl.polsl.lab.szymonbotor.notemanager does not "opens pl.polsl.lab.szymonbotor.notemanager.model" to unnamed module @32b260fa
 
-testInputWhenFileExistsAndTooLong  Time elapsed: 0.001 s  <<< ERROR!
+testInputWhenFileExistsAndTooLong  Time elapsed: 0 s  <<< ERROR!
 java.lang.reflect.InaccessibleObjectException: Unable to make pl.polsl.lab.szymonbotor.notemanager.model.NoteHistoryTest() accessible: module pl.polsl.lab.szymonbotor.notemanager does not "opens pl.polsl.lab.szymonbotor.notemanager.model" to unnamed module @32b260fa
 
 testAddWhenTextNotDuplicate  Time elapsed: 0 s  <<< ERROR!
@@ -77,13 +77,13 @@ java.lang.reflect.InaccessibleObjectException: Unable to make pl.polsl.lab.szymo
 testSaveWhenFileExists{int}[3]  Time elapsed: 0 s  <<< ERROR!
 java.lang.reflect.InaccessibleObjectException: Unable to make pl.polsl.lab.szymonbotor.notemanager.model.NoteHistoryTest() accessible: module pl.polsl.lab.szymonbotor.notemanager does not "opens pl.polsl.lab.szymonbotor.notemanager.model" to unnamed module @32b260fa
 
-testSaveWhenFileExists{int}[4]  Time elapsed: 0.001 s  <<< ERROR!
+testSaveWhenFileExists{int}[4]  Time elapsed: 0 s  <<< ERROR!
 java.lang.reflect.InaccessibleObjectException: Unable to make pl.polsl.lab.szymonbotor.notemanager.model.NoteHistoryTest() accessible: module pl.polsl.lab.szymonbotor.notemanager does not "opens pl.polsl.lab.szymonbotor.notemanager.model" to unnamed module @32b260fa
 
 testSaveWhenFileExists{int}[5]  Time elapsed: 0 s  <<< ERROR!
 java.lang.reflect.InaccessibleObjectException: Unable to make pl.polsl.lab.szymonbotor.notemanager.model.NoteHistoryTest() accessible: module pl.polsl.lab.szymonbotor.notemanager does not "opens pl.polsl.lab.szymonbotor.notemanager.model" to unnamed module @32b260fa
 
-testSaveWhenFileExists{int}[6]  Time elapsed: 0 s  <<< ERROR!
+testSaveWhenFileExists{int}[6]  Time elapsed: 0.001 s  <<< ERROR!
 java.lang.reflect.InaccessibleObjectException: Unable to make pl.polsl.lab.szymonbotor.notemanager.model.NoteHistoryTest() accessible: module pl.polsl.lab.szymonbotor.notemanager does not "opens pl.polsl.lab.szymonbotor.notemanager.model" to unnamed module @32b260fa
 
 testSaveWhenFileExists{int}[7]  Time elapsed: 0 s  <<< ERROR!

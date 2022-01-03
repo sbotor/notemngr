@@ -1,8 +1,8 @@
 -------------------------------------------------------------------------------
 Test set: pl.polsl.lab.szymonbotor.notemanager.model.AESTest
 -------------------------------------------------------------------------------
-Tests run: 7, Failures: 0, Errors: 7, Skipped: 0, Time elapsed: 0.014 s <<< FAILURE! - in pl.polsl.lab.szymonbotor.notemanager.model.AESTest
-testEncryptionAndDecryptionWhenBothMode  Time elapsed: 0.003 s  <<< ERROR!
+Tests run: 7, Failures: 0, Errors: 7, Skipped: 0, Time elapsed: 0.011 s <<< FAILURE! - in pl.polsl.lab.szymonbotor.notemanager.model.AESTest
+testEncryptionAndDecryptionWhenBothMode  Time elapsed: 0.004 s  <<< ERROR!
 java.lang.reflect.InaccessibleObjectException: Unable to make pl.polsl.lab.szymonbotor.notemanager.model.AESTest() accessible: module pl.polsl.lab.szymonbotor.notemanager does not "opens pl.polsl.lab.szymonbotor.notemanager.model" to unnamed module @32b260fa
 
 testEncryptionWhenDecryptionMode  Time elapsed: 0 s  <<< ERROR!
@@ -11,15 +11,15 @@ java.lang.reflect.InaccessibleObjectException: Unable to make pl.polsl.lab.szymo
 testEncryptionDecryptionWhenPasswordAndTextEmpty  Time elapsed: 0 s  <<< ERROR!
 java.lang.reflect.InaccessibleObjectException: Unable to make pl.polsl.lab.szymonbotor.notemanager.model.AESTest() accessible: module pl.polsl.lab.szymonbotor.notemanager does not "opens pl.polsl.lab.szymonbotor.notemanager.model" to unnamed module @32b260fa
 
-testEncryptionAndDecryptionWhenParamsCorrect  Time elapsed: 0.001 s  <<< ERROR!
+testEncryptionAndDecryptionWhenParamsCorrect  Time elapsed: 0 s  <<< ERROR!
 java.lang.reflect.InaccessibleObjectException: Unable to make pl.polsl.lab.szymonbotor.notemanager.model.AESTest() accessible: module pl.polsl.lab.szymonbotor.notemanager does not "opens pl.polsl.lab.szymonbotor.notemanager.model" to unnamed module @32b260fa
 
-testDecryptionWhenEncryptionMode  Time elapsed: 0.001 s  <<< ERROR!
+testDecryptionWhenEncryptionMode  Time elapsed: 0 s  <<< ERROR!
 java.lang.reflect.InaccessibleObjectException: Unable to make pl.polsl.lab.szymonbotor.notemanager.model.AESTest() accessible: module pl.polsl.lab.szymonbotor.notemanager does not "opens pl.polsl.lab.szymonbotor.notemanager.model" to unnamed module @32b260fa
 
 testEncryptionDecryptionWhenPasswordEmpty  Time elapsed: 0 s  <<< ERROR!
 java.lang.reflect.InaccessibleObjectException: Unable to make pl.polsl.lab.szymonbotor.notemanager.model.AESTest() accessible: module pl.polsl.lab.szymonbotor.notemanager does not "opens pl.polsl.lab.szymonbotor.notemanager.model" to unnamed module @32b260fa
 
-testEncryptionAndDecryptionWhenTextEmpty  Time elapsed: 0 s  <<< ERROR!
+testEncryptionAndDecryptionWhenTextEmpty  Time elapsed: 0.001 s  <<< ERROR!
 java.lang.reflect.InaccessibleObjectException: Unable to make pl.polsl.lab.szymonbotor.notemanager.model.AESTest() accessible: module pl.polsl.lab.szymonbotor.notemanager does not "opens pl.polsl.lab.szymonbotor.notemanager.model" to unnamed module @32b260fa
 
