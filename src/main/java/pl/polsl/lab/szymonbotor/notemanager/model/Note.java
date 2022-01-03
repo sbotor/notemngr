@@ -10,7 +10,7 @@ import java.io.*;
 /**
  * Class representing a text note. The contents can be encrypted and saved to a file, or a file can be decrypted and read into a Note object.
  * @author Szymon Botor
- * @version 2.0
+ * @version 2.1
  */
 public class Note {
     
@@ -280,5 +280,18 @@ public class Note {
      */
     public boolean hasFile() {
         return file != null;
+    }
+
+    /**
+     * Used to get the note filename without the file extension.
+     * @return note filename or null if the note does not have a file.
+     */
+    public String getName() {
+        
+        if (!hasFile()) {
+            return null;
+        }
+
+        return getFile().getName().split("\\.")[0];
     }
 }

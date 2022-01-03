@@ -17,7 +17,7 @@
   </div>
 
   <div class="container">
-    <form method="POST" action="open" class="col-4 mt-3">
+    <form method="POST" action="note" class="col-4 mt-3">
       <h4>Open note</h4>
       <div class="mb-3">
         <label for="note">Note name</label>
@@ -43,10 +43,10 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <form method="POST" action="create">
+            <form method="POST" action="note">
               <div class="mb-3">
-                <label for="noteName">Name</label>
-                <input type="text" id="noteName" name="noteName" class="form-control">
+                <label for="newNote">Name</label>
+                <input type="text" id="newNote" name="newNote" class="form-control">
               </div>
 
               <div class="mb-3">

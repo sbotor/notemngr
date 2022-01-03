@@ -100,10 +100,14 @@ public abstract class BootstrapServlet extends HttpServlet {
     }
 
     protected void printError(HttpServletResponse response, String message) throws IOException {
-        try (PrintWriter out = beginPage(response, "Error")) {
+        printMessage(response, "Error", "Error", message);
+    }
+
+    protected void printMessage(HttpServletResponse response, String header, String title, String message) throws IOException {
+        try (PrintWriter out = beginPage(response, header)) {
             out.println("<div class=\"container\">");
 
-            out.println("<h1 class=\"row\">Error</h1>");
+            out.println("<h1 class=\"row\">" + title + "</h1>");
             out.println("<div class=\"row mb-3\">" + message + "</div>");
             out.println("<a href=\"/NoteManager\" class=\"btn btn-secondary\">Home</a>");
             out.println("</div>");

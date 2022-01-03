@@ -3,6 +3,7 @@ package pl.polsl.lab.szymonbotor.notemanager.servlets;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Scanner;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -14,6 +15,11 @@ import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidCryptModeException
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.NoteTooLongException;
 import pl.polsl.lab.szymonbotor.notemanager.model.Note;
 
+/**
+ *
+ * @author Szymon Botor
+ * @version 1.0
+ */
 @WebServlet(name = "NoteServlet", urlPatterns = { "/note" })
 public class NoteServlet extends BaseNoteServlet {
 
@@ -21,106 +27,231 @@ public class NoteServlet extends BaseNoteServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String noteDir = request.getParameter("note");
-        if (noteDir == null) {
-            noteDir = request.getParameter("noteName");
-            if (noteDir == null) {
-                printError(response, "No note specified.");
+        Note note = (Note) request.getAttribute("noteAttr");
+        if (note == null) {
+            note = findNote(request, response);
+            if (note == null || !note.hasFile()) {
                 return;
             }
-        }
 
-        noteDir = getNoteFile(noteDir).getAbsolutePath();
-        if (noteDir == null) {
-            printError(response, "Invalid note name.");
+            request.setAttribute("noteAttr", note);
+            request.getRequestDispatcher("/note").forward(request, response);
             return;
         }
 
-        String pass = request.getParameter("pass");
-        if (pass == null) {
-            pass = (String)request.getParameter("pass1");
-            if (pass == null) {
-                printError(response, "No password provided.");
-                return;
-            }
-        }
-
-        Note note = null;
-        if (request.getParameter("save") != null) {
-            String noteContent = request.getParameter("content");
-            if (noteContent != null) {
-                try {
-                    note = changeNote(request);
-                } catch (InvalidCryptModeException | CryptException | NoteTooLongException e) {
-                    printError(response, e.getMessage());
-                    return;
-                }
-            } else {
-                printError(response, "Note content is null.");
-                return;
-            }
-            // TODO: do a redirect or something
-            return;
-        } else if (request.getParameter("remove") != null) {
-            removeNote(noteDir);
-            // TODO: do a redirect or something
-            return;
-        }
-
-        try {
-            if (note == null) {
-                note = new Note(noteDir, pass);
-                if (note.getContent() == null) {
-                    printError(response, "Invalid password.");
-                    return;
-                }
-            }
-        } catch (InvalidCryptModeException | CryptException e) {
-            printError(response, e.getMessage());
-            return;
-        }
-
-        try (PrintWriter out = beginPage(response, noteDir)) {
-
+        try (PrintWriter out = beginPage(response, note.getName())) {
             printNoteForm(out, note);
+
             endPage(out);
         }
     }
 
-    protected void printNoteForm(PrintWriter out, Note note) {
-        out.println("<form method=\"POST\">");
-        out.println("<h3 class=\"mb-2\">" +
-                note.getFile().getName() + "</h3>");
+    protected void printPasswordForm(HttpServletResponse response) throws IOException {
+        String formFilename = getServletContext().getRealPath("/forms/password.html");
 
-        out.println("<div class=\"mb-3>");
-        out.println("<label for=\"content\">");
-        out.print("<input type=\"text\" id=\"content\"" +
-                "name=\"content\" class=\"form-control\" value=\"");
-        out.println(note.getContent() + "\">");
+        try (PrintWriter out = beginPage(response, "Password needed");
+                Scanner scanner = new Scanner(new File(formFilename))) {
+            while (scanner.hasNextLine()) {
+                out.println(scanner.nextLine());
+            }
+
+            endPage(out);
+        }
+    }
+
+    protected Note findNote(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+        if (request.getParameter("save") != null) {
+            return changeNote(request, response);
+        } else if (request.getParameter("remove") != null) {
+            return removeNote(request, response);
+        }
+
+        String noteDir = request.getParameter("note");
+        if (noteDir == null) {
+            noteDir = (String) request.getAttribute("noteNameAttr");
+            if (noteDir == null) {
+                noteDir = request.getParameter("newNote");
+                if (noteDir == null) {
+                    printError(response, "No note specified.");
+                    return null;
+                }
+
+                return create(request, response);
+            }
+        }
+        File noteFile = getNoteFile(noteDir);
+
+        if (!noteFile.exists()) {
+            printError(response, "The note does not exist.");
+            return null;
+        }
+
+        String pass = request.getParameter("pass");
+        if (pass == null) {
+            request.setAttribute("noteNameAttr", noteDir);
+            printPasswordForm(response);
+            return null;
+        }
+
+        try {
+            Note note = new Note(noteFile.getAbsolutePath(), pass);
+            if (note.getContent() == null) {
+                printError(response, "Invalid password.");
+                return null;
+            }
+            
+            return note;
+        } catch (InvalidCryptModeException | CryptException e) {
+            printError(response, e.getMessage());
+            return null;
+        }
+    }
+
+    protected Note create(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+        File noteFile = getNoteFile(request.getParameter("newNote"));
+        if (noteFile == null) {
+            printError(response, "Invalid note name.");
+            return null;
+        }
+
+        if (noteFile.exists()) {
+            printError(response, "A note with that name already exists.");
+            return null;
+        }
+
+        String pass1 = request.getParameter("pass1"), pass2 = request.getParameter("pass2");
+        if (pass1 == null || pass2 == null) {
+            printError(response, "Invalid password for note creation.");
+            return null;
+        }
+        if (!pass1.equals(pass2)) {
+            printError(response, "Passwords do not match.");
+            return null;
+        }
+
+        try {
+            Note note = new Note();
+            note.save(noteFile.getAbsolutePath(), pass1);
+            printMessage(response, "Note created", note.getName(), "Note created successfuly.");
+            return null;
+        } catch (InvalidCryptModeException | CryptException e) {
+            printError(response, e.getMessage());
+            return null;
+        }
+    }
+
+    protected Note changeNote(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String pass = request.getParameter("savePass");
+        if (pass == null) {
+            printError(response, "No password provided.");
+            return null;
+        }
+        
+        Note note = null;
+        try {
+            note = new Note(getNoteFile(request.getParameter("save")).getAbsolutePath(), pass);
+            if (note.getContent() == null) {
+                printError(response, "Invalid password.");
+                return null;
+            }
+
+            note.change(request.getParameter("content"));
+            note.overwrite();
+            return note;
+        } catch (IOException | InvalidCryptModeException | CryptException | NoteTooLongException e) {
+            printError(response, e.getMessage());
+            return null;
+        }
+    }
+
+    protected Note removeNote(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String pass = request.getParameter("removePass");
+        if (pass == null) {
+            printError(response, "No password provided.");
+        }
+
+        System.out.print(pass);
+        
+        Note note = null;
+        try {
+            note = new Note(getNoteFile(request.getParameter("remove")).getAbsolutePath(), pass);
+            if (note.getContent() == null) {
+                printError(response, "Invalid password.");
+            }
+
+            if (note.getFile().delete()) {
+                printMessage(response, "Note removed", note.getName(), "The note has been successfully removed.");
+            } else {
+                printError(response, "Problem deleting the note.");
+            }
+            return null;
+        } catch (IOException | InvalidCryptModeException | CryptException e) {
+            printError(response, e.getMessage());
+        }
+
+        return null;
+    }
+
+    protected void printNoteForm(PrintWriter out, Note note) {
+        out.println("<form method=\"POST\" class=\"col-6 m-3\">");
+        out.println("<h3 class=\"mb-3\">" + note.getName() + "</h3>");
+
+        out.println("<div class=\"mb-3\">");
+        out.println("<textarea class=\"form-control\" id=\"content\" name=\"content\" rows=\"3\">");
+        out.println(note.getContent() + "</textarea>");
         out.println("</div>");
 
-        out.println("<button type=\"submit\" class=\"btn btn-success\" name=\"save\">" +
-                "Save</button>");
+        out.println(
+                "<button type=\"button\" class=\"btn btn-success float-end mt-1\" data-bs-toggle=\"modal\" data-bs-target=\"#saveModal\">Save</button>");
+        printPasswordModal(out, "save", note);
+
+        out.println(
+                "<button type=\"button\" class=\"btn btn-danger mt-5\" data-bs-toggle=\"modal\" data-bs-target=\"#removeModal\">Remove note</button>");
+        printPasswordModal(out, "remove", note);
+
         out.println("</form>");
 
-        out.println("<form method=\"POST\" class=\"mt-5\">");
-        out.println("<button type=\"submit\" class=\"btn btn-danger\" name=\"remove\">" +
-                "Remove note</button>");
-        out.println("</form>");
+        out.println("<a href=\"/NoteManager\" class=\"btn btn-secondary m-5 col-auto\">Home</a>");
     }
 
-    protected boolean removeNote(String name) {
-        return new File(name).delete();
+    protected void printPasswordModal(PrintWriter out, String button, Note note) {
+
+        String modalId = "modal",
+            buttonText = "Button",
+            passName = "pass";
+        if (button.equals("save")) {
+            modalId = "saveModal";
+            buttonText = "Save";
+            passName = "savePass";
+        } else if (button.equals("remove")) {
+            modalId = "removeModal";
+            buttonText = "Remove";
+            passName = "removePass";
+        }
+
+        out.println("<div class=\"modal fade\" id=\"" + modalId + "\" tabindex=\"-1\"" +
+                "aria-labelledby=\"" + modalId + "Label\" aria-hidden=\"true\">");
+        out.println("<div class=\"modal-dialog\">");
+        out.println("<div class=\"modal-content\">");
+        out.println("<div class=\"modal-header\">");
+        out.println("<h5 class=\"modal-title\" id=\"" + modalId + "Label\">Password needed</h5>");
+        out.println(
+                "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"modal\" aria-label=\"Close\"></button></div>");
+
+        out.println("<div class=\"modal-body\">");
+        out.println("<div class=\"mb-3\">");
+        out.println("<label for=\"" + passName + "\">Password</label>");
+        out.println("<input type=\"password\" id=\"" + passName + "\" name=\"" + passName + "\" class=\"form-control\">");
+        out.println("</div>");
+
+        out.println("<div class=\"modal-footer\">");
+        out.println("<button type=\"button\" class=\"btn btn-secondary\" data-bs-dismiss=\"modal\">Close</button>");
+        out.println("<button type=\"submit\" class=\"btn btn-primary mt-1\" name=\"" + button + "\" id=\"" + button +
+                "\" value=\"" + note.getName() + "\">" + buttonText + "</button>");
+
+        out.println("</div></div></div></div></div>");
+
     }
-
-    protected Note changeNote(HttpServletRequest request)
-            throws IOException, InvalidCryptModeException, CryptException, NoteTooLongException {
-        Note note = new Note(request.getParameter("note"), request.getParameter("pass"));
-
-        note.change(request.getParameter("content"));
-        note.overwrite();
-
-        return note;
-    }
-
 }
