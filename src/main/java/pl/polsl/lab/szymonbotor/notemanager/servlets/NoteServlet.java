@@ -3,7 +3,6 @@ package pl.polsl.lab.szymonbotor.notemanager.servlets;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Scanner;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -47,14 +46,9 @@ public class NoteServlet extends BaseNoteServlet {
     }
 
     protected void printPasswordForm(HttpServletResponse response) throws IOException {
-        String formFilename = getServletContext().getRealPath("/forms/password.html");
-
-        try (PrintWriter out = beginPage(response, "Password needed");
-                Scanner scanner = new Scanner(new File(formFilename))) {
-            while (scanner.hasNextLine()) {
-                out.println(scanner.nextLine());
-            }
-
+        
+        try (PrintWriter out = beginPage(response, "Password needed")) {
+            printFromFile("/forms/password.html", out);
             endPage(out);
         }
     }

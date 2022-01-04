@@ -1,7 +1,10 @@
 package pl.polsl.lab.szymonbotor.notemanager.servlets;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Scanner;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -103,16 +106,28 @@ public abstract class BootstrapServlet extends HttpServlet {
         printMessage(response, "Error", "Error", message);
     }
 
-    protected void printMessage(HttpServletResponse response, String header, String title, String message) throws IOException {
-        try (PrintWriter out = beginPage(response, header)) {
+    protected void printMessage(HttpServletResponse response, String title, String header, String message) throws IOException {
+        try (PrintWriter out = beginPage(response, title)) {
             out.println("<div class=\"container\">");
 
-            out.println("<h1 class=\"row\">" + title + "</h1>");
+            out.println("<h1 class=\"row\">" + header + "</h1>");
             out.println("<div class=\"row mb-3\">" + message + "</div>");
             out.println("<a href=\"/NoteManager\" class=\"btn btn-secondary\">Home</a>");
             out.println("</div>");
             
             endPage(out);
+        }
+    }
+
+    protected void printFromFile(String filename, PrintWriter out) throws FileNotFoundException {
+        String realPath = getServletContext().getRealPath(filename);
+
+        System.out.print(filename + " real path: " + realPath);
+
+        try (Scanner scanner = new Scanner(new File(realPath))) {
+            while (scanner.hasNextLine()) {
+                out.println(scanner.nextLine());
+            }
         }
     }
 }
