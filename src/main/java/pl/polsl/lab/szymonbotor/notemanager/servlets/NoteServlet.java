@@ -15,7 +15,7 @@ import pl.polsl.lab.szymonbotor.notemanager.exceptions.NoteTooLongException;
 import pl.polsl.lab.szymonbotor.notemanager.model.Note;
 
 /**
- *
+ * Servlet used to open, display and modify notes.
  * @author Szymon Botor
  * @version 1.0
  */
@@ -45,6 +45,11 @@ public class NoteServlet extends BaseNoteServlet {
         }
     }
 
+    /**
+     * Prints a whole page asking for a password.
+     * @param response HttpResponse to write to.
+     * @throws IOException Thrown when an IO error occurs.
+     */
     protected void printPasswordForm(HttpServletResponse response) throws IOException {
         
         try (PrintWriter out = beginPage(response, "Password needed")) {
@@ -53,6 +58,13 @@ public class NoteServlet extends BaseNoteServlet {
         }
     }
 
+    /**
+     * Used to get a Note object if none wass passed as an Attribute. It deals with note creation, modification and deletion.
+     * @param request servlet request.
+     * @param response servlet response.
+     * @return Note object if a note was found, null otherwise.
+     * @throws IOException Thrown when an IO error occurs.
+     */
     protected Note findNote(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         if (request.getParameter("save") != null) {
@@ -102,6 +114,13 @@ public class NoteServlet extends BaseNoteServlet {
         }
     }
 
+    /**
+     * Method used to create a new note according to the parameters in the request. Needs a password with confirmation.
+     * @param request servlet request.
+     * @param response servlet response.
+     * @return newly created note if successful, null otherwise.
+     * @throws IOException Thrown when an IO error occurs.
+     */
     protected Note create(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         File noteFile = getNoteFile(request.getParameter("newNote"));
@@ -128,14 +147,21 @@ public class NoteServlet extends BaseNoteServlet {
         try {
             Note note = new Note();
             note.save(noteFile.getAbsolutePath(), pass1);
-            printMessage(response, "Note created", note.getName(), "Note created successfuly.");
-            return null;
+            //printMessage(response, "Note created", note.getName(), "Note created successfuly.");
+            return note;
         } catch (InvalidCryptModeException | CryptException e) {
             printError(response, e.getMessage());
             return null;
         }
     }
 
+    /**
+     * Method used to change a note according to the parameters in the request. Needs a password.
+     * @param request servlet request.
+     * @param response servlet response.
+     * @return changed Note if successful, null otherwise.
+     * @throws IOException Thrown when an IO error occurs.
+     */
     protected Note changeNote(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String pass = request.getParameter("savePass");
         if (pass == null) {
@@ -160,6 +186,13 @@ public class NoteServlet extends BaseNoteServlet {
         }
     }
 
+    /**
+     * Method used to remove a note specified by the request. Needs a password.
+     * @param request servlet request.
+     * @param response servlet response.
+     * @return newly created note if successful, null otherwise.
+     * @throws IOException Thrown when an IO error occurs.
+     */
     protected Note removeNote(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String pass = request.getParameter("removePass");
         if (pass == null) {
@@ -188,6 +221,11 @@ public class NoteServlet extends BaseNoteServlet {
         return null;
     }
 
+    /**
+     * Method printing the main note form for modification and deletion.
+     * @param out PrintWriter to write to.
+     * @param note currently open note.
+     */
     protected void printNoteForm(PrintWriter out, Note note) {
         out.println("<form method=\"POST\" class=\"col-6 m-3\">");
         out.println("<h3 class=\"mb-3\">" + note.getName() + "</h3>");
@@ -210,6 +248,12 @@ public class NoteServlet extends BaseNoteServlet {
         out.println("<a href=\"/NoteManager\" class=\"btn btn-secondary m-5 col-auto\">Home</a>");
     }
 
+    /**
+     * Method used to print a password Bootstrap Modal during deletion or modification.
+     * @param out PrintWriter to write to.
+     * @param button button name specifing deletion (<i>remove</i>) or modification (<i>save</i>).
+     * @param note currently open note.
+     */
     protected void printPasswordModal(PrintWriter out, String button, Note note) {
 
         String modalId = "modal",

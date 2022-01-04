@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- *
+ * Abstract class implementing methods utilizing Bootstrap 5.
  * @author Szymon Botor
  * @version 1.0
  */
@@ -68,6 +68,13 @@ public abstract class BootstrapServlet extends HttpServlet {
         return "Abstract Bootstrap servlet.";
     }
 
+    /**
+     * Method used to print the beginning of a page with the Bootstrap CSS attached.
+     * @param response response to write to.
+     * @param title page title.
+     * @return PrintWriter object of the HttpResponse passed as a parameter.
+     * @throws IOException Thrown when an IO error occurs.
+     */
     protected PrintWriter beginPage(HttpServletResponse response, String title) throws IOException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
@@ -94,6 +101,11 @@ public abstract class BootstrapServlet extends HttpServlet {
         
     }
 
+    /**
+     * Method printing the end of the page including Bootstrap JavaScript. It closes the passed PrintWriter object.
+     * @param out PrintWriter object used to print the page.
+     * @throws IOException Thrown when an IO error occurs.
+     */
     protected void endPage(PrintWriter out) throws IOException {
         out.println("<script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js\" integrity=\"sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p\" crossorigin=\"anonymous\"></script>");
         out.println("</body>");
@@ -102,10 +114,24 @@ public abstract class BootstrapServlet extends HttpServlet {
         out.close();
     }
 
+    /**
+     * Convenience method used to print a whole page with an error.
+     * @param response HttpResponse to write to.
+     * @param message error message.
+     * @throws IOException Thrown when an IO error occurs.
+     */
     protected void printError(HttpServletResponse response, String message) throws IOException {
         printMessage(response, "Error", "Error", message);
     }
 
+    /**
+     * Convenience method used to print a whole page with a specified message.
+     * @param response HttpResponse to write to.
+     * @param title page title.
+     * @param header message header.
+     * @param message message content.
+     * @throws IOException Thrown when an IO error occurs.
+     */
     protected void printMessage(HttpServletResponse response, String title, String header, String message) throws IOException {
         try (PrintWriter out = beginPage(response, title)) {
             out.println("<div class=\"container\">");
@@ -119,6 +145,12 @@ public abstract class BootstrapServlet extends HttpServlet {
         }
     }
 
+    /**
+     * This method prints a portion of text specified by the filename to the PrintWriter passed as a parameter.
+     * @param filename input filename.
+     * @param out output PrintWriter object.
+     * @throws FileNotFoundException Thrown when the input file cannot be found.
+     */
     protected void printFromFile(String filename, PrintWriter out) throws FileNotFoundException {
         String realPath = getServletContext().getRealPath(filename);
 

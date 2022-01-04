@@ -11,6 +11,11 @@ import javax.servlet.http.HttpServletResponse;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidPasswordLengthException;
 import pl.polsl.lab.szymonbotor.notemanager.model.PasswordGen;
 
+/**
+ * Servlet managing the password generation page.
+ * @author Szymon Botor
+ * @version 1.0
+ */
 @WebServlet(name="PassGenServlet", urlPatterns = {"/generate"})
 public class PassGenServlet extends BootstrapServlet {
 
@@ -45,6 +50,12 @@ public class PassGenServlet extends BootstrapServlet {
         }
     }
 
+    /**
+     * Method printing the generator form.
+     * @param generatedPass generated password. Null if none was generated.
+     * @param response servlet response to write to.
+     * @throws IOException Thrown when an IO error occurs.
+     */
     protected void printForm(String generatedPass, HttpServletResponse response) throws IOException {
         StringBuilder stringBuilder = new StringBuilder();
         
@@ -72,6 +83,11 @@ public class PassGenServlet extends BootstrapServlet {
         }
     }
 
+    /**
+     * Method used to print a clean generation form with no generated password.
+     * @param response servlet response to write to.
+     * @throws IOException Thrown when an IO error occurs.
+     */
     protected void printForm(HttpServletResponse response) throws IOException {
         printForm(null, response);
     }
