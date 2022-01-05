@@ -154,7 +154,7 @@ public abstract class BootstrapServlet extends HttpServlet {
     protected void printFromFile(String filename, PrintWriter out) throws FileNotFoundException {
         String realPath = getServletContext().getRealPath(filename);
 
-        System.out.print(filename + " real path: " + realPath);
+        //System.out.print(filename + " real path: " + realPath);
 
         try (Scanner scanner = new Scanner(new File(realPath))) {
             while (scanner.hasNextLine()) {

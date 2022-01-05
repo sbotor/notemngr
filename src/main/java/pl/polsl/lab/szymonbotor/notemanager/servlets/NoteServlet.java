@@ -59,7 +59,7 @@ public class NoteServlet extends BaseNoteServlet {
     }
 
     /**
-     * Used to get a Note object if none wass passed as an Attribute. It deals with note creation, modification and deletion.
+     * Used to get a Note object if none was passed as an Attribute. It deals with note creation, modification and deletion.
      * @param request servlet request.
      * @param response servlet response.
      * @return Note object if a note was found, null otherwise.
