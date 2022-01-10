@@ -5,11 +5,13 @@ import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidPasswordLengthException;
 import pl.polsl.lab.szymonbotor.notemanager.model.PasswordGen;
+import pl.polsl.lab.szymonbotor.notemanager.view.BootstrapView;
 
 /**
  * Servlet managing the password generation page.
@@ -17,9 +19,17 @@ import pl.polsl.lab.szymonbotor.notemanager.model.PasswordGen;
  * @version 1.0
  */
 @WebServlet(name="PassGenServlet", urlPatterns = {"/generate"})
-public class PassGenServlet extends BootstrapServlet {
-
-    @Override
+public class PassGenServlet extends HttpServlet {
+    
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
@@ -46,7 +56,7 @@ public class PassGenServlet extends BootstrapServlet {
             PasswordGen passGen = new PasswordGen(passLength, useUpper, useDigits, useOther);
             printForm(passGen.generate(), response);
         } catch (NumberFormatException | InvalidPasswordLengthException e) {
-            printError(response, "Invalid password length.");
+            new BootstrapView(this).printError(response, "Invalid password length.");
         }
     }
 
@@ -61,16 +71,17 @@ public class PassGenServlet extends BootstrapServlet {
         
         stringBuilder.append("<input type=\"text\" disabled=\"true\" class=\"form-control\" id=\"generated\" name=\"generated\"");
         if (generatedPass != null) {
-            stringBuilder.append(" value=\"" + generatedPass + "\" readonly=\"true\"");
+            stringBuilder.append(" value=\"").append(generatedPass).append("\" readonly=\"true\"");
         } else {
             stringBuilder.append(" disabled=\"true\"");
         }
         stringBuilder.append(">");
 
+        BootstrapView view = new BootstrapView(this);
         try (PrintWriter out = response.getWriter()) {
             response.setContentType("text/html;charset=UTF-8");
 
-            printFromFile("/forms/generator.html", out);
+            view.printFromFile("/forms/generator.html", out);
 
             out.println("<div class=\"mb-3 row\">");
 
@@ -79,7 +90,7 @@ public class PassGenServlet extends BootstrapServlet {
 
             out.println("</div></div>");
 
-            endPage(out);
+            view.endPage(out);
         }
     }
 
@@ -90,6 +101,44 @@ public class PassGenServlet extends BootstrapServlet {
      */
     protected void printForm(HttpServletResponse response) throws IOException {
         printForm(null, response);
+    }
+
+    /**
+     * Handles the HTTP <code>GET</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+    /**
+     * Handles the HTTP <code>POST</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+    /**
+     * Returns a short description of the servlet.
+     *
+     * @return a String containing servlet description
+     */
+    @Override
+    public String getServletInfo() {
+        return "Short description";
     }
 
 }

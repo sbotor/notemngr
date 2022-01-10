@@ -13,6 +13,7 @@ import pl.polsl.lab.szymonbotor.notemanager.exceptions.CryptException;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidCryptModeException;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.NoteTooLongException;
 import pl.polsl.lab.szymonbotor.notemanager.model.Note;
+import pl.polsl.lab.szymonbotor.notemanager.view.BootstrapView;
 
 /**
  * Servlet used to open, display and modify notes.
@@ -26,6 +27,11 @@ public class NoteServlet extends BaseNoteServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+//        request.getParameterMap().keySet().forEach(attr -> {
+//            System.out.println(attr + ", " + request.getParameterMap().get(attr)[0]);
+//        });
+//        System.out.println("----------");
+
         Note note = (Note) request.getAttribute("noteAttr");
         if (note == null) {
             note = findNote(request, response);
@@ -38,10 +44,11 @@ public class NoteServlet extends BaseNoteServlet {
             return;
         }
 
-        try (PrintWriter out = beginPage(response, note.getName())) {
-            printNoteForm(out, note);
+        BootstrapView view = new BootstrapView(this);
+        try (PrintWriter out = view.beginPage(response, note.getName())) {
+            view.printNoteForm(out, note);
 
-            endPage(out);
+            view.endPage(out);
         }
     }
 
@@ -51,10 +58,11 @@ public class NoteServlet extends BaseNoteServlet {
      * @throws IOException Thrown when an IO error occurs.
      */
     protected void printPasswordForm(HttpServletResponse response) throws IOException {
-        
-        try (PrintWriter out = beginPage(response, "Password needed")) {
-            printFromFile("/forms/password.html", out);
-            endPage(out);
+
+        BootstrapView view = new BootstrapView(this);
+        try (PrintWriter out = view.beginPage(response, "Password needed")) {
+            view.printFromFile("/forms/password.html", out);
+            view.endPage(out);
         }
     }
 
@@ -67,10 +75,10 @@ public class NoteServlet extends BaseNoteServlet {
      */
     protected Note findNote(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-        if (request.getParameter("save") != null) {
-            return changeNote(request, response);
-        } else if (request.getParameter("remove") != null) {
+        if (request.getParameter("remove") != null && request.getParameter("removePass") != null) {
             return removeNote(request, response);
+        } else if (request.getParameter("save") != null && request.getParameter("savePass") != null) {
+            return changeNote(request, response);
         }
 
         String noteDir = request.getParameter("note");
@@ -79,7 +87,7 @@ public class NoteServlet extends BaseNoteServlet {
             if (noteDir == null) {
                 noteDir = request.getParameter("newNote");
                 if (noteDir == null) {
-                    printError(response, "No note specified.");
+                    new BootstrapView(this).printError(response, "No note specified.");
                     return null;
                 }
 
@@ -89,7 +97,7 @@ public class NoteServlet extends BaseNoteServlet {
         File noteFile = getNoteFile(noteDir);
 
         if (!noteFile.exists()) {
-            printError(response, "The note does not exist.");
+            new BootstrapView(this).printError(response, "The note does not exist.");
             return null;
         }
 
@@ -103,13 +111,13 @@ public class NoteServlet extends BaseNoteServlet {
         try {
             Note note = new Note(noteFile.getAbsolutePath(), pass);
             if (note.getContent() == null) {
-                printError(response, "Invalid password.");
+                new BootstrapView(this).printError(response, "Invalid password during note opening.");
                 return null;
             }
             
             return note;
         } catch (InvalidCryptModeException | CryptException e) {
-            printError(response, e.getMessage());
+            new BootstrapView(this).printError(response, e.getMessage());
             return null;
         }
     }
@@ -125,22 +133,22 @@ public class NoteServlet extends BaseNoteServlet {
 
         File noteFile = getNoteFile(request.getParameter("newNote"));
         if (noteFile == null) {
-            printError(response, "Invalid note name.");
+            new BootstrapView(this).printError(response, "Invalid note name.");
             return null;
         }
 
         if (noteFile.exists()) {
-            printError(response, "A note with that name already exists.");
+            new BootstrapView(this).printError(response, "A note with that name already exists.");
             return null;
         }
 
         String pass1 = request.getParameter("pass1"), pass2 = request.getParameter("pass2");
         if (pass1 == null || pass2 == null) {
-            printError(response, "Invalid password for note creation.");
+            new BootstrapView(this).printError(response, "Invalid password for note creation.");
             return null;
         }
         if (!pass1.equals(pass2)) {
-            printError(response, "Passwords do not match.");
+            new BootstrapView(this).printError(response, "Passwords do not match.");
             return null;
         }
 
@@ -150,7 +158,7 @@ public class NoteServlet extends BaseNoteServlet {
             //printMessage(response, "Note created", note.getName(), "Note created successfuly.");
             return note;
         } catch (InvalidCryptModeException | CryptException e) {
-            printError(response, e.getMessage());
+            new BootstrapView(this).printError(response, e.getMessage());
             return null;
         }
     }
@@ -165,7 +173,7 @@ public class NoteServlet extends BaseNoteServlet {
     protected Note changeNote(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String pass = request.getParameter("savePass");
         if (pass == null) {
-            printError(response, "No password provided.");
+            new BootstrapView(this).printError(response, "No password provided.");
             return null;
         }
         
@@ -173,7 +181,7 @@ public class NoteServlet extends BaseNoteServlet {
         try {
             note = new Note(getNoteFile(request.getParameter("save")).getAbsolutePath(), pass);
             if (note.getContent() == null) {
-                printError(response, "Invalid password.");
+                new BootstrapView(this).printError(response, "Invalid password during note modification.");
                 return null;
             }
 
@@ -181,7 +189,7 @@ public class NoteServlet extends BaseNoteServlet {
             note.overwrite();
             return note;
         } catch (IOException | InvalidCryptModeException | CryptException | NoteTooLongException e) {
-            printError(response, e.getMessage());
+            new BootstrapView(this).printError(response, e.getMessage());
             return null;
         }
     }
@@ -196,100 +204,26 @@ public class NoteServlet extends BaseNoteServlet {
     protected Note removeNote(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String pass = request.getParameter("removePass");
         if (pass == null) {
-            printError(response, "No password provided.");
+            new BootstrapView(this).printError(response, "No password provided.");
         }
-
-        System.out.print(pass);
         
         Note note = null;
         try {
             note = new Note(getNoteFile(request.getParameter("remove")).getAbsolutePath(), pass);
             if (note.getContent() == null) {
-                printError(response, "Invalid password.");
+                new BootstrapView(this).printError(response, "Invalid password during deletion.");
             }
 
             if (note.getFile().delete()) {
-                printMessage(response, "Note removed", note.getName(), "The note has been successfully removed.");
+                new BootstrapView(this).printMessage(response, "Note removed", note.getName(), "The note has been successfully removed.");
             } else {
-                printError(response, "Problem deleting the note.");
+                new BootstrapView(this).printError(response, "Problem deleting the note.");
             }
             return null;
         } catch (IOException | InvalidCryptModeException | CryptException e) {
-            printError(response, e.getMessage());
+            new BootstrapView(this).printError(response, e.getMessage());
         }
 
         return null;
-    }
-
-    /**
-     * Method printing the main note form for modification and deletion.
-     * @param out PrintWriter to write to.
-     * @param note currently open note.
-     */
-    protected void printNoteForm(PrintWriter out, Note note) {
-        out.println("<form method=\"POST\" class=\"col-6 m-3\">");
-        out.println("<h3 class=\"mb-3\">" + note.getName() + "</h3>");
-
-        out.println("<div class=\"mb-3\">");
-        out.println("<textarea class=\"form-control\" id=\"content\" name=\"content\" rows=\"3\">");
-        out.println(note.getContent() + "</textarea>");
-        out.println("</div>");
-
-        out.println(
-                "<button type=\"button\" class=\"btn btn-success float-end mt-1\" data-bs-toggle=\"modal\" data-bs-target=\"#saveModal\">Save</button>");
-        printPasswordModal(out, "save", note);
-
-        out.println(
-                "<button type=\"button\" class=\"btn btn-danger mt-5\" data-bs-toggle=\"modal\" data-bs-target=\"#removeModal\">Remove note</button>");
-        printPasswordModal(out, "remove", note);
-
-        out.println("</form>");
-
-        out.println("<a href=\"/NoteManager\" class=\"btn btn-secondary m-5 col-auto\">Home</a>");
-    }
-
-    /**
-     * Method used to print a password Bootstrap Modal during deletion or modification.
-     * @param out PrintWriter to write to.
-     * @param button button name specifing deletion (<i>remove</i>) or modification (<i>save</i>).
-     * @param note currently open note.
-     */
-    protected void printPasswordModal(PrintWriter out, String button, Note note) {
-
-        String modalId = "modal",
-            buttonText = "Button",
-            passName = "pass";
-        if (button.equals("save")) {
-            modalId = "saveModal";
-            buttonText = "Save";
-            passName = "savePass";
-        } else if (button.equals("remove")) {
-            modalId = "removeModal";
-            buttonText = "Remove";
-            passName = "removePass";
-        }
-
-        out.println("<div class=\"modal fade\" id=\"" + modalId + "\" tabindex=\"-1\"" +
-                "aria-labelledby=\"" + modalId + "Label\" aria-hidden=\"true\">");
-        out.println("<div class=\"modal-dialog\">");
-        out.println("<div class=\"modal-content\">");
-        out.println("<div class=\"modal-header\">");
-        out.println("<h5 class=\"modal-title\" id=\"" + modalId + "Label\">Password needed</h5>");
-        out.println(
-                "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"modal\" aria-label=\"Close\"></button></div>");
-
-        out.println("<div class=\"modal-body\">");
-        out.println("<div class=\"mb-3\">");
-        out.println("<label for=\"" + passName + "\">Password</label>");
-        out.println("<input type=\"password\" id=\"" + passName + "\" name=\"" + passName + "\" class=\"form-control\">");
-        out.println("</div>");
-
-        out.println("<div class=\"modal-footer\">");
-        out.println("<button type=\"button\" class=\"btn btn-secondary\" data-bs-dismiss=\"modal\">Close</button>");
-        out.println("<button type=\"submit\" class=\"btn btn-primary mt-1\" name=\"" + button + "\" id=\"" + button +
-                "\" value=\"" + note.getName() + "\">" + buttonText + "</button>");
-
-        out.println("</div></div></div></div></div>");
-
     }
 }
