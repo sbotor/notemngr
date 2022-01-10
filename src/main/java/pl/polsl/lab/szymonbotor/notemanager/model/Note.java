@@ -10,7 +10,7 @@ import java.io.*;
 /**
  * Class representing a text note. The contents can be encrypted and saved to a file, or a file can be decrypted and read into a Note object.
  * @author Szymon Botor
- * @version 2.1
+ * @version 2.2
  */
 public class Note {
     
@@ -256,6 +256,14 @@ public class Note {
         
         content = str;
         saved = false;
+    }
+
+    /**
+     * Sets the note File to the specified object.
+     * @param file File object to be set as the note File.
+     */
+    public void setFile(File file) {
+        this.file = file;
     }
 
     /**
