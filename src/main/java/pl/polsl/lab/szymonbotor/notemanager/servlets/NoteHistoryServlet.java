@@ -50,10 +50,21 @@ public class NoteHistoryServlet extends HttpServlet {
         view = new HistoryBootstrapView(this);
         history = new SessionHistoryController(request, response);
 
-        String removePass = request.getParameter("removePass");
+        String[] removePasswords = request.getParameterValues("removePass");
+        String removePass = null;
+        if (removePasswords != null) {
+            for (String pass : removePasswords) {
+                if (pass != null && !pass.isBlank()) {
+                    removePass = pass;
+                    break;
+                }
+            }
+        }
+
+        //System.out.println(removePass);
 
         if (removePass != null && !removePass.isBlank()) {
-            removeNote(request, response);
+            removeNote(request, response, removePass);
             response.sendRedirect("NoteManager/history");
             return;
         }
@@ -65,11 +76,13 @@ public class NoteHistoryServlet extends HttpServlet {
      * TODO
      * @param request
      * @param response
+     * @param pass
      * @throws IOException
      */
-    protected void removeNote(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String noteName = request.getParameter("note"),
-            pass = request.getParameter("removePass");
+    protected void removeNote(HttpServletRequest request, HttpServletResponse response, String pass) throws IOException {
+        String noteName = request.getParameter("note");
+
+        // System.out.println(noteName + ", " + pass);
 
         File noteFile = NoteServlet.getNoteFile(noteName);
         if (noteFile != null && noteFile.exists()) {

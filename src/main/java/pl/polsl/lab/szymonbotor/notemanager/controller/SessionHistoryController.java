@@ -78,9 +78,10 @@ public class SessionHistoryController {
 
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("notes")) {
-                String[] noteNames = cookie.getValue().split(";");
+                //System.out.println("Notes from cookie: " + cookie.getValue());
+                String[] noteNames = cookie.getValue().split(",");
                 for (String noteName : noteNames) {
-                    File noteFile = NoteServlet.getNoteFile(noteName);
+                    File noteFile = NoteServlet.getNoteFile(noteName.strip());
                     if (noteFile != null && noteFile.exists()) {
                         history.add(noteFile);
                     }
@@ -106,10 +107,11 @@ public class SessionHistoryController {
         for (File noteFile : history.getNotes()) {
             Note note = new Note();
             note.setFile(noteFile);
-            builder.append(note.getName()).append(";");
+            builder.append(note.getName()).append(",");
         }
 
         Cookie cookie = new Cookie("notes", builder.toString());
+        //System.out.println("Built cookie: " + builder);
         //cookie.setMaxAge(30 * 24 * 60 * 60);
         cookie.setPath("/");
         response.addCookie(cookie);
