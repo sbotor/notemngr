@@ -4,7 +4,7 @@
  */
 package pl.polsl.lab.szymonbotor.notemanager.servlets;
 
-import pl.polsl.lab.szymonbotor.notemanager.controller.SessionHistoryController;
+import pl.polsl.lab.szymonbotor.notemanager.controller.CookieHistoryController;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.CryptException;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidCryptModeException;
 import pl.polsl.lab.szymonbotor.notemanager.model.Note;
@@ -19,8 +19,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * TODO
- * @author sotor
+ * Servlet controlling a cookie-based note history list.
+ * @author Szymon Botor
+ * @version 1.0
  */
 @WebServlet(name = "NoteHistoryServlet", urlPatterns = {"/history"})
 public class NoteHistoryServlet extends HttpServlet {
@@ -33,7 +34,7 @@ public class NoteHistoryServlet extends HttpServlet {
     /**
      * Cookie controller responsible for the note history.
      */
-    SessionHistoryController history = null;
+    CookieHistoryController history = null;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -48,7 +49,7 @@ public class NoteHistoryServlet extends HttpServlet {
             throws ServletException, IOException {
 
         view = new HistoryBootstrapView(this);
-        history = new SessionHistoryController(request, response);
+        history = new CookieHistoryController(request, response);
 
         String[] removePasswords = request.getParameterValues("removePass");
         String removePass = null;
@@ -73,11 +74,11 @@ public class NoteHistoryServlet extends HttpServlet {
     }
 
     /**
-     * TODO
-     * @param request
-     * @param response
-     * @param pass
-     * @throws IOException
+     * Removes a note from the server and updates cookies.
+     * @param request servlet request.
+     * @param response servlet response.
+     * @param pass note password.
+     * @throws IOException Thrown when an IO error occurs.
      */
     protected void removeNote(HttpServletRequest request, HttpServletResponse response, String pass) throws IOException {
         String noteName = request.getParameter("note");

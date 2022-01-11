@@ -6,13 +6,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 /**
- * TODO
+ * View for printing the password generation page.
  */
 public class PassGenBootstrapView extends BootstrapView {
 
     /**
-     * TODO
-     * @param servlet
+     * Main constructor of the class.
+     * @param servlet servlet serving as the view context.
      */
     public PassGenBootstrapView(HttpServlet servlet) {
         super(servlet);

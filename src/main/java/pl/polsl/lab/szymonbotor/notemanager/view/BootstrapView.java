@@ -11,18 +11,20 @@ import java.io.PrintWriter;
 import java.util.Scanner;
 
 /**
- * TODO
+ * View implementing Bootstrap 5 methods.
+ * @author Szymon Botor
+ * @version 1.0
  */
 public class BootstrapView {
 
     /**
-     * TODO
+     * Servlet serving as the view context.
      */
     HttpServlet servlet;
 
     /**
-     * TODO
-     * @param servlet
+     * Main constructor of the class.
+     * @param servlet servlet serving as the view context.
      */
     public BootstrapView(HttpServlet servlet) {
         this.servlet = servlet;

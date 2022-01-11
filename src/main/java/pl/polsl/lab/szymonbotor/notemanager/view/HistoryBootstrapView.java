@@ -1,6 +1,6 @@
 package pl.polsl.lab.szymonbotor.notemanager.view;
 
-import pl.polsl.lab.szymonbotor.notemanager.controller.SessionHistoryController;
+import pl.polsl.lab.szymonbotor.notemanager.controller.CookieHistoryController;
 import pl.polsl.lab.szymonbotor.notemanager.model.Note;
 
 import javax.servlet.http.HttpServlet;
@@ -9,22 +9,27 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
+/**
+ * Note history view with Bootstrap 5 methods.
+ * @author Szymon Botor
+ * @version 1.0
+ */
 public class HistoryBootstrapView extends BootstrapView {
 
     /**
-     * TODO
-     * @param servlet
+     * Main constructor of the class.
+     * @param servlet servlet serving as the view context.
      */
     public HistoryBootstrapView(HttpServlet servlet) {
         super(servlet);
     }
 
     /**
-     * TODO
-     * @param history
-     * @throws IOException
+     * Prints the entire note history page.
+     * @param history controller with the note history to print.
+     * @throws IOException Thrown when an IO error occurs.
      */
-    public void printHistory(SessionHistoryController history) throws IOException {
+    public void printHistory(CookieHistoryController history) throws IOException {
         try (PrintWriter out = beginPage(history.getResponse(), "Note history")) {
             out.println("<div class=\"container\" mt-3>");
             out.println("<div class=\"row\"><a href=\"/NoteManager\" class=\"btn btn-secondary col-auto mt-3\">Home</a></div>");
@@ -46,7 +51,7 @@ public class HistoryBootstrapView extends BootstrapView {
                     out.println("</div>");
 
                     out.println("<div class=\"col-auto\">");
-                    printOpenButton(out, note.getName());
+                    out.println("<a href=\"note?note=" + note.getName() + "\" class=\"btn btn-success\">Open</a>");
                     out.println("</div>");
 
                     out.println("<div class=\"col-auto\">");
@@ -67,10 +72,10 @@ public class HistoryBootstrapView extends BootstrapView {
     }
 
     /**
-     * TODO
-     * @param out
-     * @param noteName
-     * @param index
+     * Prints the remove button and appropriate modal for the specified note name.
+     * @param out response writer.
+     * @param noteName note name.
+     * @param index note index in the history used to distinguish modals from one another in the list.
      */
     private void printRemoveButtonAndModal(PrintWriter out, String noteName, int index) {
         out.println(
@@ -79,14 +84,5 @@ public class HistoryBootstrapView extends BootstrapView {
 
         NoteBootstrapView view = new NoteBootstrapView(servlet);
         view.printPasswordModal(out, "remove", noteName, String.valueOf(index));
-    }
-
-    /**
-     * TODO
-     * @param out
-     * @param noteName
-     */
-    private void printOpenButton(PrintWriter out, String noteName) {
-        out.println("<a href=\"note?note=" + noteName + "\" class=\"btn btn-success\">Open</a>");
     }
 }

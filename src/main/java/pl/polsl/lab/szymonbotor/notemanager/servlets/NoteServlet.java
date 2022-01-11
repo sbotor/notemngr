@@ -1,6 +1,6 @@
 package pl.polsl.lab.szymonbotor.notemanager.servlets;
 
-import pl.polsl.lab.szymonbotor.notemanager.controller.SessionHistoryController;
+import pl.polsl.lab.szymonbotor.notemanager.controller.CookieHistoryController;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.CryptException;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidCryptModeException;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.NoteTooLongException;
@@ -79,7 +79,7 @@ public class NoteServlet extends HttpServlet {
 //        cookie.setPath("/NoteManager/history");
 //        response.addCookie(cookie);
 
-        SessionHistoryController history = new SessionHistoryController(request, response);
+        CookieHistoryController history = new CookieHistoryController(request, response);
         System.out.println(note.getName());
         history.addNote(note);
 
@@ -264,7 +264,7 @@ public class NoteServlet extends HttpServlet {
             }
 
             if (note.getFile().delete()) {
-                SessionHistoryController history = new SessionHistoryController(request, response);
+                CookieHistoryController history = new CookieHistoryController(request, response);
                 history.removeNote(note);
                 view.printMessage(response, "Note removed", note.getName(), "The note has been successfully removed.");
             } else {

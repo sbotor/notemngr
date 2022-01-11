@@ -7,35 +7,37 @@ import pl.polsl.lab.szymonbotor.notemanager.servlets.NoteServlet;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Enumeration;
 
 /**
- * TODO
+ * Controller class for cookie-based note history.
+ * @author Szymon Botor
+ * @version 1.0
  */
-public class SessionHistoryController {
+public class CookieHistoryController {
 
     /**
-     * TODO
+     * Note history of the controller.
      */
     private NoteHistory history;
 
     /**
-     * TODO
+     * HTTP request that the history is based on.
      */
     private HttpServletRequest request;
 
     /**
-     * TODO
+     * HTTP response that the history updates.
      */
     private HttpServletResponse response;
 
     /**
-     * TODO
+     * Main constructor of the class. It reads the recent notes from the request's cookies.
+     * @param request request to read notes from.
+     * @param response response to update cookies in.
      */
-    public SessionHistoryController(HttpServletRequest request, HttpServletResponse response) {
+    public CookieHistoryController(HttpServletRequest request, HttpServletResponse response) {
         this.request = request;
         this.response = response;
 
@@ -43,8 +45,8 @@ public class SessionHistoryController {
     }
 
     /**
-     * TODO
-     * @param note
+     * Adds a note to the history, or pushes an existing note to the top, and updates cookies.
+     * @param note note to add to the history.
      */
     public void addNote(Note note) {
         history.add(note);
@@ -52,8 +54,8 @@ public class SessionHistoryController {
     }
 
     /**
-     * TODO
-     * @param note
+     * Remove a note from history. If the note is not present nothing happens.
+     * @param note note to remove from history.
      */
     public void removeNote(Note note) {
         int noteIndex = history.getNotes().indexOf(note.getFile());
@@ -66,7 +68,7 @@ public class SessionHistoryController {
     }
 
     /**
-     * TODO
+     * Updates history according to the request cookies.
      */
     private void readHistory() {
         history = new NoteHistory();
@@ -92,7 +94,7 @@ public class SessionHistoryController {
     }
 
     /**
-     * TODO
+     * Updates response cookies according to the history.
      */
     private void saveHistory() {
         if (history.size() == 0) {

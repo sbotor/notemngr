@@ -7,11 +7,16 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+/**
+ * View for printing the note modification page.
+ * @author Szymon Botor
+ * @version 1.0
+ */
 public class NoteBootstrapView extends BootstrapView {
 
     /**
-     * TODO
-     * @param servlet
+     * Main constructor of the class.
+     * @param servlet servlet serving as the view context.
      */
     public NoteBootstrapView(HttpServlet servlet) {
         super(servlet);
