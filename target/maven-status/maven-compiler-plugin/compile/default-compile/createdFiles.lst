@@ -2,8 +2,8 @@ pl\polsl\lab\szymonbotor\notemanager\model\PasswordGen.class
 pl\polsl\lab\szymonbotor\notemanager\exceptions\CryptException.class
 pl\polsl\lab\szymonbotor\notemanager\controller\NoteFileFXController.class
 pl\polsl\lab\szymonbotor\notemanager\controller\ConsoleController.class
+pl\polsl\lab\szymonbotor\notemanager\controller\CookieHistoryController.class
 pl\polsl\lab\szymonbotor\notemanager\view\NoteBootstrapView.class
-pl\polsl\lab\szymonbotor\notemanager\controller\SessionHistoryController.class
 pl\polsl\lab\szymonbotor\notemanager\enums\CryptMode.class
 module-info.class
 pl\polsl\lab\szymonbotor\notemanager\controller\GUIStarter.class

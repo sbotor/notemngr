@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.stream.IntStream;
 
 /**
  * Controller class for cookie-based note history.
@@ -82,6 +84,7 @@ public class CookieHistoryController {
             if (cookie.getName().equals("notes")) {
                 //System.out.println("Notes from cookie: " + cookie.getValue());
                 String[] noteNames = cookie.getValue().split(",");
+                
                 for (String noteName : noteNames) {
                     File noteFile = NoteServlet.getNoteFile(noteName.strip());
                     if (noteFile != null && noteFile.exists()) {
@@ -106,9 +109,10 @@ public class CookieHistoryController {
         }
 
         StringBuilder builder = new StringBuilder();
-        for (File noteFile : history.getNotes()) {
+        ArrayList<File> list = history.getNotes();
+        for (int i = list.size() - 1; i >= 0; i--) {
             Note note = new Note();
-            note.setFile(noteFile);
+            note.setFile(list.get(i));
             builder.append(note.getName()).append(",");
         }
 

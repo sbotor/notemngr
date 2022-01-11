@@ -9,6 +9,7 @@ C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\s
 C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\view\PassGenFXView.java
 C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\module-info.java
 C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\view\NewPasswordDialog.java
+C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\controller\CookieHistoryController.java
 C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\enums\CryptMode.java
 C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\servlets\PassGenServlet.java
 C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\controller\NoteFileFXController.java
@@ -19,7 +20,6 @@ C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\s
 C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\servlets\package-info.java
 C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\view\PasswordDialog.java
 C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\controller\MainFXController.java
-C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\controller\SessionHistoryController.java
 C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\enums\package-info.java
 C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\exceptions\InvalidCharacterException.java
 C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\model\package-info.java
