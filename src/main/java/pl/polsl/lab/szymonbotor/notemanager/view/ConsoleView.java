@@ -3,16 +3,18 @@ package pl.polsl.lab.szymonbotor.notemanager.view;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.CryptException;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidCryptModeException;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.NoteTooLongException;
+import pl.polsl.lab.szymonbotor.notemanager.model.Note;
+import pl.polsl.lab.szymonbotor.notemanager.model.NoteHistory;
+import pl.polsl.lab.szymonbotor.notemanager.model.PasswordGen;
+
 import java.io.Console;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import pl.polsl.lab.szymonbotor.notemanager.model.*;
 
 /**
  * Console view class of the whole program. It is used as the main user interface during runtime.

@@ -1,10 +1,11 @@
 package pl.polsl.lab.szymonbotor.notemanager.model;
 
-import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidPasswordLengthException;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidCharacterException;
-import java.util.Set;
-import java.util.HashSet;
+import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidPasswordLengthException;
+
 import java.security.SecureRandom;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Class used during password generation. It uses the provided symbols to generate a random password of a specified length.

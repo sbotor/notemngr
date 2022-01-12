@@ -1,15 +1,16 @@
 package pl.polsl.lab.szymonbotor.notemanager.controller;
 
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.CryptException;
+import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidCharacterException;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidCryptModeException;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidPasswordLengthException;
-import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidCharacterException;
+import pl.polsl.lab.szymonbotor.notemanager.model.Note;
+import pl.polsl.lab.szymonbotor.notemanager.model.NoteHistory;
+import pl.polsl.lab.szymonbotor.notemanager.model.PasswordGen;
+import pl.polsl.lab.szymonbotor.notemanager.view.ConsoleView;
 
 import java.io.IOException;
 import java.nio.file.InvalidPathException;
-
-import pl.polsl.lab.szymonbotor.notemanager.view.ConsoleView;
-import pl.polsl.lab.szymonbotor.notemanager.model.*;
 
 /**
  * The main controller class of the whole program in the console.
