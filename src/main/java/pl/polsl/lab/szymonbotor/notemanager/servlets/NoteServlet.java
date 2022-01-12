@@ -79,7 +79,7 @@ public class NoteServlet extends HttpServlet {
 //        response.addCookie(cookie);
 
         CookieHistoryController history = new CookieHistoryController(request, response);
-        System.out.println(note.getName());
+        //System.out.println(note.getName());
         history.addNote(note);
 
         try (PrintWriter out = view.beginPage(response, note.getName())) {
@@ -200,7 +200,7 @@ public class NoteServlet extends HttpServlet {
         try {
             Note note = new Note();
             note.save(noteFile.getAbsolutePath(), pass1);
-            //printMessage(response, "Note created", note.getName(), "Note created successfuly.");
+            //printMessage(response, "Note created", note.getName(), "Note created successfully.");
             return note;
         } catch (InvalidCryptModeException | CryptException e) {
             view.printError(response, e.getMessage());

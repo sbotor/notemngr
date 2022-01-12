@@ -56,7 +56,7 @@ public class CookieHistoryController {
     }
 
     /**
-     * Remove a note from history. If the note is not present nothing happens.
+     * Remove a note from history. If the note is not present then nothing happens.
      * @param note note to remove from history.
      */
     public void removeNote(Note note) {
