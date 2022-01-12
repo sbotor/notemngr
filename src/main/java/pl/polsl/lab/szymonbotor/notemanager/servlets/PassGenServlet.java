@@ -1,17 +1,15 @@
 package pl.polsl.lab.szymonbotor.notemanager.servlets;
 
-import java.io.IOException;
+import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidPasswordLengthException;
+import pl.polsl.lab.szymonbotor.notemanager.model.PasswordGen;
+import pl.polsl.lab.szymonbotor.notemanager.view.PassGenBootstrapView;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidPasswordLengthException;
-import pl.polsl.lab.szymonbotor.notemanager.model.PasswordGen;
-import pl.polsl.lab.szymonbotor.notemanager.view.BootstrapView;
-import pl.polsl.lab.szymonbotor.notemanager.view.PassGenBootstrapView;
+import java.io.IOException;
 
 /**
  * Servlet managing the password generation page.

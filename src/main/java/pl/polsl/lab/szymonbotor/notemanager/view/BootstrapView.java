@@ -1,7 +1,5 @@
 package pl.polsl.lab.szymonbotor.notemanager.view;
 
-import pl.polsl.lab.szymonbotor.notemanager.model.Note;
-
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;

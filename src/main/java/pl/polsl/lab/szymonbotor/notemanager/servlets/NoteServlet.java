@@ -7,15 +7,14 @@ import pl.polsl.lab.szymonbotor.notemanager.exceptions.NoteTooLongException;
 import pl.polsl.lab.szymonbotor.notemanager.model.Note;
 import pl.polsl.lab.szymonbotor.notemanager.view.NoteBootstrapView;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 /**
  * Servlet used to open, display and modify notes.
