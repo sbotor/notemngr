@@ -1,4 +1,0 @@
---patch-module
-pl.polsl.lab.szymonbotor.notemanager=_
---add-reads
-pl.polsl.lab.szymonbotor.notemanager=ALL-UNNAMED
