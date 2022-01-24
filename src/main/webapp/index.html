@@ -16,63 +16,64 @@
     <h1 class="row mt-3">Note Manager</h1>
 
     <div class="container row">
-      <form method="POST" action="note" class="col-4 mt-3">
+      <form method="POST" action="user" class="col-4 mt-3">
         <div class="row">
-          <h4 class="col-8">Open note</h4>
-          <a href="history" class="col-auto btn btn-outline-secondary">Recent notes</a>
+          <h4 class="col-8">Log in</h4>
         </div>
 
         <div class="mb-3">
-          <label for="note">Note name</label>
-          <input type="text" class="form-control" id="note" name="note">
+          <label for="username">Username</label>
+          <input type="text" class="form-control" id="username" name="username">
         </div>
         <div class="mb-3">
-          <label for="pass">Password</label>
-          <input type="password" class="form-control" id="pass" name="pass">
+          <label for="password">Password</label>
+          <input type="password" class="form-control" id="password" name="password">
         </div>
 
-        <button type="submit" class="btn btn-primary float-end">Open</button>
+        <button type="submit" class="btn btn-primary float-end">Log in</button>
       </form>
 
       <div class="row">
-        <button class="col-auto btn btn-success" data-bs-toggle="modal" data-bs-target="#newNoteModal">Create
-          a new note</button>
+        <button class="col-auto btn btn-success" data-bs-toggle="modal" data-bs-target="#newUserModal">Create
+          a new user</button>
       </div>
 
-      <!-- New note modal -->
-      <div class="modal fade" id="newNoteModal" tabindex="-1" aria-labelledby="newNoteModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="newNoteModalLabel">New note</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <form method="POST" action="note">
-                <div class="mb-3">
-                  <label for="newNote">Name</label>
-                  <input type="text" id="newNote" name="newNote" class="form-control">
-                </div>
+      <!-- New user modal -->
+      <form method="POST" action="newUser">
+        <div class="modal fade" id="newUserModal" tabindex="-1" aria-labelledby="newUserModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="newUserModalLabel">New user</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <form method="POST" action="newUser">
+                  <div class="mb-3">
+                    <label for="newUsername">Username</label>
+                    <input type="text" id="newUsername" name="newUsername" class="form-control">
+                  </div>
 
-                <div class="mb-3">
-                  <label for="pass1">Password</label>
-                  <input type="password" id="pass1" name="pass1" class="form-control">
-                </div>
+                  <div class="mb-3">
+                    <label for="pass1">Password</label>
+                    <input type="password" id="pass1" name="pass1" class="form-control">
+                  </div>
 
-                <div class="mb-3">
-                  <label for="pass2">Repeat password</label>
-                  <input type="password" id="pass2" name="pass2" class="form-control">
-                </div>
+                  <div class="mb-3">
+                    <label for="pass2">Repeat password</label>
+                    <input type="password" id="pass2" name="pass2" class="form-control">
+                  </div>
 
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                  <button type="submit" class="btn btn-success">Create</button>
-                </div>
-              </form>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-success">Create</button>
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </form>
 
       <div class="row">
         <a href="generate" class="col-auto btn btn-secondary mt-5">Generate a password</a>

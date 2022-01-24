@@ -38,16 +38,17 @@ public class PassGenBootstrapView extends BootstrapView {
         try (PrintWriter out = response.getWriter()) {
             response.setContentType("text/html;charset=UTF-8");
 
-            printFromFile("/forms/generator.html", out);
+            printFromFile(out, "/forms/generator.html");
 
-            out.println("<div class=\"mb-3 row\">");
+            openDiv("mb-3 row");
 
             out.println("<label for=\"generated\">Generated password</label>");
             out.println(stringBuilder.toString());
 
-            out.println("</div></div>");
+            closeDiv();
+            closeDiv();
 
-            endPage(out);
+            endPage();
         }
     }
 

@@ -12,18 +12,14 @@ import java.util.Arrays;
  * @author Szymon Botor
  * @version 1.1
  */
-public class Authenticator {
-    /**
-     * Hash of the original password obtained through passing it through SHA-256.
-     */
-    private byte[] hash;
+public class Authenticator extends Hash {
     
     /**
      * Constructor used to create an instance of the Authenticator class with a provided hash value.
      * @param passwordHash the original password hash for comparison.
      */
     public Authenticator(byte[] passwordHash) {
-        hash = passwordHash;
+        super(passwordHash);
     }
     
     /**
@@ -33,23 +29,6 @@ public class Authenticator {
      * @throws CryptException This exception is thrown when an error occurs during hashing.
      */
     public boolean authenticate(String password) throws CryptException {
-        return Arrays.equals(hash, hashPassword(password));
-    }
-    
-    /**
-     * A static method used for hashing a provided password by passing it through SHA-256.
-     * @param password password to be hashed.
-     * @return array of bytes representing the hash of the password.
-     * @throws CryptException This exception is thrown when an error occurs during hashing.
-     */
-    public static byte[] hashPassword(String password) throws CryptException {
-
-        MessageDigest digest = null;
-        try {
-            digest = MessageDigest.getInstance("SHA-256");
-            return digest.digest(password.getBytes(StandardCharsets.UTF_8));
-        } catch (NoSuchAlgorithmException e) {
-            throw new CryptException(e.getMessage());
-        }
+        return Arrays.equals(this.hash, hashText(password));
     }
 }

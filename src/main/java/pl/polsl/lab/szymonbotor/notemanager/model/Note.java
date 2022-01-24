@@ -169,7 +169,7 @@ public class Note {
         }
         File newFile = new File(filename);
 
-        byte[] newPassHash = Authenticator.hashPassword(password);
+        byte[] newPassHash = Authenticator.hashText(password);
         aes = new AES(password, CryptMode.BOTH);
         byte[] salt = aes.getSalt();
         byte[] iv = aes.getIV();

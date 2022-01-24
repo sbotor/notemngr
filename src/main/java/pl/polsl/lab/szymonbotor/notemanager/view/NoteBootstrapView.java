@@ -114,8 +114,8 @@ public class NoteBootstrapView extends BootstrapView {
     public void printPasswordForm(HttpServletResponse response) throws IOException {
 
         try (PrintWriter out = beginPage(response, "Password needed")) {
-            printFromFile("/forms/password.html", out);
-            endPage(out);
+            printFromFile(out, "/forms/password.html");
+            endPage();
         }
     }
 

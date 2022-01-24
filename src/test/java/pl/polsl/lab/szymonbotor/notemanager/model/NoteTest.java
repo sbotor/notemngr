@@ -72,7 +72,7 @@ class NoteTest {
 
         salt = aes.getSalt();
         iv = aes.getIV();
-        hash = Authenticator.hashPassword(password);
+        hash = Authenticator.hashText(password);
         encryptedText = aes.encrypt(plainText);
     }
 

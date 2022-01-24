@@ -11,14 +11,19 @@ import java.util.Scanner;
 /**
  * View implementing Bootstrap 5 methods.
  * @author Szymon Botor
- * @version 1.0
+ * @version 2.0
  */
 public class BootstrapView {
 
     /**
      * Servlet serving as the view context.
      */
-    HttpServlet servlet;
+    private final HttpServlet servlet;
+
+    /**
+     * PrintWriter object bound to the view.
+     */
+    private PrintWriter out = null;
 
     /**
      * Main constructor of the class.
@@ -37,7 +42,7 @@ public class BootstrapView {
      */
     public PrintWriter beginPage(HttpServletResponse response, String title) throws IOException {
         response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
+        out = response.getWriter();
 
         try {
             out.println("<!doctype html>");
@@ -61,15 +66,31 @@ public class BootstrapView {
     }
 
     /**
-     * Method printing the end of the page including Bootstrap JavaScript. It closes the passed PrintWriter object.
-     * @param out PrintWriter object used to print the page.
+     * Method printing the end of the page including Bootstrap JavaScript. It closes the bound PrintWriter object.
      */
-    public void endPage(PrintWriter out) {
-        try (out) {
+    public void endPage() {
+        try {
             out.println("<script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js\" integrity=\"sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p\" crossorigin=\"anonymous\"></script>");
             out.println("</body>");
             out.println("</html>");
+        } finally {
+            out.close();
         }
+    }
+
+    // TODO
+    public void openDiv(String classStr) {
+        out.println("<div class=\"" + classStr + "\">");
+    }
+
+    // TODO
+    public void openDiv() {
+        out.println("<div>");
+    }
+
+    // TODO
+    public void closeDiv() {
+        out.println("</div>");
     }
 
     /**
@@ -82,14 +103,18 @@ public class BootstrapView {
      */
     public void printMessage(HttpServletResponse response, String title, String header, String message) throws IOException {
         try (PrintWriter out = beginPage(response, title)) {
-            out.println("<div class=\"container\">");
+            openDiv("container");
 
             out.println("<h1 class=\"row\">" + header + "</h1>");
-            out.println("<div class=\"row mb-3\">" + message + "</div>");
-            out.println("<a href=\"/NoteManager\" class=\"btn btn-secondary\">Home</a>");
-            out.println("</div>");
+            openDiv("row mb-3");
 
-            endPage(out);
+            out.println(message);
+            closeDiv();
+
+            out.println("<a href=\"/NoteManager\" class=\"btn btn-secondary\">Home</a>");
+            closeDiv();
+
+            endPage();
         }
     }
 
@@ -109,15 +134,22 @@ public class BootstrapView {
      * @param out output PrintWriter object.
      * @throws FileNotFoundException Thrown when the input file cannot be found.
      */
-    public void printFromFile(String filename, PrintWriter out) throws FileNotFoundException {
+    public void printFromFile(PrintWriter out, String filename) throws FileNotFoundException {
         String realPath = servlet.getServletContext().getRealPath(filename);
-
-        //System.out.print(filename + " real path: " + realPath);
 
         try (Scanner scanner = new Scanner(new File(realPath))) {
             while (scanner.hasNextLine()) {
                 out.println(scanner.nextLine());
             }
         }
+    }
+
+    /**
+     * This method prints a portion of text specified by the filename to the bound PrintWriter.
+     * @param filename input filename.
+     * @throws FileNotFoundException Thrown when the input file cannot be found.
+     */
+    public void printFromFile(String filename) throws FileNotFoundException {
+        printFromFile(out, filename);
     }
 }

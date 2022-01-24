@@ -24,7 +24,7 @@ class AuthenticatorTest {
         // When
         boolean testSuccess = false;
         try {
-            byte[] passHash = Authenticator.hashPassword(originalPassword);
+            byte[] passHash = Authenticator.hashText(originalPassword);
             Authenticator auth = new Authenticator(passHash);
 
             testSuccess = !auth.authenticate(newPassword);
@@ -49,7 +49,7 @@ class AuthenticatorTest {
         // When
         boolean testSuccess = false;
         try {
-            byte[] passHash = Authenticator.hashPassword(originalPassword);
+            byte[] passHash = Authenticator.hashText(originalPassword);
             Authenticator auth = new Authenticator(passHash);
 
             testSuccess = auth.authenticate(newPassword);
@@ -74,7 +74,7 @@ class AuthenticatorTest {
         // When
         boolean testSuccess = false;
         try {
-            byte[] passHash = Authenticator.hashPassword(originalPassword);
+            byte[] passHash = Authenticator.hashText(originalPassword);
             Authenticator auth = new Authenticator(passHash);
 
             testSuccess = auth.authenticate(newPassword);
