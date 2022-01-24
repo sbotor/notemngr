@@ -23,7 +23,7 @@ public class BootstrapView {
     /**
      * PrintWriter object bound to the view.
      */
-    private PrintWriter out = null;
+    protected PrintWriter out = null;
 
     /**
      * Main constructor of the class.
@@ -91,6 +91,21 @@ public class BootstrapView {
     // TODO
     public void closeDiv() {
         out.println("</div>");
+    }
+
+    // TODO
+    public void println(String line) {
+        out.println(line);
+    }
+
+    // TODO
+    public void print(String str) {
+       out.print(str);
+    }
+
+    // TODO
+    public String getHomeButton() {
+        return "<a href=\"/NoteManager\" class=\"col-auto btn btn-secondary\">Home</a>";
     }
 
     /**

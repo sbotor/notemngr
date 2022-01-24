@@ -1,10 +1,6 @@
 package pl.polsl.lab.szymonbotor.notemanager.controller;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import javax.persistence.PersistenceException;
-import java.util.Optional;
+import javax.persistence.*;
 
 /**
  * TODO
@@ -14,12 +10,12 @@ public class EntityController {
     /**
      * TODO
      */
-    public static final EntityManagerFactory EMF = Persistence.createEntityManagerFactory("pl.polsl.lab.szymonbotor.notemanager");
+    public static final EntityManagerFactory FACTORY = Persistence.createEntityManagerFactory("pl.polsl.lab.szymonbotor.notemanager");
 
     /**
      *
      */
-    protected final EntityManager em = EMF.createEntityManager();
+    public static final EntityManager MANAGER = FACTORY.createEntityManager();
 
     /**
      * Persist an entity in the database.
@@ -27,17 +23,15 @@ public class EntityController {
      * @return if the persistence was successful.
      */
     public boolean persist(Object entity) {
-        em.getTransaction().begin();
+        beginTransaction();
 
         try {
-            em.persist(entity);
-            em.getTransaction().commit();
+            MANAGER.persist(entity);
+            commitIfActive();
         } catch (PersistenceException e) {
             e.printStackTrace();
-            em.getTransaction().rollback();
+            rollbackIfActive();
             return false;
-        } finally {
-            em.close();
         }
 
         return true;
@@ -49,19 +43,42 @@ public class EntityController {
      * @return if the removal was successful.
      */
     public boolean remove(Object entity) {
-        em.getTransaction().begin();
+        beginTransaction();
 
         try {
-            em.remove(entity);
-            em.getTransaction().commit();
+            MANAGER.remove(entity);
+            commitIfActive();
         } catch (PersistenceException e) {
             e.printStackTrace();
-            em.getTransaction().rollback();
+            rollbackIfActive();
             return false;
-        } finally {
-            em.close();
         }
 
         return true;
+    }
+
+    // TODO
+    protected EntityTransaction beginTransaction() {
+        EntityTransaction transaction = MANAGER.getTransaction();
+        transaction.begin();
+        return transaction;
+    }
+
+    // TODO
+    protected void commitIfActive() {
+        EntityTransaction transaction = MANAGER.getTransaction();
+
+        if (transaction.isActive()) {
+            transaction.commit();
+        }
+    }
+
+    // TODO
+    protected void rollbackIfActive() {
+        EntityTransaction transaction = MANAGER.getTransaction();
+
+        if (transaction.isActive()) {
+            transaction.rollback();
+        }
     }
 }

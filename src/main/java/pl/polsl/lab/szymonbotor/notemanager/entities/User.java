@@ -23,7 +23,29 @@ public class User implements Serializable {
     public static final int MAX_USERNAME_LENGTH = 32;
 
     private static final long serialVersionUID = 1L;
-    
+
+    /**
+     * Creates a new user with null fields.
+     */
+    public User() {
+        this.username = null;
+        this.password = null;
+
+        this.notes = null;
+    }
+
+    /**
+     * Creates a user with the specified username and password and null note set.
+     * @param username new username for the user.
+     * @param password new password for the user.
+     */
+    public User(String username, String password) {
+        this();
+
+        this.username = username;
+        this.password = password;
+    }
+
     /**
      * User ID.
      */
@@ -40,7 +62,7 @@ public class User implements Serializable {
     /**
      * User password encrypted with SHA-256.
      */
-    @Column(length = 32, nullable = false)
+    @Column(length = 64, nullable = false)
     private String password;
 
     /**

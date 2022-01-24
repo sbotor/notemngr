@@ -1,13 +1,14 @@
 package pl.polsl.lab.szymonbotor.notemanager.controller;
 
 import pl.polsl.lab.szymonbotor.notemanager.entities.User;
+import pl.polsl.lab.szymonbotor.notemanager.exceptions.CryptException;
+import pl.polsl.lab.szymonbotor.notemanager.model.Hash;
 
 import javax.persistence.PersistenceException;
-import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Optional;
 
 /**
  * TODO
@@ -16,29 +17,34 @@ public class UserController extends EntityController {
 
     // TODO
     public User findByUsername(String username) {
-        em.getTransaction().begin();
+        beginTransaction();
 
         try {
-            Query query = em.createQuery("SELECT u FROM users WHERE username=" + username + ";");
-            User user = (User) query.getSingleResult();
+            String queryString = "SELECT u FROM User u WHERE u.username = :username";
+            TypedQuery<User> query = MANAGER.createQuery(queryString, User.class);
+            query.setParameter("username", username);
 
+            User user =  query.getSingleResult();
+            commitIfActive();
             return user;
         } catch (PersistenceException e) {
             e.printStackTrace();
-            em.getTransaction().rollback();
-
+            rollbackIfActive();
             return null;
-        } finally {
-            em.close();
         }
     }
 
     // TODO
     public User createUser(String username, String password) {
-        User user = new User();
-        user.setUsername(username);
-        user.setPassword(password);
 
+        String hashedPassword;
+        try {
+            hashedPassword = Hash.fromPlain(password).toString();
+        } catch (CryptException e) {
+            return null;
+        }
+
+        User user = new User(username, hashedPassword);
         if (persist(user)) {
             return user;
         } else {
@@ -63,7 +69,7 @@ public class UserController extends EntityController {
 
         String password = null;
         for (Cookie cookie : cookies) {
-            if (cookie.getName() == "password") {
+            if (cookie.getName().equals("password")) {
                 password = cookie.getValue();
                 break;
             }

@@ -184,4 +184,20 @@ public class Note implements Serializable {
     public void setIv(String iv) {
         this.iv = iv;
     }
+
+    /**
+     * Gets the name of the note.
+     * @return the note's name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Sets the name of the note.
+     * @param name new note name.
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
 }

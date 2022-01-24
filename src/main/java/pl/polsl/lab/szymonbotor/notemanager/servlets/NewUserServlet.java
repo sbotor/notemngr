@@ -18,21 +18,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * TODO
+ *
  * @author sotor
  */
-@WebServlet(name = "UserPageServlet", urlPatterns = {"/user"})
-public class UserPageServlet extends HttpServlet {
-
-    /**
-     * View responsible for page rendering.
-     */
-    UserPageView view = null;
+@WebServlet(name = "NewUserServlet", urlPatterns = {"/newUser"})
+public class NewUserServlet extends HttpServlet {
 
     /**
      * TODO
      */
     UserController userCont = null;
+
+    // TODO
+    BootstrapView view = null;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -46,52 +44,36 @@ public class UserPageServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        view = new UserPageView(this);
-        userCont = (UserController) request.getAttribute("userController");
-        if (userCont == null) {
-            userCont = new UserController();
+        userCont = new UserController();
+        view = new BootstrapView(this);
+
+        String username = request.getParameter("newUsername"),
+                pass1 = request.getParameter("pass1"),
+                pass2 = request.getParameter("pass2");
+
+        if (username == null || username.isBlank() ||
+            pass1 == null || pass1.isBlank() ||
+            pass2 == null || pass2.isBlank()) {
+
+            view.printError(response, "Invalid user form");
+            return;
         }
 
-        User user = (User) request.getAttribute("user");
-        if (user == null) {
-            user = findUser(request, response);
-            if (user == null) {
-                return;
-            }
+        if (userCont.findByUsername(username) != null) {
+            view.printError(response, "User already exists.");
+            return;
         }
 
-        request.setAttribute("user", user);
-
-    }
-
-    // TODO
-    protected User findUser(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        String username = request.getParameter("username"),
-                password = request.getParameter("password");
-
-        if (username == null || username.isBlank() || password == null || password.isBlank()) {
-            view.printError(response, "No username/password.");
-            return null;
+        if (!pass1.equals(pass2)) {
+            view.printError(response, "Passwords do not match.");
+            return;
         }
 
-        User user = userCont.findByUsername(username);
-        if (user == null) {
-            view.printError(response, "Cannot find the specified user.");
-            return null;
+        if (userCont.createUser(username, pass1) != null) {
+            view.printMessage(response, "New user created", username, "User created successfully.");
+        } else {
+            view.printError(response, "Could not create the user.");
         }
-
-        try {
-            if (user.authenticate(password)) {
-                userCont.storePassword(response, password);
-                return user;
-            } else {
-                view.printError(response, "Invalid password.");
-            }
-        } catch (CryptException e) {
-            view.printError(response, "Problem authenticating the user.");
-        }
-
-        return null;
     }
 
     /**
