@@ -7,10 +7,8 @@ import pl.polsl.lab.szymonbotor.notemanager.model.Hash;
 
 import javax.persistence.PersistenceException;
 import javax.persistence.TypedQuery;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.Enumeration;
 
 /**
  * TODO
@@ -18,20 +16,35 @@ import javax.servlet.http.HttpSession;
 public class UserController extends EntityController {
 
     // TODO
+    public static final String USER_ATTR = "user";
+
+    // TODO
+    public static final String AES_ATTR = "aes";
+
+    // TODO
+    public static final int MAX_INACTIVE_INTERVAL = 5 * 60;
+
+    // TODO
     private User user;
 
     // TODO
-    public UserController() {
-        user = null;
+    private AES aes;
+
+    // TODO
+    private HttpSession session;
+
+
+    // TODO
+    public UserController(HttpSession session) {
+
+        this.session = session;
+
+        this.user = fetchUser();
+        this.aes = fetchAES();
     }
 
     // TODO
-    public UserController(User user) {
-        this.user = user;
-    }
-
-    // TODO
-    public User findByUsername(String username) {
+    public static User findByUsername(String username) {
         beginTransaction();
 
         try {
@@ -39,9 +52,9 @@ public class UserController extends EntityController {
             TypedQuery<User> query = MANAGER.createQuery(queryString, User.class);
             query.setParameter("username", username);
 
-            user =  query.getSingleResult();
+            User newUser = query.getSingleResult();
             commitIfActive();
-            return user;
+            return newUser;
         } catch (PersistenceException e) {
             e.printStackTrace();
             rollbackIfActive();
@@ -50,7 +63,7 @@ public class UserController extends EntityController {
     }
 
     // TODO
-    public User createUser(String username, String password) {
+    public static User createUser(String username, String password) {
 
         String hashedPassword;
         try {
@@ -61,41 +74,60 @@ public class UserController extends EntityController {
 
         User newUser = new User(username, hashedPassword);
         if (persist(newUser)) {
-            user = newUser;
-            return user;
+            return newUser;
         } else {
             return null;
         }
     }
 
     // TODO
-    public void storeUserData(HttpSession session, String password) {
-        storeUser(session);
+    public void storeUserData(User user, String password) {
+        storeUser(user);
 
         try {
             AES aes = new AES(password);
-            session.setAttribute("aes", aes);
+            session.setAttribute(AES_ATTR, aes);
         } catch (CryptException e) {
             e.printStackTrace();
         }
 
-        session.setMaxInactiveInterval(5 * 60);
+        session.setMaxInactiveInterval(MAX_INACTIVE_INTERVAL);
+
+        System.out.println("Storing: " + session.getId());
+        Enumeration<String> it = session.getAttributeNames();
+        while (it.hasMoreElements()) {
+            System.out.print(it.nextElement());
+        }
+        System.out.println();
     }
 
     // TODO
-    public void storeUser(HttpSession session) {
-        session.setAttribute("user", user);
+    public void storeUser(User user) {
+        session.setAttribute(USER_ATTR, user);
+        session.setMaxInactiveInterval(MAX_INACTIVE_INTERVAL);
+
+        this.user = user;
     }
 
     // TODO
-    public User fetchUser(HttpSession session) {
-        user = (User) session.getAttribute("user");
-        return user;
+    private User fetchUser() {
+        return (User) session.getAttribute(USER_ATTR);
     }
 
     // TODO
-    public static AES fetchAES(HttpSession session) {
-        return (AES) session.getAttribute("aes");
+    public void clearUserData() {
+        if (session.getAttribute(USER_ATTR) != null) {
+            session.removeAttribute(USER_ATTR);
+        }
+
+        if (session.getAttribute(AES_ATTR) != null) {
+            session.removeAttribute(AES_ATTR);
+        }
+    }
+
+    // TODO
+    private AES fetchAES() {
+        return (AES) session.getAttribute(AES_ATTR);
     }
 
     // TODO
@@ -104,7 +136,12 @@ public class UserController extends EntityController {
     }
 
     // TODO
-    public void setUser(User user) {
-        this.user = user;
+    public AES getAES() {
+        return aes;
+    }
+
+    // TODO
+    public HttpSession getSession() {
+        return session;
     }
 }

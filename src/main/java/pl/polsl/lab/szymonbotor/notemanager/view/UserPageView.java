@@ -43,9 +43,9 @@ public class UserPageView extends BootstrapView {
     // TODO
     private void printNoteList(Set<Note> notes) {
 
-        openDiv("row");
+        openDiv("row mb-3");
         println("<h4 class=\"col-3 mb-3\">Your notes</h4>");
-        println("<a href=\"note\" class=\"btn btn-success col-auto disabled\">Add new</a>");
+        println("<a href=\"/NoteManager/newNote\" class=\"btn btn-success col-auto\">Add new</a>");
         closeDiv();
 
         if (notes == null || notes.isEmpty()) {
@@ -65,15 +65,14 @@ public class UserPageView extends BootstrapView {
     // TODO
     private void printSortedNotes(Note[] sortedNotes) {
         println("<form method=\"POST\" action=\"note\">");
-        println("<ul class=\"list-group\">");
+        println("<ul class=\"list-group row col-5\">");
         for (Note note : sortedNotes) {
-            println("<li class=\"list-group-item container col-8\">");
-
-            println("<p class=\"col-5\">" + note.getName() + "</p>");
-            println("<button type=\"submit\" class=\"btn btn-primary col-1 disabled\" " +
-                    "name=\"openId\" value=\"" + note.getId() + "\" disabled>Open</button>");
-            println("<button type=\"submit\" class=\"btn btn-danger col-1 disabled\" " +
+            println("<li class=\"list-group-item row\">");
+            println("<button type=\"submit\" class=\"btn btn-link col-7 disabled\" " +
+                    "name=\"openId\" value=\"" + note.getId() + "\" disabled>" + note.getName() + "</button>");
+            println("<button type=\"submit\" class=\"btn btn-outline-danger col-auto ms-1 float-end disabled\" " +
                     "name=\"removeId\" value=\"" + note.getId() + "\" disabled>Remove</button>");
+            println("</li>");
 
             println("</li>");
         }

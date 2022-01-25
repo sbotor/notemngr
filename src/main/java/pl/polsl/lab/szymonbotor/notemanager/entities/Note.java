@@ -32,6 +32,16 @@ public class Note implements Serializable {
      */
     public static final int MAX_NAME_LENGTH = 32;
 
+    /**
+     * The length of the IV hex string.
+     */
+    public static final int IV_LENGTH = AES.IV_LENGTH * 2;
+
+    /**
+     * The length of the salt hex string.
+     */
+    public static final int SALT_LENGTH = AES.SALT_LENGTH * 2;
+
     private static final long serialVersionUID = 1L;
 
     /**
@@ -62,13 +72,13 @@ public class Note implements Serializable {
     /**
      * Cryptographic salt for note encryption.
      */
-    @Column(length = AES.SALT_LENGTH, nullable = false)
+    @Column(length = SALT_LENGTH, nullable = false)
     private String salt;
 
     /**
      * Initialization vector for encryption.
      */
-    @Column(length = AES.IV_LENGTH, nullable = false)
+    @Column(length = IV_LENGTH, nullable = false)
     private String iv;
 
     // TODO

@@ -4,8 +4,11 @@ pl\polsl\lab\szymonbotor\notemanager\exceptions\CryptException.class
 pl\polsl\lab\szymonbotor\notemanager\servlets\NewUserServlet.class
 pl\polsl\lab\szymonbotor\notemanager\controller\ConsoleController.class
 pl\polsl\lab\szymonbotor\notemanager\view\NoteBootstrapView.class
+pl\polsl\lab\szymonbotor\notemanager\controller\NoteController.class
 pl\polsl\lab\szymonbotor\notemanager\enums\CryptMode.class
 pl\polsl\lab\szymonbotor\notemanager\entities\Note.class
+pl\polsl\lab\szymonbotor\notemanager\servlets\LogoutServlet.class
+pl\polsl\lab\szymonbotor\notemanager\servlets\NewNoteServlet.class
 pl\polsl\lab\szymonbotor\notemanager\model\Authenticator.class
 pl\polsl\lab\szymonbotor\notemanager\model\AES.class
 pl\polsl\lab\szymonbotor\notemanager\model\Note.class
@@ -23,6 +26,7 @@ pl\polsl\lab\szymonbotor\notemanager\listeners\ContextListener.class
 pl\polsl\lab\szymonbotor\notemanager\view\UserPageView.class
 pl\polsl\lab\szymonbotor\notemanager\servlets\UserPageServlet.class
 pl\polsl\lab\szymonbotor\notemanager\servlets\PassGenServlet.class
+pl\polsl\lab\szymonbotor\notemanager\servlets\UserServlet.class
 pl\polsl\lab\szymonbotor\notemanager\view\BootstrapView.class
 pl\polsl\lab\szymonbotor\notemanager\exceptions\InvalidPasswordLengthException.class
 pl\polsl\lab\szymonbotor\notemanager\entities\User.class

@@ -7,53 +7,42 @@ package pl.polsl.lab.szymonbotor.notemanager.servlets;
 import pl.polsl.lab.szymonbotor.notemanager.controller.UserController;
 import pl.polsl.lab.szymonbotor.notemanager.entities.User;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.CryptException;
+import pl.polsl.lab.szymonbotor.notemanager.model.AES;
 import pl.polsl.lab.szymonbotor.notemanager.view.UserPageView;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.Enumeration;
 
 /**
  * TODO
  * @author sotor
  */
 @WebServlet(name = "UserPageServlet", urlPatterns = {"/user"})
-public class UserPageServlet extends HttpServlet {
+public class UserPageServlet extends UserServlet {
 
-    /**
-     * View responsible for page rendering.
-     */
-    UserPageView view = null;
+    // TODO
+    protected UserPageView view;
 
-    /**
-     * TODO
-     */
-    UserController userCont = null;
-
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-
+    @Override
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        super.processRequest(request, response);
         view = new UserPageView(this);
-        userCont = new UserController();
-        HttpSession session = request.getSession();
 
-        User user = userCont.fetchUser(session);
-        if (user == null) {
+        System.out.println("Before: " + request.getSession().getId());
+        Enumeration<String> it = request.getSession().getAttributeNames();
+        while (it.hasMoreElements()) {
+            System.out.print(it.nextElement());
+        }
+        System.out.println();
 
-            System.out.println("No user or AES in session" + request.getSession().getId());
+        User user = userCont.getUser();
+        AES aes = userCont.getAES();
+
+        if (user == null || aes == null) {
 
             user = findUser(request, response);
             if (user == null) {
@@ -62,6 +51,13 @@ public class UserPageServlet extends HttpServlet {
         }
 
         view.printPage(response, user.getUsername(), user);
+
+        System.out.println("After: " + request.getSession().getId());
+        Enumeration<String> it2 = request.getSession().getAttributeNames();
+        while (it2.hasMoreElements()) {
+            System.out.print(it2.nextElement());
+        }
+        System.out.println();
     }
 
     // TODO
@@ -70,11 +66,11 @@ public class UserPageServlet extends HttpServlet {
                 password = request.getParameter("password");
 
         if (username == null || username.isBlank() || password == null || password.isBlank()) {
-            view.printError(response, "No username/password.");
+            view.printError(response, "The session has expired and no username/password was provided.");
             return null;
         }
 
-        User user = userCont.findByUsername(username);
+        User user = UserController.findByUsername(username);
         if (user == null) {
             view.printError(response, "Cannot find the specified user.");
             return null;
@@ -82,8 +78,7 @@ public class UserPageServlet extends HttpServlet {
 
         try {
             if (user.authenticate(password)) {
-                userCont.setUser(user);
-                userCont.storeUserData(request.getSession(), password);
+                userCont.storeUserData(user, password);
                 return user;
             } else {
                 view.printError(response, "Invalid password.");
@@ -94,43 +89,4 @@ public class UserPageServlet extends HttpServlet {
 
         return null;
     }
-
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
-    }
-
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
-    }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }
-
 }

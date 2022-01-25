@@ -22,7 +22,7 @@ public class EntityController {
      * @param entity entity to save to the database.
      * @return if the persistence was successful.
      */
-    public boolean persist(Object entity) {
+    public static boolean persist(Object entity) {
         beginTransaction();
 
         try {
@@ -42,7 +42,7 @@ public class EntityController {
      * @param entity entity to be removed from the database.
      * @return if the removal was successful.
      */
-    public boolean remove(Object entity) {
+    public static boolean remove(Object entity) {
         beginTransaction();
 
         try {
@@ -58,14 +58,14 @@ public class EntityController {
     }
 
     // TODO
-    protected EntityTransaction beginTransaction() {
+    protected static EntityTransaction beginTransaction() {
         EntityTransaction transaction = MANAGER.getTransaction();
         transaction.begin();
         return transaction;
     }
 
     // TODO
-    protected void commitIfActive() {
+    protected static void commitIfActive() {
         EntityTransaction transaction = MANAGER.getTransaction();
 
         if (transaction.isActive()) {
@@ -74,7 +74,7 @@ public class EntityController {
     }
 
     // TODO
-    protected void rollbackIfActive() {
+    protected static void rollbackIfActive() {
         EntityTransaction transaction = MANAGER.getTransaction();
 
         if (transaction.isActive()) {

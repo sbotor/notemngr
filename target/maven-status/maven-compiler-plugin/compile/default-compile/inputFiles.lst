@@ -1,5 +1,6 @@
 C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\model\Authenticator.java
 C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\model\PasswordGen.java
+C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\controller\NoteController.java
 C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\controller\package-info.java
 C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\listeners\ContextListener.java
 C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\model\NoteHistory.java
@@ -7,12 +8,14 @@ C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\s
 C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\model\AES.java
 C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\servlets\UserPageServlet.java
 C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\model\Hash.java
+C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\servlets\NewNoteServlet.java
 C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\view\UserPageView.java
 C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\controller\EntityController.java
 C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\enums\CryptMode.java
 C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\entities\Note.java
 C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\servlets\PassGenServlet.java
 C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\controller\UserController.java
+C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\servlets\LogoutServlet.java
 C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\entities\package-info.java
 C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\exceptions\CryptException.java
 C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\model\Note.java
@@ -24,6 +27,7 @@ C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\s
 C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\entities\User.java
 C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\model\package-info.java
 C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\exceptions\package-info.java
+C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\servlets\UserServlet.java
 C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\view\package-info.java
 C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\controller\ConsoleController.java
 C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\view\BootstrapView.java

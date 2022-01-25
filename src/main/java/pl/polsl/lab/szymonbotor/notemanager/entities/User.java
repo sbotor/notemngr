@@ -68,7 +68,7 @@ public class User implements Serializable {
     /**
      * User notes.
      */
-    @OneToMany(targetEntity = Note.class, mappedBy = "user")
+    @OneToMany(targetEntity = Note.class, mappedBy = "user", cascade = CascadeType.PERSIST)
     private Set<Note> notes;
 
     // TODO

@@ -16,6 +16,11 @@ import java.util.Scanner;
 public class BootstrapView {
 
     /**
+     * Content type of the HTTP response.
+     */
+    public static String CONTENT_TYPE = "text/html;charset=UTF-8";
+
+    /**
      * Servlet serving as the view context.
      */
     private final HttpServlet servlet;
@@ -51,8 +56,11 @@ public class BootstrapView {
             out.println("<head>");
             out.println("<meta charset=\"utf-8\">");
             out.println("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
+            
             out.println(
                     "<link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css\" rel=\"stylesheet\" integrity=\"sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3\" crossorigin=\"anonymous\">");
+            out.println("<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css\">");
+            
             out.println("<title>" + title + "</title>");
             out.println("</head>");
 
@@ -110,7 +118,7 @@ public class BootstrapView {
 
     // TODO
     public String getUserButton() {
-        return "<a href=\"NoteManager/user\" class=\"col-auto btn btn-secondary mt-3 mb-3\">My notes</a>";
+        return "<a href=\"/NoteManager/user\" class=\"col-auto btn btn-secondary mt-3 mb-3\">My notes</a>";
     }
 
     /**
@@ -171,5 +179,13 @@ public class BootstrapView {
      */
     public void printFromFile(String filename) throws FileNotFoundException {
         printFromFile(out, filename);
+    }
+
+    /**
+     * Sets the PrintWriter of the view.
+     * @param out new PrintWriter to write into.
+     */
+    public void setWriter(PrintWriter out) {
+        this.out = out;
     }
 }

@@ -8,14 +8,7 @@ import pl.polsl.lab.szymonbotor.notemanager.model.Hash;
 public class NoteController extends EntityController {
 
     // TODO
-    private Note note;
-
-    public NoteController() {
-        note = null;
-    }
-
-    // TODO
-    public Note createNote(String name, AES aes) {
+    public static Note createNote(String name, AES aes, User user) {
 
         aes.regenerateIv();
         aes.regenerateSalt();
@@ -23,8 +16,8 @@ public class NoteController extends EntityController {
         Note newNote = new Note(name);
         newNote.setIV(Hash.bytesToString(aes.getIV()));
         newNote.setSalt(Hash.bytesToString(aes.getSalt()));
+        newNote.setUser(user);
 
-        note = newNote;
         return newNote;
     }
 }
