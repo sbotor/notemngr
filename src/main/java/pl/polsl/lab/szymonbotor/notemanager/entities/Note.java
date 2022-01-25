@@ -56,53 +56,34 @@ public class Note implements Serializable {
     /**
      * The name of the note.
      */
-    @Column(length = MAX_NAME_LENGTH)
+    @Column(length = MAX_NAME_LENGTH, nullable = false)
     private String name;
-
-    /**
-     * Whether the note is encrypted or not.
-     */
-    @Column(nullable = false)
-    private boolean encrypted;
 
     /**
      * Cryptographic salt for note encryption.
      */
-    @Column(length = AES.SALT_LENGTH)
+    @Column(length = AES.SALT_LENGTH, nullable = false)
     private String salt;
 
     /**
      * Initialization vector for encryption.
      */
-    @Column(length = AES.IV_LENGTH)
+    @Column(length = AES.IV_LENGTH, nullable = false)
     private String iv;
 
     // TODO
-    public Optional<String> decrypt(String password) throws InvalidCryptModeException, CryptException {
-
-        Authenticator auth = new Authenticator(password.getBytes(StandardCharsets.UTF_8));
-        if (!auth.authenticate(password)) {
-            return Optional.empty();
-        }
-
-        byte[] saltBytes = Hash.stringToBytes(salt),
-                ivBytes = Hash.stringToBytes(iv);
-        AES aes = new AES(password, saltBytes, ivBytes);
-
-        return Optional.of(aes.decrypt(content.getBytes(StandardCharsets.UTF_8)));
+    public Note() {
+        user = null;
+        name = null;
+        salt = null;
+        iv = null;
     }
 
     // TODO
-    public boolean encrypt(String password, String newContent) throws CryptException, InvalidCryptModeException {
+    public Note(String name) {
+        super();
 
-        Authenticator auth = new Authenticator(password.getBytes(StandardCharsets.UTF_8));
-        if (!auth.authenticate(password)) {
-            return false;
-        }
-
-        AES aes = new AES(password, CryptMode.ENCRYPTION);
-        content = Hash.bytesToString(aes.encrypt(newContent));
-        return true;
+        this.name = name;
     }
 
     /**
@@ -138,22 +119,6 @@ public class Note implements Serializable {
     }
 
     /**
-     * Checks if the note is encrypted with AES.
-     * @return true if the note is encrypted, false otherwise.
-     */
-    public boolean isEncrypted() {
-        return encrypted;
-    }
-
-    /**
-     * Sets the encryption status of the note.
-     * @param encrypted true if the note is encrypted false otherwise.
-     */
-    public void setEncrypted(boolean encrypted) {
-        this.encrypted = encrypted;
-    }
-
-    /**
      * Gets the salt of the note.
      * @return note's salt.
      */
@@ -173,7 +138,7 @@ public class Note implements Serializable {
      * Gets the note's initialization vector.
      * @return note's initialization vector.
      */
-    public String getIv() {
+    public String getIV() {
         return iv;
     }
 
@@ -181,7 +146,7 @@ public class Note implements Serializable {
      * Sets the note's initialization vector.
      * @param iv new IV of the array.
      */
-    public void setIv(String iv) {
+    public void setIV(String iv) {
         this.iv = iv;
     }
 

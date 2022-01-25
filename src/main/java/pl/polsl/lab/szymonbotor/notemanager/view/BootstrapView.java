@@ -105,7 +105,12 @@ public class BootstrapView {
 
     // TODO
     public String getHomeButton() {
-        return "<a href=\"/NoteManager\" class=\"col-auto btn btn-secondary\">Home</a>";
+        return "<a href=\"/NoteManager\" class=\"col-auto btn btn-secondary mt-3 mb-3\">Home</a>";
+    }
+
+    // TODO
+    public String getUserButton() {
+        return "<a href=\"NoteManager/user\" class=\"col-auto btn btn-secondary mt-3 mb-3\">My notes</a>";
     }
 
     /**

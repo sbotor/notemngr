@@ -94,15 +94,12 @@ public class AES {
         SecretKeyFactory factory = null;
         try {
             factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-            salt = new byte[SALT_LENGTH];
-            new SecureRandom().nextBytes(salt);
+            regenerateSalt();
 
             KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, ITER_COUNT, KEY_LENGTH);
             key = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
 
-            byte[] ivArray = new byte[IV_LENGTH];
-            new SecureRandom().nextBytes(ivArray);
-            iv = new IvParameterSpec(ivArray);
+            regenerateIv();
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
             throw new CryptException(e.getMessage());
         }
@@ -146,7 +143,24 @@ public class AES {
             throw new CryptException(e.getMessage());
         }
     }
-    
+
+    /**
+     * Generates a new value of the initialization vector of the AES.
+     */
+    public void regenerateIv() {
+        byte[] ivArray = new byte[IV_LENGTH];
+        new SecureRandom().nextBytes(ivArray);
+        iv = new IvParameterSpec(ivArray);
+    }
+
+    /**
+     * Generates a new value of the salt of the AES.
+     */
+    public void regenerateSalt() {
+        salt = new byte[SALT_LENGTH];
+        new SecureRandom().nextBytes(salt);
+    }
+
     /**
      * This method is used to get the initialisation vector.
      * @return current initialisation vector of the AES instance.

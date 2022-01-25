@@ -4,30 +4,36 @@
  */
 package pl.polsl.lab.szymonbotor.notemanager.servlets;
 
+import pl.polsl.lab.szymonbotor.notemanager.controller.NoteController;
 import pl.polsl.lab.szymonbotor.notemanager.controller.UserController;
+import pl.polsl.lab.szymonbotor.notemanager.entities.Note;
 import pl.polsl.lab.szymonbotor.notemanager.entities.User;
-import pl.polsl.lab.szymonbotor.notemanager.exceptions.CryptException;
-import pl.polsl.lab.szymonbotor.notemanager.view.UserPageView;
+import pl.polsl.lab.szymonbotor.notemanager.model.AES;
+import pl.polsl.lab.szymonbotor.notemanager.model.Hash;
+import pl.polsl.lab.szymonbotor.notemanager.view.BootstrapView;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.HashSet;
+import java.util.Set;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
 
 /**
  * TODO
  * @author sotor
  */
-@WebServlet(name = "UserPageServlet", urlPatterns = {"/user"})
-public class UserPageServlet extends HttpServlet {
+@WebServlet(name = "NewNoteServlet", urlPatterns = {"/newNote"})
+public class NewNoteServlet extends HttpServlet {
 
     /**
      * View responsible for page rendering.
      */
-    UserPageView view = null;
+    BootstrapView view = null;
 
     /**
      * TODO
@@ -46,53 +52,62 @@ public class UserPageServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        view = new UserPageView(this);
+        view = new BootstrapView(this);
         userCont = new UserController();
         HttpSession session = request.getSession();
 
         User user = userCont.fetchUser(session);
-        if (user == null) {
+        AES aes = UserController.fetchAES(session);
 
-            System.out.println("No user or AES in session" + request.getSession().getId());
-
-            user = findUser(request, response);
-            if (user == null) {
-                return;
-            }
+        if (user == null || aes == null) {
+            view.printError(response, "The session has expired. Log in again.");
+            return;
         }
 
-        view.printPage(response, user.getUsername(), user);
+        String newName = request.getParameter("newName");
+        if (newName == null || newName.isBlank()) {
+            printNameForm(request, response);
+            return;
+        }
+
+        Set<Note> notes = user.getNotes();
+        if (notes == null || notes.isEmpty()) {
+            notes = new HashSet<Note>();
+            user.setNotes(notes);
+        }
+
+        NoteController noteCont = new NoteController();
+        Note newNote = noteCont.createNote(newName, aes);
+        notes.add(newNote);
+
+        userCont.persist(user);
+        userCont.storeUser(session);
+
+        try (PrintWriter out = view.beginPage(response, "Note created")) {
+
+            view.openDiv("container");
+            view.println("<h4 class=\"col-auto\">Note created</h4>");
+            view.println(view.getUserButton());
+
+            view.endPage();
+        }
     }
 
     // TODO
-    protected User findUser(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        String username = request.getParameter("username"),
-                password = request.getParameter("password");
+    private void printNameForm(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-        if (username == null || username.isBlank() || password == null || password.isBlank()) {
-            view.printError(response, "No username/password.");
-            return null;
+        try (PrintWriter out = view.beginPage(response, "New note")) {
+
+            view.openDiv("container");
+
+            // TODO
+            view.println("<form method=\"POST\">");
+            view.println("<label for=\"newName\"");
+
+            view.println("</form>");
+            view.openDiv();
+            view.endPage();
         }
-
-        User user = userCont.findByUsername(username);
-        if (user == null) {
-            view.printError(response, "Cannot find the specified user.");
-            return null;
-        }
-
-        try {
-            if (user.authenticate(password)) {
-                userCont.setUser(user);
-                userCont.storeUserData(request.getSession(), password);
-                return user;
-            } else {
-                view.printError(response, "Invalid password.");
-            }
-        } catch (CryptException e) {
-            view.printError(response, "Problem authenticating the user.");
-        }
-
-        return null;
     }
 
     /**

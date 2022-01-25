@@ -132,4 +132,12 @@ public class User implements Serializable {
     public Set<Note> getNotes() {
         return notes;
     }
+
+    /**
+     * Sets the user notes.
+     * @param notes new set of user notes.
+     */
+    public void setNotes(Set<Note> notes) {
+        this.notes = notes;
+    }
 }

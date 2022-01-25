@@ -27,8 +27,13 @@ public class UserPageView extends BootstrapView {
             openDiv("container");
 
             println(getHomeButton());
-            println("<h3 class=\"row mb-5\">" + user.getUsername() + "</h3>");
+            println("<h3 class=\"row mb-5\">Hello, " + user.getUsername() + "</h3>");
             printNoteList(user.getNotes());
+
+            println("<form method=\"POST\" action=\"removeUser\"");
+            println("<button type=\"submit\" class=\"row col-2 btn btn-danger mt-5 disabled\" name=\"removeId\" value=\"" +
+                    user.getId() + "\" disabled>Remove account</button>");
+            println("</form>");
 
             closeDiv();
             endPage();
@@ -40,7 +45,7 @@ public class UserPageView extends BootstrapView {
 
         openDiv("row");
         println("<h4 class=\"col-3 mb-3\">Your notes</h4>");
-        println("<a href=\"note\" class=\"btn btn-success col-auto\">New note</a>");
+        println("<a href=\"note\" class=\"btn btn-success col-auto disabled\">Add new</a>");
         closeDiv();
 
         if (notes == null || notes.isEmpty()) {
@@ -65,10 +70,10 @@ public class UserPageView extends BootstrapView {
             println("<li class=\"list-group-item container col-8\">");
 
             println("<p class=\"col-5\">" + note.getName() + "</p>");
-            println("<button type=\"submit\" class=\"btn btn-primary col-1\" " +
-                    "name=\"open\" value=\"" + note.getId() + "\">Open</button>");
-            println("<button type=\"submit\" class=\"btn btn-danger col-1\" " +
-                    "name=\"remove\" value=\"" + note.getId() + "\">Remove</button>");
+            println("<button type=\"submit\" class=\"btn btn-primary col-1 disabled\" " +
+                    "name=\"openId\" value=\"" + note.getId() + "\" disabled>Open</button>");
+            println("<button type=\"submit\" class=\"btn btn-danger col-1 disabled\" " +
+                    "name=\"removeId\" value=\"" + note.getId() + "\" disabled>Remove</button>");
 
             println("</li>");
         }

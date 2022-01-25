@@ -2,6 +2,7 @@ package pl.polsl.lab.szymonbotor.notemanager.controller;
 
 import pl.polsl.lab.szymonbotor.notemanager.entities.User;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.CryptException;
+import pl.polsl.lab.szymonbotor.notemanager.model.AES;
 import pl.polsl.lab.szymonbotor.notemanager.model.Hash;
 
 import javax.persistence.PersistenceException;
@@ -9,11 +10,25 @@ import javax.persistence.TypedQuery;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  * TODO
  */
 public class UserController extends EntityController {
+
+    // TODO
+    private User user;
+
+    // TODO
+    public UserController() {
+        user = null;
+    }
+
+    // TODO
+    public UserController(User user) {
+        this.user = user;
+    }
 
     // TODO
     public User findByUsername(String username) {
@@ -24,7 +39,7 @@ public class UserController extends EntityController {
             TypedQuery<User> query = MANAGER.createQuery(queryString, User.class);
             query.setParameter("username", username);
 
-            User user =  query.getSingleResult();
+            user =  query.getSingleResult();
             commitIfActive();
             return user;
         } catch (PersistenceException e) {
@@ -44,8 +59,9 @@ public class UserController extends EntityController {
             return null;
         }
 
-        User user = new User(username, hashedPassword);
-        if (persist(user)) {
+        User newUser = new User(username, hashedPassword);
+        if (persist(newUser)) {
+            user = newUser;
             return user;
         } else {
             return null;
@@ -53,28 +69,42 @@ public class UserController extends EntityController {
     }
 
     // TODO
-    public void storePassword(HttpServletResponse response, String password) {
-        Cookie cookie = new Cookie("password", password);
-        cookie.setPath("/");
-        cookie.setMaxAge(5 * 60);
-        response.addCookie(cookie);
+    public void storeUserData(HttpSession session, String password) {
+        storeUser(session);
+
+        try {
+            AES aes = new AES(password);
+            session.setAttribute("aes", aes);
+        } catch (CryptException e) {
+            e.printStackTrace();
+        }
+
+        session.setMaxInactiveInterval(5 * 60);
     }
 
     // TODO
-    public String fetchPassword(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null || cookies.length == 0) {
-            return null;
-        }
+    public void storeUser(HttpSession session) {
+        session.setAttribute("user", user);
+    }
 
-        String password = null;
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("password")) {
-                password = cookie.getValue();
-                break;
-            }
-        }
+    // TODO
+    public User fetchUser(HttpSession session) {
+        user = (User) session.getAttribute("user");
+        return user;
+    }
 
-        return password;
+    // TODO
+    public static AES fetchAES(HttpSession session) {
+        return (AES) session.getAttribute("aes");
+    }
+
+    // TODO
+    public User getUser() {
+        return user;
+    }
+
+    // TODO
+    public void setUser(User user) {
+        this.user = user;
     }
 }
