@@ -8,20 +8,26 @@ import pl.polsl.lab.szymonbotor.notemanager.model.Hash;
 import javax.persistence.PersistenceException;
 import javax.persistence.TypedQuery;
 import javax.servlet.http.HttpSession;
-import java.util.Enumeration;
+import java.util.List;
 
 /**
  * TODO
  */
 public class UserController extends EntityController {
 
-    // TODO
+    /**
+     * Name of the user session attribute.
+     */
     public static final String USER_ATTR = "user";
 
-    // TODO
+    /**
+     * Name of the AES session attribute.
+     */
     public static final String AES_ATTR = "aes";
 
-    // TODO
+    /**
+     * Maximum time in seconds that the session should stay active.
+     */
     public static final int MAX_INACTIVE_INTERVAL = 5 * 60;
 
     // TODO
@@ -52,9 +58,15 @@ public class UserController extends EntityController {
             TypedQuery<User> query = MANAGER.createQuery(queryString, User.class);
             query.setParameter("username", username);
 
-            User newUser = query.getSingleResult();
-            commitIfActive();
-            return newUser;
+            List<User> found = query.getResultList();
+            if (found.size() == 1) {
+                commitIfActive();
+                return found.get(0);
+            } else {
+                rollbackIfActive();
+                return null;
+            }
+            
         } catch (PersistenceException e) {
             e.printStackTrace();
             rollbackIfActive();
@@ -81,6 +93,11 @@ public class UserController extends EntityController {
     }
 
     // TODO
+    public static boolean validatePassword(String password) {
+        return true; // TODO: validate
+    }
+
+    // TODO
     public void storeUserData(User user, String password) {
         storeUser(user);
 
@@ -92,13 +109,6 @@ public class UserController extends EntityController {
         }
 
         session.setMaxInactiveInterval(MAX_INACTIVE_INTERVAL);
-
-        System.out.println("Storing: " + session.getId());
-        Enumeration<String> it = session.getAttributeNames();
-        while (it.hasMoreElements()) {
-            System.out.print(it.nextElement());
-        }
-        System.out.println();
     }
 
     // TODO
@@ -116,13 +126,18 @@ public class UserController extends EntityController {
 
     // TODO
     public void clearUserData() {
-        if (session.getAttribute(USER_ATTR) != null) {
+        if (fetchUser() != null) {
             session.removeAttribute(USER_ATTR);
         }
 
-        if (session.getAttribute(AES_ATTR) != null) {
+        if (fetchAES() != null) {
             session.removeAttribute(AES_ATTR);
         }
+    }
+
+    // TODO
+    public boolean isAuthenticated() {
+        return (user != null && aes != null);
     }
 
     // TODO

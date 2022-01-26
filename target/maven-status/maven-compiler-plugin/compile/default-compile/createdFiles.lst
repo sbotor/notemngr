@@ -10,6 +10,7 @@ pl\polsl\lab\szymonbotor\notemanager\entities\Note.class
 pl\polsl\lab\szymonbotor\notemanager\servlets\LogoutServlet.class
 pl\polsl\lab\szymonbotor\notemanager\servlets\NewNoteServlet.class
 pl\polsl\lab\szymonbotor\notemanager\model\Authenticator.class
+pl\polsl\lab\szymonbotor\notemanager\servlets\NoteServlet.class
 pl\polsl\lab\szymonbotor\notemanager\model\AES.class
 pl\polsl\lab\szymonbotor\notemanager\model\Note.class
 pl\polsl\lab\szymonbotor\notemanager\model\Hash.class

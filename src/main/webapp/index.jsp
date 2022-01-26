@@ -24,7 +24,7 @@
             pl.polsl.lab.szymonbotor.notemanager.entities.User user = userCont.getUser();
             pl.polsl.lab.szymonbotor.notemanager.model.AES aes = userCont.getAES();
 
-            if (user != null && aes != null) { %>
+            if (userCont.isAuthenticated()) { %>
 
             <h4 class="row">Logged in as: <%= user.getUsername() %> </h4>
             <div class="container row mt-4">
@@ -96,7 +96,7 @@
         <% } %>
 
         <div class="row">
-            <a href="NoteManager/generate" class="col-auto btn btn-secondary mt-5">Generate a password</a>
+            <a href="/NoteManager/generate" class="col-auto btn btn-secondary mt-5">Generate a password</a>
         </div>
         </div>
         </div>

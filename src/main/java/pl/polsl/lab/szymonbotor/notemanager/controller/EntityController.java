@@ -3,19 +3,21 @@ package pl.polsl.lab.szymonbotor.notemanager.controller;
 import javax.persistence.*;
 
 /**
- * TODO
+ * Base entity controller class with basic methods for adding, removing and finding objects in the database.
+ * @author Szymon Botor
+ * @version 1.0
  */
 public class EntityController {
 
     /**
-     * TODO
+     * Entity manager factory responsible for creating an Entity Manager.
      */
-    public static final EntityManagerFactory FACTORY = Persistence.createEntityManagerFactory("pl.polsl.lab.szymonbotor.notemanager");
+    protected static final EntityManagerFactory FACTORY = Persistence.createEntityManagerFactory("pl.polsl.lab.szymonbotor.notemanager");
 
     /**
-     *
+     * Entity manager responsible for managing all entities.
      */
-    public static final EntityManager MANAGER = FACTORY.createEntityManager();
+    protected static final EntityManager MANAGER = FACTORY.createEntityManager();
 
     /**
      * Persist an entity in the database.
@@ -57,14 +59,24 @@ public class EntityController {
         return true;
     }
 
-    // TODO
+    /**
+     * Begins a new transaction if none is present.
+     * @return a begun transaction or an existing one.
+     */
     protected static EntityTransaction beginTransaction() {
         EntityTransaction transaction = MANAGER.getTransaction();
+        
+        if (transaction.isActive()) {
+            return transaction;
+        }
+
         transaction.begin();
         return transaction;
     }
 
-    // TODO
+    /**
+     * Commits a transaction if one is active.
+     */
     protected static void commitIfActive() {
         EntityTransaction transaction = MANAGER.getTransaction();
 
@@ -73,12 +85,30 @@ public class EntityController {
         }
     }
 
-    // TODO
+    /**
+     * Rolls back a transaction if one is active.
+     */
     protected static void rollbackIfActive() {
         EntityTransaction transaction = MANAGER.getTransaction();
 
         if (transaction.isActive()) {
             transaction.rollback();
         }
+    }
+
+    /**
+     * Gets the entity manager of the class.
+     * @return the EntityManager object.
+     */
+    public static EntityManager getManager() {
+        return MANAGER;
+    }
+
+    /**
+     * Gets the entity manager factory of the class.
+     * @return the EntityManagerFactory object.
+     */
+    public static EntityManagerFactory getFactory() {
+        return FACTORY;
     }
 }

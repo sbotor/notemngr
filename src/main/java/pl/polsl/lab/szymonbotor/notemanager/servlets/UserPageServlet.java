@@ -7,7 +7,6 @@ package pl.polsl.lab.szymonbotor.notemanager.servlets;
 import pl.polsl.lab.szymonbotor.notemanager.controller.UserController;
 import pl.polsl.lab.szymonbotor.notemanager.entities.User;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.CryptException;
-import pl.polsl.lab.szymonbotor.notemanager.model.AES;
 import pl.polsl.lab.szymonbotor.notemanager.view.UserPageView;
 
 import javax.servlet.ServletException;
@@ -15,7 +14,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Enumeration;
 
 /**
  * TODO
@@ -32,32 +30,18 @@ public class UserPageServlet extends UserServlet {
         super.processRequest(request, response);
         view = new UserPageView(this);
 
-        System.out.println("Before: " + request.getSession().getId());
-        Enumeration<String> it = request.getSession().getAttributeNames();
-        while (it.hasMoreElements()) {
-            System.out.print(it.nextElement());
-        }
-        System.out.println();
-
-        User user = userCont.getUser();
-        AES aes = userCont.getAES();
-
-        if (user == null || aes == null) {
+        User user = null;
+        if (!userCont.isAuthenticated()) {
 
             user = findUser(request, response);
             if (user == null) {
+                view.printError(response, "Cannot find the specified user.");
                 return;
             }
         }
-
+        
+        user = userCont.getUser();
         view.printPage(response, user.getUsername(), user);
-
-        System.out.println("After: " + request.getSession().getId());
-        Enumeration<String> it2 = request.getSession().getAttributeNames();
-        while (it2.hasMoreElements()) {
-            System.out.print(it2.nextElement());
-        }
-        System.out.println();
     }
 
     // TODO

@@ -9,8 +9,8 @@ import java.util.Set;
 import javax.persistence.*;
 
 /**
- * User entity. TODO
- * @author sotor
+ * User entity. Contains a username and a SHA-256 encrypted password.
+ * @author Szymon Botor
  * @version 1.0
  */
 @Entity
@@ -71,7 +71,12 @@ public class User implements Serializable {
     @OneToMany(targetEntity = Note.class, mappedBy = "user", cascade = CascadeType.PERSIST)
     private Set<Note> notes;
 
-    // TODO
+    /**
+     * Checks if the provided password is correct for the user.
+     * @param password password to check.
+     * @return true if the user was authenticated, false otherwise.
+     * @throws CryptException Thrown when a cryptographic error occurs.
+     */
     public boolean authenticate(String password) throws CryptException {
         Authenticator auth = new Authenticator(Hash.stringToBytes(this.password));
         return auth.authenticate(password);

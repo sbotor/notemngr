@@ -2,9 +2,6 @@ package pl.polsl.lab.szymonbotor.notemanager.model;
 
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.CryptException;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 /**

@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package pl.polsl.lab.szymonbotor.notemanager.servlets;
 
 import pl.polsl.lab.szymonbotor.notemanager.controller.NoteController;
@@ -20,8 +16,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * TODO
- * @author sotor
+ * Servlet responsible for creating a new note.
+ * @author Szymon Botor
+ * @version 1.0
  */
 @WebServlet(name = "NewNoteServlet", urlPatterns = {"/newNote"})
 public class NewNoteServlet extends UserServlet {
@@ -30,15 +27,13 @@ public class NewNoteServlet extends UserServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         super.processRequest(request, response);
 
-        User user = userCont.getUser();
-        AES aes = userCont.getAES();
-
-        if (user == null || aes == null) {
-
+        if (!userCont.isAuthenticated()) {
             userCont.clearUserData();
             view.printError(response, "The session has expired. Log in again.");
             return;
         }
+        User user = userCont.getUser();
+        AES aes = userCont.getAES();
 
         String newName = request.getParameter("newName");
         if (newName == null || newName.isBlank()) {
@@ -68,7 +63,12 @@ public class NewNoteServlet extends UserServlet {
         }
     }
 
-    // TODO
+    /**
+     * Prints the new note name form as a page.
+     * @param request servlet request.
+     * @param response servlet response.
+     * @throws IOException Thrown when an IO error occurs.
+     */
     private void printNameForm(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         try (PrintWriter out = view.beginPage(response, "New note")) {

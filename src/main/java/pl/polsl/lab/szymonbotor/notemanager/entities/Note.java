@@ -1,19 +1,14 @@
 package pl.polsl.lab.szymonbotor.notemanager.entities;
 
-import pl.polsl.lab.szymonbotor.notemanager.enums.CryptMode;
-import pl.polsl.lab.szymonbotor.notemanager.exceptions.CryptException;
-import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidCryptModeException;
 import pl.polsl.lab.szymonbotor.notemanager.model.AES;
-import pl.polsl.lab.szymonbotor.notemanager.model.Authenticator;
-import pl.polsl.lab.szymonbotor.notemanager.model.Hash;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
-import java.util.Optional;
 
 /**
- * TODO
+ * Note entity class representing a note encrypted with AES.
+ * @author Szymon Botor
+ * @version 1.0
  */
 @Entity
 @Table(
@@ -81,7 +76,9 @@ public class Note implements Serializable {
     @Column(length = IV_LENGTH, nullable = false)
     private String iv;
 
-    // TODO
+    /**
+     * A default constructor initializing everything to null.
+     */
     public Note() {
         user = null;
         name = null;
@@ -89,7 +86,11 @@ public class Note implements Serializable {
         iv = null;
     }
 
-    // TODO
+    /**
+     * A default constructor initializing everything to null and naming the
+     * note according to the <code>name</code> parameter.
+     * @param name
+     */
     public Note(String name) {
         super();
 
@@ -174,5 +175,10 @@ public class Note implements Serializable {
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    // TODO
+    public void setContent(String newContent) {
+        // TODO: set new note content, convert invalid characters somehow.
     }
 }

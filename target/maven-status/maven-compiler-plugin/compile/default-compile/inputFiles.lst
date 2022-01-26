@@ -7,6 +7,7 @@ C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\s
 C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\exceptions\InvalidPasswordLengthException.java
 C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\model\AES.java
 C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\servlets\UserPageServlet.java
+C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\servlets\NoteServlet.java
 C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\model\Hash.java
 C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\servlets\NewNoteServlet.java
 C:\Users\sotor\OneDrive\Documents\repos\NoteManager\src\main\java\pl\polsl\lab\szymonbotor\notemanager\view\UserPageView.java

@@ -9,7 +9,7 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
 /**
- * TODO
+ * Main servlet context listener responsible for closing EntityManagers and their factories after server shutdown.
  */
 @WebListener
 public class ContextListener implements ServletContextListener {
@@ -17,8 +17,8 @@ public class ContextListener implements ServletContextListener {
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
 
-        EntityManagerFactory emf = EntityController.FACTORY;
-        EntityManager em = EntityController.MANAGER;
+        EntityManagerFactory emf = EntityController.getFactory();
+        EntityManager em = EntityController.getManager();
 
         if (em.isOpen()) {
             em.close();
