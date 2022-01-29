@@ -77,7 +77,7 @@ public class Note implements Serializable {
     /**
      * A default constructor initializing everything to null and naming the
      * note according to the <code>name</code> parameter.
-     * @param name
+     * @param name note name.
      */
     public Note(String name) {
         super();
@@ -149,12 +149,18 @@ public class Note implements Serializable {
         this.name = name;
     }
 
-    // TODO
+    /**
+     * Sets the note content. Does not perform encryption.
+     * @param content new note content.
+     */
     public void setContent(String content) {
         this.content = content;
     }
 
-    // TODO
+    /**
+     * Gets the note content. Does not perform decryption.
+     * @return content of the note.
+     */
     public String getContent() {
         return this.content;
     }

@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package pl.polsl.lab.szymonbotor.notemanager.servlets;
 
 import pl.polsl.lab.szymonbotor.notemanager.controller.NoteController;
@@ -19,13 +15,16 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * TODO
- * @author sotor
+ * Servlet responsible for the main user page including the note list.
+ * @author Szymon Botor
+ * @version 1.0
  */
 @WebServlet(name = "UserPageServlet", urlPatterns = {"/user"})
 public class UserPageServlet extends UserServlet {
 
-    // TODO
+    /**
+     * View bound to the servlet used for page rendering.
+     */
     protected UserPageView view;
 
     @Override
@@ -48,13 +47,18 @@ public class UserPageServlet extends UserServlet {
         user = userCont.getUser();
 
         if (makeActions(request, response)) {
-            return;
-        }
-
-        view.printPage(response, user.getUsername(), user);
+            view.printPage(response, user.getUsername(), user);
+        }        
     }
 
-    // TODO
+    /**
+     * Tries to find the user creating one from the HTTP parameters if needed.
+     * @param request servlet request.
+     * @param response servlet response.
+     * @return found or created user. If no user was found or creation was impossible returns null.
+     * @throws IOException Thrown when an IO error occurs.
+     * @throws ServletException Thrown if a servlet exception occurs.
+     */
     protected User findUser(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         String username = request.getParameter("username"),
                 password = request.getParameter("password");
@@ -85,7 +89,15 @@ public class UserPageServlet extends UserServlet {
         return null;
     }
 
-    // TODO
+    /**
+     * Checks if an action should be taken before rendering the page
+     * performs it accordingly. The action can make the page unrenderable
+     * (for example a note can be deleted).
+     * @param request servlet request.
+     * @param response servlet response.
+     * @return true if the a note page should be rendered.
+     * @throws IOException Thrown when an IO error occurs.
+     */
     private boolean makeActions(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         String action = request.getParameter("removeId");
@@ -97,7 +109,7 @@ public class UserPageServlet extends UserServlet {
                 note = NoteController.findNote(noteId);
                 if (note == null)  {
                     view.printError(response, "Cannot find the specified note.");
-                    return true;
+                    return false;
                 }
             } catch (NumberFormatException e) {
                 view.printError(response, "Invalid note ID.");
@@ -109,10 +121,10 @@ public class UserPageServlet extends UserServlet {
                 return false;
             } else {
                 view.printError(response, "The note does not belong to the current user.");
-                return true;
+                return false;
             }
         }
 
-        return false;
+        return true;
     }
 }

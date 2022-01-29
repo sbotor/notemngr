@@ -14,8 +14,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * TODO
+ * Abstract servlet with properties common to all user servlets.
  * @author Szymon Botor
+ * @version 1.0
  */
 public abstract class UserServlet extends HttpServlet {
 
@@ -25,7 +26,7 @@ public abstract class UserServlet extends HttpServlet {
     protected BootstrapView view = null;
 
     /**
-     * TODO
+     * Controller for managing the current user.
      */
     protected UserController userCont = null;
 

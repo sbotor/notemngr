@@ -20,7 +20,13 @@ public class UserPageView extends BootstrapView {
         super(servlet);
     }
 
-    // TODO
+    /**
+     * Method for printing the entire user page.
+     * @param response servlet response.
+     * @param title page title.
+     * @param user User entity that the page should be based on.
+     * @throws IOException Thrown when an IO error occurs.
+     */
     public void printPage(HttpServletResponse response, String title, User user) throws IOException {
         try (PrintWriter writer = beginPage(response, title)) {
 
@@ -30,17 +36,17 @@ public class UserPageView extends BootstrapView {
             println("<h3 class=\"row mb-5\">Hello, " + user.getUsername() + "</h3>");
             printNoteList(user.getNotes());
 
-            println("<form method=\"POST\" action=\"removeUser\"");
-            println("<button type=\"submit\" class=\"row col-2 btn btn-danger mt-5 disabled\" name=\"removeId\" value=\"" +
-                    user.getId() + "\" disabled>Remove account</button>");
-            println("</form>");
+            println("<a href=\"removeUser\" class=\"row col-2 btn btn-danger mt-5\">Remove account</a>");
 
             closeDiv();
             endPage();
         }
     }
 
-    // TODO
+    /**
+     * Prints the user notes.
+     * @param notes a set of user notes.
+     */
     private void printNoteList(Set<Note> notes) {
 
         openDiv("row mb-3");
@@ -62,7 +68,10 @@ public class UserPageView extends BootstrapView {
         closeDiv();
     }
 
-    // TODO
+    /**
+     * Used to print the array of notes to the output.
+     * @param sortedNotes array of notes that should be sorted.
+     */
     private void printSortedNotes(Note[] sortedNotes) {
         println("<form method=\"POST\" action=\"note\">");
         println("<ul class=\"list-group row col-5\">");

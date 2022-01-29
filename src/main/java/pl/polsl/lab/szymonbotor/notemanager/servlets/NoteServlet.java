@@ -15,11 +15,17 @@ import pl.polsl.lab.szymonbotor.notemanager.exceptions.CryptException;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidCryptModeException;
 import pl.polsl.lab.szymonbotor.notemanager.model.AES;
 
-// TODO
+/**
+ * Servlet responsible for note modification.
+ * @author Szymon Botor
+ * @version 1.0
+ */
 @WebServlet(name = "NoteServlet", urlPatterns = { "/note" })
 public class NoteServlet extends UserServlet {
 
-    // TODO
+    /**
+     * Note controller bound to this servlet.
+     */
     protected NoteController noteCont;
 
     @Override
@@ -88,13 +94,15 @@ public class NoteServlet extends UserServlet {
         }
         
         if (makeActions(request, response)) {
-            return;
+            request.getRequestDispatcher("note.jsp").forward(request, response);
         }
-
-        request.getRequestDispatcher("note.jsp").forward(request, response);
     }
 
-    // TODO
+    /**
+     * Removes a note from the database and session.
+     * Updates the current user in the database as well as the session.
+     * @param note note object to remove.
+     */
     private void remove(Note note) {
         User user = userCont.getUser();
 
@@ -106,7 +114,15 @@ public class NoteServlet extends UserServlet {
         noteCont.clearNote();
     }
 
-    // TODO
+    /**
+     * Checks if an action should be taken before rendering the page
+     * performs it accordingly. The action can make the page unrenderable
+     * (for example a note can be deleted).
+     * @param request servlet request.
+     * @param response servlet response.
+     * @return true if the a note page should be rendered.
+     * @throws IOException Thrown when an IO error occurs.
+     */
     private boolean makeActions(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         String action = request.getParameter("save");
@@ -114,7 +130,7 @@ public class NoteServlet extends UserServlet {
             String content = request.getParameter("content");
             if (content == null) {
                 view.printError(response, "No note content provided.");
-                return true;
+                return false;
             }
 
             AES aes = userCont.getAES();
@@ -122,11 +138,11 @@ public class NoteServlet extends UserServlet {
                 Note note = noteCont.modifyNote(aes, content);
                 NoteController.persist(note);
                 noteCont.storeNote(note);
-                return false;
+                return true;
             } catch (InvalidCryptModeException | CryptException e) {
                 e.printStackTrace();
                 view.printError(response, "Problem saving the note.");
-                return true;
+                return false;
             }
         }
 
@@ -138,6 +154,6 @@ public class NoteServlet extends UserServlet {
             return true;
         }
 
-        return false;
+        return true;
     }
 }

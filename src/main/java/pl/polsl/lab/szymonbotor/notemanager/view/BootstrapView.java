@@ -86,37 +86,58 @@ public class BootstrapView {
         }
     }
 
-    // TODO
+    /**
+     * Convenience method used to open a <code>div</code> tag to the response output.
+     * Custom class string supported.
+     * @param classStr contents of the <code>class</code> attribute for the div.
+     */
     public void openDiv(String classStr) {
         out.println("<div class=\"" + classStr + "\">");
     }
 
-    // TODO
+    /**
+     * Convenience method used to open a <code>div</code> tag to the response output.
+     */
     public void openDiv() {
         out.println("<div>");
     }
 
-    // TODO
+    /**
+     * Convenience method used to close a <code>div</code> tag to the response output.
+     */
     public void closeDiv() {
         out.println("</div>");
     }
 
-    // TODO
+    /**
+     * Convenience method used to print a line of text to the response output.
+     * Ends the line with a newline character.
+     * @param line line of text to print.
+     */
     public void println(String line) {
         out.println(line);
     }
 
-    // TODO
+    /**
+     * Convenience method used to print a portion of text to the response output.
+     * @param str text to print.
+     */
     public void print(String str) {
        out.print(str);
     }
 
-    // TODO
+    /**
+     * Convenience method to find an <code>a</code> tag being a home button.
+     * @return an HTML tag with a button to the homepage.
+     */
     public String getHomeButton() {
         return "<a href=\"/NoteManager\" class=\"col-auto btn btn-secondary mt-3 mb-3\">Home</a>";
     }
 
-    // TODO
+    /**
+     * Convenience method to find an <code>a</code> tag being a user page button.
+     * @return an HTML tag with a button to the user page.
+     */
     public String getUserButton() {
         return "<a href=\"/NoteManager/user\" class=\"col-auto btn btn-secondary mt-3 mb-3\">My notes</a>";
     }

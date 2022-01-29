@@ -11,6 +11,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
+import java.util.Arrays;
+
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -145,7 +147,14 @@ public class AES {
         iv = new IvParameterSpec(ivArray);
     }
 
-    // TODO
+    /**
+     * Used to generate a key for encryption and decryption based on the passed parameters.
+     * @param password password to base the key on.
+     * @param salt cryptographic salt.
+     * @return generated key.
+     * @throws NoSuchAlgorithmException This exception is thrown when a particular cryptographic algorithm is requested but is not available in the environment.
+     * @throws InvalidKeySpecException This is the exception for invalid key specifications.
+     */
     private static SecretKey generateKey(String password, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
         KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, ITER_COUNT, KEY_LENGTH);
@@ -250,15 +259,28 @@ public class AES {
         }
     }
 
-    // TODO
+    /**
+     * Performs a deep copy of the current AES object with the passed IV.
+     * @param iv initialization vector to use.
+     * @return a new AES object that is a copy of this instance with the specified IV.
+     * @throws CryptException When a cryptographic error occurs.
+     */
     public AES cloneWithIV(byte[] iv) throws CryptException {
-        AES newAES = new AES("", this.salt, iv, this.cryptMode);
+        byte[] salt = Arrays.copyOf(this.salt, this.salt.length);
+        CryptMode mode = CryptMode.valueOf(this.cryptMode.name());
+
+        AES newAES = new AES("", salt, iv, mode);
         newAES.key = this.key;
 
         return newAES;
     }
 
-    // TODO
+    /**
+     * Creates a new AES from the specified User entity and password.
+     * @param user User entity that has a stored salt value for key generation.
+     * @param password password used for key generation.
+     * @return new AES object with the specified parameters or null if an error occurs.
+     */
     public static AES fromUserEntity(User user, String password) {
         try {
             AES newAes = new AES(password, CryptMode.BOTH);
