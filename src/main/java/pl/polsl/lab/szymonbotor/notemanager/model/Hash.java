@@ -7,7 +7,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 /**
- * A convenience class for implementing SHA-256 algorithm.
+ * A convenience class for implementing SHA-256 algorithm
+ * and general byte and hex string conversions.
  * @author Szymon Botor
  * @version 1.0
  */

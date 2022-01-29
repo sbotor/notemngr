@@ -68,10 +68,10 @@ public class UserPageView extends BootstrapView {
         println("<ul class=\"list-group row col-5\">");
         for (Note note : sortedNotes) {
             println("<li class=\"list-group-item row\">");
-            println("<button type=\"submit\" class=\"btn btn-link col-7 disabled\" " +
-                    "name=\"openId\" value=\"" + note.getId() + "\" disabled>" + note.getName() + "</button>");
-            println("<button type=\"submit\" class=\"btn btn-outline-danger col-auto ms-1 float-end disabled\" " +
-                    "name=\"removeId\" value=\"" + note.getId() + "\" disabled>Remove</button>");
+            println("<button type=\"submit\" class=\"btn btn-link col-7\" " +
+                    "name=\"openId\" value=\"" + note.getId() + "\">" + note.getName() + "</button>");
+            println("<button type=\"submit\" class=\"btn btn-outline-danger col-auto ms-1 float-end\" " +
+                    "name=\"removeId\" value=\"" + note.getId() + "\">Remove</button>");
             println("</li>");
 
             println("</li>");

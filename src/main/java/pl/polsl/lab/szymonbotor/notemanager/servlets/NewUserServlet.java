@@ -5,7 +5,9 @@
 package pl.polsl.lab.szymonbotor.notemanager.servlets;
 
 import pl.polsl.lab.szymonbotor.notemanager.controller.UserController;
-
+import pl.polsl.lab.szymonbotor.notemanager.enums.CryptMode;
+import pl.polsl.lab.szymonbotor.notemanager.exceptions.CryptException;
+import pl.polsl.lab.szymonbotor.notemanager.model.AES;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -47,7 +49,15 @@ public class NewUserServlet extends UserServlet {
             return;
         }
 
-        if (UserController.createUser(username, pass1) != null) {
+        AES aes;
+        try {
+            aes = new AES(pass1, CryptMode.BOTH);
+        } catch (CryptException e) {
+            e.printStackTrace();
+            view.printError(response, "Problem creating user.");
+            return;
+        }
+        if (UserController.createUser(username, pass1, aes) != null) {
             view.printMessage(response, "New user created", username, "User created successfully.");
         } else {
             view.printError(response, "Could not create the user.");

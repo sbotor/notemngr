@@ -32,11 +32,6 @@ public class Note implements Serializable {
      */
     public static final int IV_LENGTH = AES.IV_LENGTH * 2;
 
-    /**
-     * The length of the salt hex string.
-     */
-    public static final int SALT_LENGTH = AES.SALT_LENGTH * 2;
-
     private static final long serialVersionUID = 1L;
 
     /**
@@ -44,7 +39,7 @@ public class Note implements Serializable {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private long id;
 
     /**
      * Owner of the note.
@@ -65,12 +60,6 @@ public class Note implements Serializable {
     private String name;
 
     /**
-     * Cryptographic salt for note encryption.
-     */
-    @Column(length = SALT_LENGTH, nullable = false)
-    private String salt;
-
-    /**
      * Initialization vector for encryption.
      */
     @Column(length = IV_LENGTH, nullable = false)
@@ -82,7 +71,6 @@ public class Note implements Serializable {
     public Note() {
         user = null;
         name = null;
-        salt = null;
         iv = null;
     }
 
@@ -101,7 +89,7 @@ public class Note implements Serializable {
      * Gets the note ID.
      * @return note ID.
      */
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
@@ -109,7 +97,7 @@ public class Note implements Serializable {
      * Sets the note ID.
      * @param id new note ID.
      */
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -127,22 +115,6 @@ public class Note implements Serializable {
      */
     public void setUser(User user) {
         this.user = user;
-    }
-
-    /**
-     * Gets the salt of the note.
-     * @return note's salt.
-     */
-    public String getSalt() {
-        return salt;
-    }
-
-    /**
-     * Sets the note's salt.
-     * @param salt new salt.
-     */
-    public void setSalt(String salt) {
-        this.salt = salt;
     }
 
     /**
@@ -178,7 +150,12 @@ public class Note implements Serializable {
     }
 
     // TODO
-    public void setContent(String newContent) {
-        // TODO: set new note content, convert invalid characters somehow.
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    // TODO
+    public String getContent() {
+        return this.content;
     }
 }

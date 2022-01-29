@@ -8,6 +8,7 @@ import pl.polsl.lab.szymonbotor.notemanager.model.Hash;
 import javax.persistence.PersistenceException;
 import javax.persistence.TypedQuery;
 import javax.servlet.http.HttpSession;
+
 import java.util.List;
 
 /**
@@ -38,7 +39,6 @@ public class UserController extends EntityController {
 
     // TODO
     private HttpSession session;
-
 
     // TODO
     public UserController(HttpSession session) {
@@ -75,7 +75,7 @@ public class UserController extends EntityController {
     }
 
     // TODO
-    public static User createUser(String username, String password) {
+    public static User createUser(String username, String password, AES aes) {
 
         String hashedPassword;
         try {
@@ -85,6 +85,7 @@ public class UserController extends EntityController {
         }
 
         User newUser = new User(username, hashedPassword);
+        newUser.setSalt(Hash.bytesToString(aes.getSalt()));
         if (persist(newUser)) {
             return newUser;
         } else {
@@ -98,16 +99,9 @@ public class UserController extends EntityController {
     }
 
     // TODO
-    public void storeUserData(User user, String password) {
+    public void storeUserData(User user, AES aes) {
         storeUser(user);
-
-        try {
-            AES aes = new AES(password);
-            session.setAttribute(AES_ATTR, aes);
-        } catch (CryptException e) {
-            e.printStackTrace();
-        }
-
+        session.setAttribute(AES_ATTR, aes);
         session.setMaxInactiveInterval(MAX_INACTIVE_INTERVAL);
     }
 
@@ -133,6 +127,8 @@ public class UserController extends EntityController {
         if (fetchAES() != null) {
             session.removeAttribute(AES_ATTR);
         }
+
+        session.removeAttribute(NoteController.NOTE_ATTR);
     }
 
     // TODO

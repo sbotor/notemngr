@@ -4,6 +4,8 @@ import pl.polsl.lab.szymonbotor.notemanager.controller.NoteController;
 import pl.polsl.lab.szymonbotor.notemanager.controller.UserController;
 import pl.polsl.lab.szymonbotor.notemanager.entities.Note;
 import pl.polsl.lab.szymonbotor.notemanager.entities.User;
+import pl.polsl.lab.szymonbotor.notemanager.exceptions.CryptException;
+import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidCryptModeException;
 import pl.polsl.lab.szymonbotor.notemanager.model.AES;
 
 import java.io.IOException;
@@ -47,7 +49,14 @@ public class NewNoteServlet extends UserServlet {
             user.setNotes(notes);
         }
         
-        Note newNote = NoteController.createNote(newName, aes, user);
+        Note newNote;
+        try {
+            newNote = NoteController.createNote(newName, user, aes);
+        } catch (InvalidCryptModeException | CryptException e) {
+            e.printStackTrace();
+            view.printError(response, "Problem encrypting the note.");
+            return;
+        }
 
         notes.add(newNote);
         UserController.persist(user);

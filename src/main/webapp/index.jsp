@@ -35,6 +35,11 @@
             </div>
 
         <% } else { %>
+
+            <% 
+                userCont.clearUserData();
+            %>
+
             <form method="POST" action="user" class="col-4 mt-3">
                 <div class="row">
                     <h4 class="col-8">Log in</h4>

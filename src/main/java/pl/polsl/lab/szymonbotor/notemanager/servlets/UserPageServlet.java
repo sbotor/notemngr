@@ -4,9 +4,12 @@
  */
 package pl.polsl.lab.szymonbotor.notemanager.servlets;
 
+import pl.polsl.lab.szymonbotor.notemanager.controller.NoteController;
 import pl.polsl.lab.szymonbotor.notemanager.controller.UserController;
+import pl.polsl.lab.szymonbotor.notemanager.entities.Note;
 import pl.polsl.lab.szymonbotor.notemanager.entities.User;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.CryptException;
+import pl.polsl.lab.szymonbotor.notemanager.model.AES;
 import pl.polsl.lab.szymonbotor.notemanager.view.UserPageView;
 
 import javax.servlet.ServletException;
@@ -30,6 +33,8 @@ public class UserPageServlet extends UserServlet {
         super.processRequest(request, response);
         view = new UserPageView(this);
 
+        request.removeAttribute(NoteController.NOTE_ATTR);
+
         User user = null;
         if (!userCont.isAuthenticated()) {
 
@@ -41,6 +46,11 @@ public class UserPageServlet extends UserServlet {
         }
         
         user = userCont.getUser();
+
+        if (makeActions(request, response)) {
+            return;
+        }
+
         view.printPage(response, user.getUsername(), user);
     }
 
@@ -62,7 +72,8 @@ public class UserPageServlet extends UserServlet {
 
         try {
             if (user.authenticate(password)) {
-                userCont.storeUserData(user, password);
+                AES aes = AES.fromUserEntity(user, password);
+                userCont.storeUserData(user, aes);
                 return user;
             } else {
                 view.printError(response, "Invalid password.");
@@ -72,5 +83,36 @@ public class UserPageServlet extends UserServlet {
         }
 
         return null;
+    }
+
+    // TODO
+    private boolean makeActions(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+        String action = request.getParameter("removeId");
+        if (action != null && !action.isBlank()) {
+            long noteId;
+            Note note;
+            try {
+                noteId = Long.parseLong(action);
+                note = NoteController.findNote(noteId);
+                if (note == null)  {
+                    view.printError(response, "Cannot find the specified note.");
+                    return true;
+                }
+            } catch (NumberFormatException e) {
+                view.printError(response, "Invalid note ID.");
+                return true;
+            }
+
+            if (userCont.getUser().getId() == note.getUser().getId()) {
+                NoteController.remove(note);
+                return false;
+            } else {
+                view.printError(response, "The note does not belong to the current user.");
+                return true;
+            }
+        }
+
+        return false;
     }
 }

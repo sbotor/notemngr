@@ -1,6 +1,7 @@
 package pl.polsl.lab.szymonbotor.notemanager.entities;
 
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.CryptException;
+import pl.polsl.lab.szymonbotor.notemanager.model.AES;
 import pl.polsl.lab.szymonbotor.notemanager.model.Authenticator;
 import pl.polsl.lab.szymonbotor.notemanager.model.Hash;
 
@@ -21,6 +22,11 @@ public class User implements Serializable {
      * Maximum number of characters in the username.
      */
     public static final int MAX_USERNAME_LENGTH = 32;
+
+    /**
+     * The length of the salt hex string.
+     */
+    public static final int SALT_LENGTH = AES.SALT_LENGTH * 2;
 
     private static final long serialVersionUID = 1L;
 
@@ -51,7 +57,7 @@ public class User implements Serializable {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private long id;
 
     /**
      * Unique username for the user.
@@ -64,6 +70,12 @@ public class User implements Serializable {
      */
     @Column(length = 64, nullable = false)
     private String password;
+
+    /**
+     * Cryptographic salt for note encryption.
+     */
+    @Column(length = SALT_LENGTH, nullable = false)
+    private String salt;
 
     /**
      * User notes.
@@ -86,7 +98,7 @@ public class User implements Serializable {
      * Gets the user ID.
      * @return user ID.
      */
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
@@ -94,7 +106,7 @@ public class User implements Serializable {
      * Sets the user ID.
      * @param id new user ID.
      */
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -144,5 +156,21 @@ public class User implements Serializable {
      */
     public void setNotes(Set<Note> notes) {
         this.notes = notes;
+    }
+
+    /**
+     * Gets the salt.
+     * @return hex string with the saved salt.
+     */
+    public String getSalt() {
+        return salt;
+    }
+
+    /**
+     * Sets a new salt for the user. Should only be used at initialization.
+     * @param salt new salt.
+     */
+    public void setSalt(String salt) {
+        this.salt = salt;
     }
 }

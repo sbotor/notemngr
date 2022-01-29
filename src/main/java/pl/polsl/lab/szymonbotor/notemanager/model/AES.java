@@ -1,5 +1,6 @@
 package pl.polsl.lab.szymonbotor.notemanager.model;
 
+import pl.polsl.lab.szymonbotor.notemanager.entities.User;
 import pl.polsl.lab.szymonbotor.notemanager.enums.CryptMode;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.CryptException;
 import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidCryptModeException;
@@ -90,14 +91,9 @@ public class AES {
             throws CryptException {
 
         cryptMode = mode;
-
-        SecretKeyFactory factory = null;
         try {
-            factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
             regenerateSalt();
-
-            KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, ITER_COUNT, KEY_LENGTH);
-            key = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
+            key = generateKey(password, salt);
 
             regenerateIv();
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
@@ -130,12 +126,8 @@ public class AES {
     public AES(String password, byte[] salt, byte[] ivArray, CryptMode mode)
             throws CryptException {
 
-        SecretKeyFactory factory = null;
         try {
-            factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-            KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, ITER_COUNT, KEY_LENGTH);
-
-            key = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
+            key = generateKey(password, salt);
             iv = new IvParameterSpec(ivArray);
             this.salt = salt;
             cryptMode = mode;
@@ -151,6 +143,13 @@ public class AES {
         byte[] ivArray = new byte[IV_LENGTH];
         new SecureRandom().nextBytes(ivArray);
         iv = new IvParameterSpec(ivArray);
+    }
+
+    // TODO
+    private static SecretKey generateKey(String password, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+        KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, ITER_COUNT, KEY_LENGTH);
+        return new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
     }
 
     /**
@@ -248,6 +247,26 @@ public class AES {
                     BadPaddingException e) {
                 throw new CryptException(e.getMessage());
             }
+        }
+    }
+
+    // TODO
+    public AES cloneWithIV(byte[] iv) throws CryptException {
+        AES newAES = new AES("", this.salt, iv, this.cryptMode);
+        newAES.key = this.key;
+
+        return newAES;
+    }
+
+    // TODO
+    public static AES fromUserEntity(User user, String password) {
+        try {
+            AES newAes = new AES(password, CryptMode.BOTH);
+            newAes.salt = Hash.stringToBytes(user.getSalt());
+            newAes.key = AES.generateKey(password, newAes.getSalt());
+            return newAes;
+        } catch (CryptException | NoSuchAlgorithmException | InvalidKeySpecException e) {
+            return null;
         }
     }
 }

@@ -48,9 +48,10 @@ public class EntityController {
         beginTransaction();
 
         try {
+            MANAGER.merge(entity);
             MANAGER.remove(entity);
             commitIfActive();
-        } catch (PersistenceException e) {
+        } catch (PersistenceException | IllegalArgumentException e) {
             e.printStackTrace();
             rollbackIfActive();
             return false;

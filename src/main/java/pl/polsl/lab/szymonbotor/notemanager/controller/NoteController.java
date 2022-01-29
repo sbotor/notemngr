@@ -5,6 +5,8 @@ import javax.servlet.http.HttpSession;
 
 import pl.polsl.lab.szymonbotor.notemanager.entities.Note;
 import pl.polsl.lab.szymonbotor.notemanager.entities.User;
+import pl.polsl.lab.szymonbotor.notemanager.exceptions.CryptException;
+import pl.polsl.lab.szymonbotor.notemanager.exceptions.InvalidCryptModeException;
 import pl.polsl.lab.szymonbotor.notemanager.model.AES;
 import pl.polsl.lab.szymonbotor.notemanager.model.Hash;
 
@@ -35,22 +37,20 @@ public class NoteController extends EntityController {
     }
 
     /**
-     * TODO: possible changes
      * Creates a new Note object not saving it to the database.
      * @param name note name.
      * @param aes 
      * @param user
      * @return newly created Note object.
+     * @throws CryptException
+     * @throws InvalidCryptModeException
      */
-    public static Note createNote(String name, AES aes, User user) {
-
-        aes.regenerateIv();
-        aes.regenerateSalt();
+    public static Note createNote(String name, User user, AES aes) throws InvalidCryptModeException, CryptException {
 
         Note newNote = new Note(name);
-        newNote.setIV(Hash.bytesToString(aes.getIV()));
-        newNote.setSalt(Hash.bytesToString(aes.getSalt()));
         newNote.setUser(user);
+        newNote.setContent(Hash.bytesToString(aes.encrypt("")));
+        newNote.setIV(Hash.bytesToString(aes.getIV()));
 
         return newNote;
     }
@@ -100,8 +100,37 @@ public class NoteController extends EntityController {
     }
 
     // TODO
-    public void persistNote(Note note) {
-        // TODO
+    public Note modifyNote(Note note, AES aes, String content) throws InvalidCryptModeException, CryptException {
+        aes.regenerateIv();
+        note.setIV(Hash.bytesToString(aes.getIV()));
+
+        note.setContent(Hash.bytesToString(aes.encrypt(content)));
+
+        this.note = note;
+        return this.note;
+    }
+
+    // TODO
+    public Note modifyNote(AES aes, String content) throws InvalidCryptModeException, CryptException {
+        return modifyNote(this.note, aes, content);
+    }
+
+    // TODO
+    public String getDecryptedContent(AES aes) {
+        
+        byte[] iv = Hash.stringToBytes(note.getIV());
+        try {
+            AES newAes = aes.cloneWithIV(iv);
+            return decrypt(newAes);
+        } catch (CryptException | InvalidCryptModeException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private String decrypt(AES aes) throws InvalidCryptModeException, CryptException {
+        byte[] bytes = Hash.stringToBytes(note.getContent());
+        return aes.decrypt(bytes);
     }
 
     // TODO
